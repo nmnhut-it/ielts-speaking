@@ -182,16 +182,19 @@ Format your response clearly with checkmarks (✓) for covered elements.`
                     // Hobbies & Interests (5)
                     {
                         question: 'What kind of music do you like?',
+                        followUp: 'Has your taste in music changed over the years?',
                         sampleAnswer: 'I\'d say I\'m really drawn to jazz. There\'s something about the smooth, improvisational melodies that helps me wind down after a hectic day at work. I tend to put it on in the evenings while I\'m cooking or just lounging around at home. It\'s the kind of music you can appreciate on different levels — sometimes I\'m just enjoying the vibe, and other times I catch myself really listening to the complexity of the arrangements.',
                         w5h1: { what: 'jazz music', when: 'in the evenings', where: 'at home while cooking or relaxing', who: 'by myself', why: 'helps wind down, appreciates complexity', how: 'enjoys on different levels depending on mood' }
                     },
                     {
                         question: 'Do you enjoy watching movies?',
+                        followUp: 'What was the last movie you really enjoyed?',
                         sampleAnswer: 'Oh, absolutely. I\'m a big fan of thrillers and sci-fi — anything with a gripping plot that keeps you guessing. My family and I usually have a movie night on weekends, though for big releases I prefer the full cinema experience. What I enjoy most is how a good film can completely transport you to another world and make you forget about the stresses of everyday life.',
                         w5h1: { what: 'thrillers and sci-fi films', when: 'weekends, cinema for big releases', where: 'at home or cinema', who: 'with family', why: 'gripping plots, transports you to another world', how: 'forget daily stress, keeps you guessing' }
                     },
                     {
                         question: 'What do you like to do on weekends?',
+                        followUp: 'Do you prefer a planned weekend or a spontaneous one?',
                         sampleAnswer: 'Well, it varies quite a bit actually. If the weather\'s nice, my friends and I like to check out new cafés or brunch spots around the city — we\'re always on the lookout for hidden gems. It\'s become a bit of a Saturday tradition for us, and it\'s a great way to unwind and catch up after a busy week.',
                         w5h1: { what: 'checking out new cafés and brunch spots', when: 'Saturdays', where: 'around the city', who: 'with friends', why: 'unwind and catch up after busy week', how: 'became a tradition, always looking for hidden gems' },
                         alternativeSamples: [
@@ -204,11 +207,13 @@ Format your response clearly with checkmarks (✓) for covered elements.`
                     },
                     {
                         question: 'Do you have any hobbies?',
+                        followUp: 'How did you first get into that hobby?',
                         sampleAnswer: 'Yes, I\'ve been quite into photography for the past three years or so. I tend to grab my camera whenever I\'m exploring new places or just wandering around my neighbourhood on weekends. What I love about it is that it\'s completely changed the way I see things — I notice details now that I would have walked straight past before, like interesting light patterns or textures.',
                         w5h1: { what: 'photography for three years', when: 'when exploring or on weekends', where: 'new places and neighbourhood', who: 'solo creative pursuit', why: 'changed the way I see the world', how: 'notices details like light patterns and textures' }
                     },
                     {
                         question: 'What do you do in your free time?',
+                        followUp: 'Do you wish you had more free time?',
                         sampleAnswer: 'I\'d say I split my free time between two quite different things — reading and tennis. I usually wind down with a mystery novel before bed; it\'s become a kind of ritual that helps me switch off. And then twice a week, I play tennis with a few friends at a local court, which is brilliant for burning off energy and staying in shape.',
                         w5h1: { what: 'reading mystery novels and playing tennis', when: 'before bed / twice a week', where: 'at home / local court', who: 'alone / with friends', why: 'reading to switch off, tennis for energy and fitness', how: 'ritual-like habit, good balance of mind and body' },
                         alternativeSamples: [
@@ -223,26 +228,31 @@ Format your response clearly with checkmarks (✓) for covered elements.`
                     // Daily Life (5)
                     {
                         question: 'Do you prefer studying alone or with others?',
+                        followUp: 'What do you do when you get stuck on a difficult topic?',
                         sampleAnswer: 'On the whole, I\'d say I prefer studying alone, especially for anything that requires deep concentration. I usually settle into a quiet corner at the library or my room and just focus. That said, group study sessions can be really valuable when we\'re working through tricky concepts — hearing someone else\'s perspective often helps things click.',
                         w5h1: { what: 'studying alone for deep focus', when: 'evenings or weekends', where: 'library or room', who: 'alone, sometimes group for tricky concepts', why: 'quiet helps concentration, others offer fresh perspectives', how: 'settles into focused state, things click with collaboration' }
                     },
                     {
                         question: 'What time do you usually wake up?',
+                        followUp: 'Are you a morning person or a night owl?',
                         sampleAnswer: 'On weekdays, my alarm goes off at half six, which gives me enough time to get ready without rushing. I\'m not exactly a natural early riser, but I\'ve found that having a calm morning sets the tone for the whole day. On weekends though, I let myself sleep in until eight or nine — I think the body needs that chance to properly recover.',
                         w5h1: { what: 'waking at 6:30 weekdays, sleeping in weekends', when: '6:30 AM weekdays / 8-9 AM weekends', where: 'at home', who: 'alone', why: 'calm morning sets the tone, weekends for recovery', how: 'not a natural early riser but values the routine' }
                     },
                     {
                         question: 'How do you usually spend your evenings?',
+                        followUp: 'Has your evening routine changed over the years?',
                         sampleAnswer: 'Most evenings are pretty low-key for me. After finishing work around six, I usually cook something and then settle in for an episode or two of whatever series I\'m into at the moment. Sometimes my partner joins me, and occasionally I\'ll ring a friend or family member to catch up. It\'s nothing glamorous, but it\'s how I recharge.',
                         w5h1: { what: 'cooking and watching series', when: 'after work from about 6 PM', where: 'at home', who: 'sometimes with partner, calls friends', why: 'recharge after work, stay connected', how: 'low-key routine that works well' }
                     },
                     {
                         question: 'Do you prefer eating at home or at restaurants?',
+                        followUp: 'What is the best meal you have cooked recently?',
                         sampleAnswer: 'Generally, I\'m a home-cooking person during the week — I tend to make fairly simple things like stir-fries or pasta, which is healthier and easier on the wallet. But come the weekend, I really look forward to dining out with friends or family. There\'s a social element to restaurants that you just can\'t replicate at home, plus it\'s always fun to try dishes I\'d never attempt to make myself.',
                         w5h1: { what: 'home cooking weekdays, restaurants weekends', when: 'weekdays at home, weekends out', where: 'kitchen / restaurants', who: 'alone or with partner / friends or family', why: 'healthier and cheaper at home, social and adventurous dining out', how: 'looks forward to the contrast between both' }
                     },
                     {
                         question: 'What do you usually do after work/school?',
+                        followUp: 'Do you find it easy to switch off after work?',
                         sampleAnswer: 'The first thing I do is go for a quick jog in the park near my office — even just thirty minutes makes a huge difference in terms of clearing my head after a full day. After that, I head home, throw something together for dinner, and just take it easy for the rest of the evening. It\'s a simple routine, but it helps me draw a clear line between work mode and personal time.',
                         w5h1: { what: 'quick jog then dinner and relaxing', when: 'right after work, about 30 minutes', where: 'park near office, then home', who: 'alone', why: 'clears head, separates work from personal time', how: 'simple routine that creates clear boundaries' }
                     },
@@ -250,26 +260,31 @@ Format your response clearly with checkmarks (✓) for covered elements.`
                     // Activities & Sports (5)
                     {
                         question: 'Do you like playing sports?',
+                        followUp: 'Is there a sport you would like to try in the future?',
                         sampleAnswer: 'Definitely — I\'m a big badminton fan. A few friends from university and I play twice a week at a community sports centre, usually on Tuesday and Thursday evenings. It\'s one of those things I genuinely look forward to because it\'s competitive enough to get a proper workout, but also just a really fun way to socialise.',
                         w5h1: { what: 'playing badminton', when: 'twice a week, Tuesday and Thursday evenings', where: 'community sports centre', who: 'with university friends', why: 'competitive workout and social outlet', how: 'genuinely looks forward to it each week' }
                     },
                     {
                         question: 'Do you enjoy outdoor activities?',
+                        followUp: 'What outdoor activity would you recommend to a friend?',
                         sampleAnswer: 'I really do, yes. Hiking is probably my favourite — a group of friends and I try to hit a new trail most weekends, especially during spring and autumn when the conditions are ideal. There\'s something incredibly restorative about being out in nature; I always come back feeling like my batteries have been fully recharged.',
                         w5h1: { what: 'hiking new trails', when: 'most weekends, spring and autumn', where: 'mountains and trails', who: 'with a group of friends', why: 'restorative, recharges batteries', how: 'always comes back feeling renewed' }
                     },
                     {
                         question: 'Have you ever tried swimming?',
+                        followUp: 'Do you prefer swimming in a pool or in the sea?',
                         sampleAnswer: 'Yes, I actually learned when I was about seven, and it\'s stuck with me ever since. I still swim from time to time, mainly in summer when the heat becomes unbearable. What I like about it is that it\'s gentle on the joints but still gives you a proper workout — you get out of the pool feeling both tired and oddly energised.',
                         w5h1: { what: 'swimming since age seven', when: 'mainly in summer', where: 'local pool', who: 'usually alone', why: 'gentle on joints, proper workout', how: 'paradox of feeling tired yet energised' }
                     },
                     {
                         question: 'Do you like going to the gym?',
+                        followUp: 'What motivates you to keep exercising regularly?',
                         sampleAnswer: 'I do, though I wouldn\'t call myself a gym fanatic. I go about three times a week after work and focus on a mix of cardio and weights. Honestly, it started as a way to manage stress, but over time it\'s become part of my routine — if I skip it, I actually notice a dip in both my mood and energy levels.',
                         w5h1: { what: 'cardio and weights three times a week', when: 'evenings after work', where: 'gym near home', who: 'alone to focus', why: 'started for stress, now essential for mood and energy', how: 'notices the difference when sessions are skipped' }
                     },
                     {
                         question: 'What kind of exercise do you do?',
+                        followUp: 'Has your exercise routine changed since you were younger?',
                         sampleAnswer: 'I have a bit of a dual routine going on. Most mornings I jog in the park near my flat — it\'s a nice way to start the day before things get hectic. On alternate days I do yoga at home, which is more about flexibility and mental clarity. The two complement each other surprisingly well; the running builds stamina and the yoga keeps everything loose.',
                         w5h1: { what: 'jogging and yoga on alternate days', when: 'most mornings for jogging, other days for yoga', where: 'park near flat / at home', who: 'solo routine', why: 'jogging for stamina, yoga for flexibility and clarity', how: 'the two complement each other well' }
                     },
@@ -277,26 +292,31 @@ Format your response clearly with checkmarks (✓) for covered elements.`
                     // Technology & Media (5)
                     {
                         question: 'Do you use social media?',
+                        followUp: 'Do you think people spend too much time on social media?',
                         sampleAnswer: 'I do, mainly Instagram and Facebook, though I try to keep it in check. I tend to scroll through during lunch breaks or in the evening to see what friends are up to. It\'s useful for staying in the loop, but I\'ve learned the hard way that too much screen time can be a real drain, so I try to set boundaries.',
                         w5h1: { what: 'Instagram and Facebook with limits', when: 'lunch breaks and evenings', where: 'at work and home', who: 'connecting with friends', why: 'staying in the loop', how: 'sets boundaries to avoid draining effects' }
                     },
                     {
                         question: 'What do you use your phone for most?',
+                        followUp: 'Could you live without your phone for a week?',
                         sampleAnswer: 'Messaging and emails, without a doubt — especially for work. Beyond that, I rely on it heavily for navigation when I\'m driving and for music during my commute. It\'s honestly become a bit of an extension of my hand at this point, which I\'m not entirely proud of, but it does keep things running smoothly.',
                         w5h1: { what: 'messaging, emails, navigation, music', when: 'throughout the day and commute', where: 'work, driving, on the go', who: 'communicating with colleagues and clients', why: 'keeps things organised and running smoothly', how: 'feels almost too dependent but practically essential' }
                     },
                     {
                         question: 'Do you like watching TV shows?',
+                        followUp: 'Do you prefer watching series alone or with someone?',
                         sampleAnswer: 'I do, especially crime dramas and documentaries. I usually watch an episode or two after dinner as a way to wind down before bed. The beauty of streaming is that you can go at your own pace — no waiting a whole week for the next instalment. Although I have to admit, the downside is that it\'s far too easy to binge.',
                         w5h1: { what: 'crime dramas and documentaries', when: 'evenings after dinner', where: 'at home', who: 'usually alone', why: 'wind down before bed', how: 'appreciates own-pace streaming, but admits binge risk' }
                     },
                     {
                         question: 'Do you prefer online shopping or in-store shopping?',
+                        followUp: 'Have you ever bought something online that was completely different from what you expected?',
                         sampleAnswer: 'For most things, I\'d go with online — it\'s hard to beat the convenience of browsing from your sofa and having things delivered to your door. But when it comes to clothes and shoes, I still prefer going into a shop. You really need to try things on to know if they\'ll work; I\'ve had too many disappointing returns from buying clothes online.',
                         w5h1: { what: 'online for most things, in-store for clothes', when: 'weekends for browsing', where: 'home for online, physical stores for clothing', who: 'usually alone', why: 'online is convenient, but clothes need trying on', how: 'learned from disappointing online clothing returns' }
                     },
                     {
                         question: 'How often do you use the internet?',
+                        followUp: 'What would you do if the internet went down for a whole day?',
                         sampleAnswer: 'Constantly, if I\'m being honest. Between work, where I need it for research and communicating with colleagues, and my personal life, where I use it for everything from streaming to staying up to date with the news — I\'d estimate I\'m online at least six or seven hours a day. I think that\'s just the reality of modern life though.',
                         w5h1: { what: 'internet for work research, communication, streaming, news', when: 'six or seven hours daily', where: 'office and home', who: 'alone, communicating with colleagues', why: 'work demands and personal entertainment', how: 'accepts it as modern reality' }
                     },
@@ -304,26 +324,31 @@ Format your response clearly with checkmarks (✓) for covered elements.`
                     // People & Relationships (5)
                     {
                         question: 'Do you spend a lot of time with your family?',
+                        followUp: 'What is your favourite thing to do as a family?',
                         sampleAnswer: 'I make a real effort to, especially on weekends. We usually get together for dinner at my parents\' place, and sometimes we\'ll do something like go hiking or catch a film. With everyone\'s schedules being so hectic, it takes a bit of planning, but I think maintaining that connection is genuinely important.',
                         w5h1: { what: 'dinner and activities together', when: 'weekends', where: 'parents\' place, outdoors, cinemas', who: 'with family', why: 'maintaining connection despite busy schedules', how: 'takes planning but worth the effort' }
                     },
                     {
                         question: 'Do you have many friends?',
+                        followUp: 'How do you usually make new friends?',
                         sampleAnswer: 'Not a huge number, but the ones I have are quite close. We\'ve known each other for years and tend to meet up once or twice a month for dinner or coffee. I\'ve always been someone who values depth over breadth when it comes to friendships — I\'d much rather have a handful of people I can truly count on.',
                         w5h1: { what: 'small circle of close, long-term friends', when: 'meet once or twice a month', where: 'restaurants and cafés', who: 'close friends known for years', why: 'values depth over breadth in friendships', how: 'prefers few reliable people over many acquaintances' }
                     },
                     {
                         question: 'Do you like meeting new people?',
+                        followUp: 'What is the best way to make a good first impression?',
                         sampleAnswer: 'On the whole, yes. I find it stimulating to hear about different people\'s experiences and perspectives, particularly in professional settings like conferences. It can be a bit daunting at first, especially in large groups, but once the conversation gets going, I usually enjoy it — you never know what interesting things you might learn.',
                         w5h1: { what: 'meeting people at events and conferences', when: 'through work and social gatherings', where: 'conferences, parties, professional events', who: 'colleagues and new acquaintances', why: 'stimulating to hear different perspectives', how: 'initially daunting but rewarding once engaged' }
                     },
                     {
                         question: 'Do you keep in touch with childhood friends?',
+                        followUp: 'How has your friendship changed since childhood?',
                         sampleAnswer: 'I do, actually — two of them in particular. We don\'t see each other as much as we used to since we all live in different cities now, but we chat online regularly and make a point of meeting up a few times a year. There\'s something irreplaceable about friends who\'ve known you since you were a kid.',
                         w5h1: { what: 'maintaining two close childhood friendships', when: 'chat regularly, meet a few times yearly', where: 'online and in person when schedules align', who: 'two closest childhood friends', why: 'irreplaceable bond from shared childhood', how: 'adapted to distance with online contact and reunions' }
                     },
                     {
                         question: 'Do you prefer spending time alone or with others?',
+                        followUp: 'What do you usually do when you need some alone time?',
                         sampleAnswer: 'It honestly fluctuates. I\'m naturally quite sociable and love spending weekends out with friends — it really energises me. But I also need that quiet time to recharge, whether it\'s reading, going for a solo walk, or just doing nothing in particular at home. I think a healthy balance between the two is key.',
                         w5h1: { what: 'balancing social time and solitude', when: 'social on weekends, alone time during week', where: 'out with friends / quiet at home', who: 'friends for social, solo for recharging', why: 'sociable nature needs balance with recharge time', how: 'recognises healthy balance is key' }
                     },
@@ -331,26 +356,31 @@ Format your response clearly with checkmarks (✓) for covered elements.`
                     // Learning & Work (5)
                     {
                         question: 'What do you find most interesting about your studies?',
+                        followUp: 'Would you like to study something completely different?',
                         sampleAnswer: 'I think it\'s the practical side of things that really grabs me. In my business course, we often analyse real companies and their strategies, which brings all the theory to life. It\'s far more engaging than just memorising concepts from a textbook because you can actually see how everything plays out in the real world.',
                         w5h1: { what: 'analysing real companies in business course', when: 'during class and group projects', where: 'at university', who: 'with classmates', why: 'brings theory to life, more engaging than textbooks', how: 'sees how concepts play out in real world' }
                     },
                     {
                         question: 'Do you enjoy learning new things?',
+                        followUp: 'What is the most useful skill you have learned recently?',
                         sampleAnswer: 'Very much so. I\'m actually teaching myself graphic design at the moment through online courses, which has been really rewarding. I think there\'s a real buzz that comes from picking up a new skill and watching yourself improve over time — it keeps your mind sharp and stops things from getting stale.',
                         w5h1: { what: 'learning graphic design through online courses', when: 'in free time currently', where: 'at home online', who: 'self-taught', why: 'rewarding to build new skills and improve', how: 'keeps mind sharp, prevents stagnation' }
                     },
                     {
                         question: 'What was your favorite subject at school?',
+                        followUp: 'Did you have a teacher who made a big difference to you?',
                         sampleAnswer: 'History, hands down. Our teacher had this wonderful storytelling approach that made events from centuries ago feel vivid and relevant. Beyond the stories though, it taught me to think about cause and effect, to question why things happened — which is a skill I still rely on in everyday life.',
                         w5h1: { what: 'history with storytelling teacher', when: 'during school years', where: 'in the classroom', who: 'with classmates and inspiring teacher', why: 'vivid storytelling made it relevant, taught critical thinking', how: 'still uses cause-and-effect thinking today' }
                     },
                     {
                         question: 'Do you think your job is interesting?',
+                        followUp: 'What would be your dream job if money were not a concern?',
                         sampleAnswer: 'Yes, genuinely. I work as a marketing coordinator, and every project is a completely different puzzle to solve. One week I might be working on a campaign for a tech startup, the next for a food brand. That variety is what keeps it fresh — I\'m constantly learning about new industries, and the creative side really appeals to me.',
                         w5h1: { what: 'marketing coordinator with varied projects', when: 'different projects each week', where: 'office and client sites', who: 'with clients across industries', why: 'variety keeps it fresh, constantly learning', how: 'each project is a different puzzle to solve' }
                     },
                     {
                         question: 'Would you like to change your job in the future?',
+                        followUp: 'What skills do you think will be most important in the future?',
                         sampleAnswer: 'Eventually, yes. I\'m quite content where I am at the moment, but I\'d love to move into a management role down the line — leading projects, mentoring junior colleagues, that sort of thing. I think the experience I\'m building now is setting me up well for that transition.',
                         w5h1: { what: 'aspiring to management role', when: 'down the line', where: 'within career path', who: 'leading projects and mentoring juniors', why: 'natural progression, current experience is building foundation', how: 'content now but forward-looking' }
                     },

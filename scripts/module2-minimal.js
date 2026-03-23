@@ -326,6 +326,12 @@ function renderCurrentQuestion() {
         document.getElementById('sampleSection').style.display = 'none';
     }
 
+    // Update follow-up question section
+    updateFollowUpSection(question);
+
+    // Update quick answer tips
+    updateQuickAnswerTips(category);
+
     // Update vocabulary section
     updateVocabularySection();
 
@@ -855,6 +861,106 @@ function getFieldMapping(technique) {
     return mappings[technique] || [];
 }
 
+// ========== FOLLOW-UP QUESTION FEATURE ==========
+
+/** Show/hide follow-up question for current question */
+function updateFollowUpSection(question) {
+    const section = document.getElementById('followUpSection');
+    const btn = document.getElementById('followUpBtn');
+    const box = document.getElementById('followUpBox');
+    if (!section || !btn || !box) return;
+
+    const hasFollowUp = typeof question === 'object' && question.followUp;
+    section.style.display = hasFollowUp ? 'block' : 'none';
+    box.style.display = 'none';
+    btn.textContent = 'Show Follow-up Question';
+
+    if (hasFollowUp) {
+        box.textContent = question.followUp;
+    }
+}
+
+/** Toggle follow-up question visibility */
+function toggleFollowUp() {
+    const box = document.getElementById('followUpBox');
+    const btn = document.getElementById('followUpBtn');
+    if (!box || !btn) return;
+
+    const isHidden = box.style.display === 'none';
+    box.style.display = isHidden ? 'block' : 'none';
+    btn.textContent = isHidden ? 'Hide Follow-up' : 'Show Follow-up Question';
+}
+
+// ========== RECORDING TIMER WITH COLOR CODING ==========
+
+const PART1_TARGET_MIN = 20;
+const PART1_TARGET_MAX = 30;
+
+/** Update recording timer color based on elapsed seconds */
+function updateRecordingTimerColor(seconds) {
+    const timerEl = document.getElementById('recordTimer');
+    if (!timerEl) return;
+
+    if (seconds < PART1_TARGET_MIN) {
+        timerEl.style.color = '#16a34a'; // green
+    } else if (seconds <= PART1_TARGET_MAX) {
+        timerEl.style.color = '#ca8a04'; // yellow
+    } else {
+        timerEl.style.color = '#dc2626'; // red
+    }
+}
+
+// ========== QUICK ANSWER TIPS BY CATEGORY ==========
+
+const CATEGORY_TIPS = {
+    'Hobbies & Interests': 'Use present simple + frequency adverbs (always, usually, often)',
+    'Daily Life': 'Describe your routine with time markers (in the morning, after work)',
+    'Activities & Sports': 'Use present simple for habits, past tense for specific events',
+    'Technology & Media': 'Compare past and present (used to... but now...)',
+    'People & Relationships': 'Describe personality traits and give examples of behaviour',
+    'Learning & Work': 'Talk about skills, goals, and what motivates you',
+    'Places & Travel': 'Use descriptive adjectives and talk about your feelings',
+    'Food & Cooking': 'Describe taste, texture, and the experience of eating',
+    'Weather & Seasons': 'Compare different seasons and their effects on your mood',
+    'Shopping & Fashion': 'Express preferences with reasons (I prefer... because...)',
+    'Home & Living': 'Describe spaces using adjectives and explain what you like about them',
+    'Arts & Entertainment': 'Share personal reactions and say why something appeals to you',
+    'Nature & Environment': 'Use descriptive language and express opinions about conservation',
+    'Transportation': 'Compare methods and discuss convenience, cost, and speed',
+    'Health & Lifestyle': 'Talk about habits using frequency expressions and results',
+    'Celebrations & Festivals': 'Use past tense for memories, present for traditions',
+    'Pets & Animals': 'Describe behaviour and explain emotional connections',
+    'Language & Communication': 'Discuss learning strategies and challenges',
+    'Memory & Childhood': 'Use past tense and expressions like "I remember when..."',
+    'Time Management': 'Talk about priorities and scheduling with time expressions'
+};
+
+/** Update the quick answer tips section */
+function updateQuickAnswerTips(category) {
+    const section = document.getElementById('quickTipsSection');
+    const content = document.getElementById('quickTipsContent');
+    if (!section || !content) return;
+
+    const tip = CATEGORY_TIPS[category];
+    if (tip) {
+        content.textContent = tip;
+        section.style.display = 'block';
+    } else {
+        section.style.display = 'none';
+    }
+}
+
+/** Toggle quick tips expansion */
+function toggleQuickTips() {
+    const content = document.getElementById('quickTipsContent');
+    const btn = document.getElementById('quickTipsToggle');
+    if (!content || !btn) return;
+
+    const isHidden = content.style.display === 'none';
+    content.style.display = isHidden ? 'block' : 'none';
+    btn.textContent = isHidden ? '▼' : '▶';
+}
+
 // Navigation
 function previousQuestion() {
     if (currentIndex > 0) {
@@ -1306,10 +1412,13 @@ function startRecordingTimer() {
     timerDisplay.style.display = 'inline';
     timerDisplay.textContent = '0:00';
 
+    let recSeconds = 0;
     recordingTimer = setInterval(() => {
         if (audioRecorder) {
             const duration = audioRecorder.getRecordingDuration();
             timerDisplay.textContent = formatDuration(duration);
+            recSeconds = Math.floor(duration / 1000);
+            updateRecordingTimerColor(recSeconds);
         }
     }, 1000);
 }

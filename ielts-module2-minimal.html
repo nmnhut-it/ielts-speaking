@@ -125,6 +125,15 @@
                 <button class="btn-favorite" id="favBtn" onclick="toggleFavorite()" aria-label="Favorite">☆</button>
             </div>
             <h2 class="question-text" id="questionText">Loading question...</h2>
+
+            <!-- Quick Answer Tips -->
+            <div class="quick-tips-section" id="quickTipsSection" style="display: none;">
+                <div style="display: flex; align-items: center; gap: 6px; cursor: pointer;" onclick="toggleQuickTips()">
+                    <span id="quickTipsToggle" style="font-size: 0.8em; color: #666;">▼</span>
+                    <span style="font-size: 0.85em; color: #007bff; font-weight: 600;">Tip for this category</span>
+                </div>
+                <div id="quickTipsContent" style="margin-top: 6px; padding: 8px 12px; background: #eef6ff; border-radius: 6px; font-size: 0.9em; color: #333; line-height: 1.5;"></div>
+            </div>
         </section>
 
         <!-- Input Form -->
@@ -141,6 +150,7 @@
                         <span class="record-label" id="recordLabel">Record Answer</span>
                     </button>
                     <span class="record-timer" id="recordTimer" style="display: none;">0:00</span>
+                    <span class="record-target-hint" style="font-size: 0.8em; color: #888; margin-left: 8px;">aim for 20-30s</span>
                 </div>
 
                 <div class="live-transcript-area hidden" id="liveTranscriptArea" style="margin-top:12px;padding:12px 16px;background:#f0f7ff;border:1px solid #b3d4fc;border-radius:8px;min-height:60px;">
@@ -173,6 +183,12 @@
                     </div>
                     <div class="hidden" id="m2ScoreDisplay" style="margin-top:12px;padding:16px;background:#f8f9fa;border-radius:8px;border:1px solid #dee2e6;"></div>
                 </div>
+            </div>
+
+            <!-- Follow-up Question -->
+            <div class="follow-up-section" id="followUpSection" style="display: none; margin-top: 16px;">
+                <button class="btn-follow-up" id="followUpBtn" onclick="toggleFollowUp()" style="padding: 8px 16px; background: #f59e0b; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9em; font-weight: 600;">Show Follow-up Question</button>
+                <div class="follow-up-box" id="followUpBox" style="display: none; margin-top: 10px; padding: 12px 16px; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; font-size: 1em; color: #92400e; line-height: 1.5; font-weight: 500;"></div>
             </div>
 
             <!-- Answer Template Guide -->
