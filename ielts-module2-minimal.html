@@ -192,12 +192,16 @@
                 <div class="review-answers" id="reviewAnswers"></div>
                 <div class="review-score" id="reviewScore"></div>
                 <div class="review-feedback" id="reviewFeedback"></div>
-                <!-- Audio controls -->
+                <!-- Send to Telegram — always visible in review -->
+                <button class="btn-send-review" id="sendTelegramBtn" onclick="sendAudioToTelegram()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                    Send to nmnhut-it
+                </button>
+                <!-- Audio controls (shown if recording exists) -->
                 <div class="audio-preview review-audio" id="audioPreview" style="display:none">
                     <audio controls id="audioPlayer"></audio>
                     <div class="audio-actions">
                         <button class="btn-download-audio" id="downloadAudioBtn" onclick="downloadRecording()">Download</button>
-                        <button class="btn-send-telegram" id="sendTelegramBtn" onclick="sendAudioToTelegram()">Send to nmnhut-it</button>
                         <button class="btn-delete-audio" onclick="deleteRecording()">Delete</button>
                     </div>
                 </div>

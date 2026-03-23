@@ -2203,16 +2203,12 @@ function deleteRecording() {
 }
 
 async function sendAudioToTelegram() {
-    const recording = currentRecording || mainRecording;
-    if (!recording) {
-        alert('No recording available');
-        return;
-    }
-
     if (!telegramSender) {
         alert('Telegram not configured');
         return;
     }
+
+    const recording = currentRecording || mainRecording;
 
     const sendBtn = document.getElementById('sendTelegramBtn');
     const originalText = sendBtn.textContent;
@@ -2264,28 +2260,34 @@ async function sendAudioToTelegram() {
         caption += '\n<b>📊 Band Score:</b> ' + scoreText + '\n' +
             '<b>Total Words:</b> ' + totalWords;
 
-        if (session?.photoDataUrl) {
-            const photoBlob = dataURLtoBlob(session.photoDataUrl);
-            await telegramSender.sendPhoto(
-                photoBlob,
-                caption,
-                `${studentName}_q${currentIndex + 1}.jpg`
-            );
-        }
+        if (recording) {
+            // Send audio with caption
+            if (session?.photoDataUrl) {
+                const photoBlob = dataURLtoBlob(session.photoDataUrl);
+                await telegramSender.sendPhoto(
+                    photoBlob,
+                    caption,
+                    `${studentName}_q${currentIndex + 1}.jpg`
+                );
+            }
 
-        await telegramSender.sendAudio(
-            recording.blob,
-            caption,
-            `${studentName}_q${currentIndex + 1}.ogg`
-        );
-
-        // Send follow-up recording separately if available
-        if (followUpText && currentRecording && mainRecording && currentRecording !== mainRecording) {
             await telegramSender.sendAudio(
-                currentRecording.blob,
-                '<b>🔄 Follow-up recording for Q' + (currentIndex + 1) + '</b>',
-                `${studentName}_q${currentIndex + 1}_followup.ogg`
+                recording.blob,
+                caption,
+                `${studentName}_q${currentIndex + 1}.ogg`
             );
+
+            // Send follow-up recording separately if available
+            if (followUpText && currentRecording && mainRecording && currentRecording !== mainRecording) {
+                await telegramSender.sendAudio(
+                    currentRecording.blob,
+                    '<b>🔄 Follow-up recording for Q' + (currentIndex + 1) + '</b>',
+                    `${studentName}_q${currentIndex + 1}_followup.ogg`
+                );
+            }
+        } else {
+            // No recording — send transcript as text message
+            await telegramSender.sendTextMessage(caption);
         }
 
         alert('Sent to nmnhut-it successfully!');
