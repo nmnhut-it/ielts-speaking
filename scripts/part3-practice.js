@@ -1300,10 +1300,28 @@ function downloadAnswerRecording() {
 function sendRecordingToTelegram() {
     if (!answerRecordingBlob || typeof TelegramSender === 'undefined') return;
     const q = allQuestions[currentIndex];
-    TelegramSender.sendAudio(
-        answerRecordingBlob,
-        'Part 3 Q' + (currentIndex + 1) + ': ' + q.question
-    );
+    const studentName = localStorage.getItem('studentName') || 'Unknown';
+    const transcript = localStorage.getItem(STORAGE_PREFIX_TRANSCRIPT + currentIndex) || '';
+    const wordCount = transcript ? transcript.trim().split(/\s+/).length : 0;
+
+    let scoreText = 'Not scored';
+    if (transcript && window.calculateBandScores) {
+        const scores = calculateBandScores(transcript);
+        scoreText = scores.overall + ' (F:' + scores.fluency +
+            ' V:' + scores.vocabulary + ' G:' + scores.grammar +
+            ' P:' + scores.pronunciation + ')';
+    }
+
+    const caption = '<b>\ud83d\udcda IELTS Part 3 Recording</b>\n\n' +
+        '<b>Student:</b> ' + studentName + '\n' +
+        '<b>Topic:</b> ' + q.topic + '\n' +
+        '<b>Question #' + (currentIndex + 1) + ':</b> ' + q.question + '\n\n' +
+        '<b>\ud83d\udcdd Transcription:</b>\n' +
+        (transcript || 'No transcription available') + '\n\n' +
+        '<b>\ud83d\udcca Band Score:</b> ' + scoreText + '\n' +
+        '<b>Words:</b> ' + wordCount;
+
+    TelegramSender.sendAudio(answerRecordingBlob, caption);
 }
 
 // --- Jump Modal ---

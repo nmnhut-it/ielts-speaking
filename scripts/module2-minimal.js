@@ -277,7 +277,7 @@ function setupEventListeners() {
         if (e.key === 'ArrowLeft' || e.key === 'p') previousQuestion();
         if (e.key === 'ArrowRight' || e.key === 'n') nextQuestion();
         if (e.key === 's') toggleSample();
-        if (e.key === 'f') getAIFeedback();
+        if (e.key === 'f') scoreMyAnswer();
     });
 
     // Quick jump input enter key
@@ -1042,58 +1042,67 @@ function updateTemplateDisplay() {
     templateText.innerHTML = template;
 }
 
-// AI Feedback
-async function getAIFeedback() {
+// Score My Answer - run band scoring on the preview text and show comparison
+function scoreMyAnswer() {
     const previewBox = document.getElementById('previewBox');
     const answer = previewBox.textContent;
 
     if (!answer || answer.length < 10 || answer === 'Start typing to see your answer...') {
-        alert('Please fill in at least 2-3 fields before getting feedback');
+        alert('Please fill in at least 2-3 fields before scoring');
         return;
     }
 
-    // Use offline scoring - no API key needed
-
     const question = allQuestions[currentIndex];
-    const questionText = typeof question === 'string' ? question : question.question;
-
     const feedbackSection = document.getElementById('feedbackSection');
     const feedbackContent = document.getElementById('feedbackContent');
 
     feedbackSection.style.display = 'block';
-    feedbackContent.textContent = 'Analyzing...';
+    feedbackContent.textContent = 'Scoring...';
 
     try {
-        // Use offline heuristic feedback
         const words = answer.trim().split(/\s+/);
         const wordCount = words.length;
-        const sentences = answer.split(/[.!?]+/).filter(s => s.trim());
         const lines = [];
-        lines.push('<strong>Self-Study Analysis</strong>');
-        lines.push('Word count: ' + wordCount);
-        if (wordCount < 20) {
-            lines.push('Try to develop your answer more (aim for 30-50 words).');
-        } else if (wordCount >= 40) {
-            lines.push('Good length! Well-developed answer.');
-        } else {
-            lines.push('Decent length. Try adding more details or examples.');
-        }
-        if (sentences.length > 1) {
-            lines.push('You used ' + sentences.length + ' sentences - good structure.');
-        }
+
         if (window.calculateBandScores) {
             const scores = calculateBandScores(answer);
-            lines.push('Estimated band: ' + scores.overall);
+            lines.push('<strong>Band Score: ' + scores.overall + '</strong>');
+            lines.push('Fluency: ' + scores.fluency +
+                ' | Vocabulary: ' + scores.vocabulary +
+                ' | Grammar: ' + scores.grammar +
+                ' | Pronunciation: ' + scores.pronunciation);
         }
+
+        lines.push('<strong>Word count:</strong> ' + wordCount);
+        if (wordCount < 20) {
+            lines.push('Aim for 30-50 words for a Part 1 answer.');
+        } else if (wordCount >= 40) {
+            lines.push('Good length for Part 1.');
+        }
+
+        // Show sample answer comparison
+        const sampleAnswer = getSampleAnswer(question);
+        if (sampleAnswer) {
+            lines.push('<br><strong>Sample Answer:</strong>');
+            lines.push('<em>' + sampleAnswer + '</em>');
+        }
+
         feedbackContent.innerHTML = lines.join('<br>');
 
-        // Mark as completed
         const questionId = getQuestionId(question, currentIndex);
         completed.add(questionId);
         saveProgress();
     } catch (error) {
         feedbackContent.textContent = 'Error: ' + error.message;
     }
+}
+
+// Get sample answer text from question data
+function getSampleAnswer(question) {
+    if (typeof question === 'object' && question.sample) return question.sample;
+    if (typeof question === 'object' && question.sampleAnswer) return question.sampleAnswer;
+    if (typeof question === 'object' && question.answer) return question.answer;
+    return null;
 }
 
 // Progress
@@ -1483,13 +1492,26 @@ async function sendAudioToTelegram() {
         const session = studentSession.getSession();
         const studentName = session ? session.name : 'Unknown Student';
 
-        const caption = telegramSender.formatAudioCaption(
-            questionText,
-            currentIndex + 1,
-            category,
-            currentRecording.duration,
-            studentName
-        );
+        const transcript = localStorage.getItem('m2_last_transcript_' + currentIndex) || '';
+        const wordCount = transcript ? transcript.trim().split(/\s+/).length : 0;
+        const duration = currentRecording.duration || 0;
+
+        let scoreText = 'Not scored';
+        if (transcript && window.calculateBandScores) {
+            const scores = calculateBandScores(transcript, duration);
+            scoreText = scores.overall + ' (F:' + scores.fluency +
+                ' V:' + scores.vocabulary + ' G:' + scores.grammar +
+                ' P:' + scores.pronunciation + ')';
+        }
+
+        const caption = '<b>\ud83d\udcda IELTS Part 1 Recording</b>\n\n' +
+            '<b>Student:</b> ' + studentName + '\n' +
+            '<b>Question #' + (currentIndex + 1) + ':</b> ' + questionText + '\n' +
+            '<b>Category:</b> ' + category + '\n\n' +
+            '<b>\ud83d\udcdd Transcription:</b>\n' +
+            (transcript || 'No transcription available') + '\n\n' +
+            '<b>\ud83d\udcca Band Score:</b> ' + scoreText + '\n' +
+            '<b>Words:</b> ' + wordCount + ' | <b>Duration:</b> ' + Math.round(duration) + 's';
 
         if (session?.photoDataUrl) {
             const photoBlob = dataURLtoBlob(session.photoDataUrl);

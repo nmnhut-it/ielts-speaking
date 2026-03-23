@@ -1332,7 +1332,7 @@ function setupEventListeners() {
         if (e.key === 'ArrowLeft' || e.key === 'p') previousCard();
         if (e.key === 'ArrowRight' || e.key === 'n') nextCard();
         if (e.key === 's') toggleSample();
-        if (e.key === 'f') getAIFeedback();
+        if (e.key === 'f') scoreMyAnswer();
         if (e.key === 'j') {
             const modal = document.getElementById('jumpModal');
             if (!modal.classList.contains('active')) openJumpModal();
@@ -2009,50 +2009,52 @@ function updateConnectorDisplay() {
     connectorText.innerHTML = connectors;
 }
 
-// AI Feedback
-async function getAIFeedback() {
+// Score My Answer - run band scoring on preview text and show comparison
+function scoreMyAnswer() {
     const previewBox = document.getElementById('previewBox');
     const answer = previewBox.textContent;
 
     if (!answer || answer.length < 50 || answer === 'Start filling in the fields to see your answer...') {
-        alert('Please fill in at least 2-3 fields before getting feedback');
+        alert('Please fill in at least 2-3 fields before scoring');
         return;
     }
 
-    // Use offline scoring - no API key needed
-
     const card = allCards[currentIndex];
-    const strategy = STRATEGY_CONFIG[currentStrategy];
-
     const feedbackSection = document.getElementById('feedbackSection');
     const feedbackContent = document.getElementById('feedbackContent');
 
     feedbackSection.style.display = 'block';
-    feedbackContent.textContent = 'Analyzing...';
+    feedbackContent.textContent = 'Scoring...';
 
     try {
-        // Use offline heuristic feedback
         const words = answer.trim().split(/\s+/);
         const wordCount = words.length;
-        const sentences = answer.split(/[.!?]+/).filter(s => s.trim());
         const estimatedSeconds = Math.round(wordCount / 2.5);
         const lines = [];
-        lines.push('<strong>Self-Study Analysis</strong>');
-        lines.push('Word count: ' + wordCount + ' (~' + estimatedSeconds + ' seconds of speaking)');
-        if (estimatedSeconds < 90) {
-            lines.push('Your answer may be too short for a 2-minute response. Try adding more details.');
-        } else if (estimatedSeconds > 150) {
-            lines.push('Good length! This would comfortably fill the 2-minute slot.');
-        } else {
-            lines.push('Reasonable length for Part 2.');
-        }
-        if (sentences.length >= 5) {
-            lines.push('Good structure with ' + sentences.length + ' sentences.');
-        }
+
         if (window.calculateBandScores) {
             const scores = calculateBandScores(answer);
-            lines.push('Estimated band: ' + scores.overall);
+            lines.push('<strong>Band Score: ' + scores.overall + '</strong>');
+            lines.push('Fluency: ' + scores.fluency +
+                ' | Vocabulary: ' + scores.vocabulary +
+                ' | Grammar: ' + scores.grammar +
+                ' | Pronunciation: ' + scores.pronunciation);
         }
+
+        lines.push('<strong>Word count:</strong> ' + wordCount +
+            ' (~' + estimatedSeconds + 's of speaking)');
+        if (estimatedSeconds < 90) {
+            lines.push('Too short for 2 minutes. Add more details.');
+        } else if (estimatedSeconds > 150) {
+            lines.push('Good length for the 2-minute slot.');
+        }
+
+        // Show sample answer comparison
+        if (card.sampleAnswer && card.sampleAnswer.text) {
+            lines.push('<br><strong>Sample Answer:</strong>');
+            lines.push('<em>' + card.sampleAnswer.text + '</em>');
+        }
+
         feedbackContent.innerHTML = lines.join('<br>');
 
         const cardId = getCardId(card, currentIndex);
@@ -2249,9 +2251,26 @@ async function sendRecordingToTelegram() {
         const card = allCards[currentIndex];
         const session = studentSession ? studentSession.getSession() : null;
         const studentName = session ? session.name : 'Unknown';
-        const caption = '<b>Module 3 Recording</b>\n' +
+        const transcript = localStorage.getItem('m3_last_transcript_' + currentIndex) || '';
+        const wordCount = transcript ? transcript.trim().split(/\s+/).length : 0;
+        const duration = timerMode === 'idle' ? (120 - timerSeconds) : 0;
+
+        let scoreText = 'Not scored';
+        if (transcript && window.calculateBandScores) {
+            const scores = calculateBandScores(transcript, duration);
+            scoreText = scores.overall + ' (F:' + scores.fluency +
+                ' V:' + scores.vocabulary + ' G:' + scores.grammar +
+                ' P:' + scores.pronunciation + ')';
+        }
+
+        const caption = '<b>\ud83d\udcda IELTS Part 2 Recording</b>\n\n' +
+            '<b>Student:</b> ' + studentName + '\n' +
             '<b>Topic:</b> ' + card.topic + '\n' +
-            '<b>Student:</b> ' + studentName;
+            '<b>Card #' + (currentIndex + 1) + ':</b> ' + card.category + '\n\n' +
+            '<b>\ud83d\udcdd Transcription:</b>\n' +
+            (transcript || 'No transcription available') + '\n\n' +
+            '<b>\ud83d\udcca Band Score:</b> ' + scoreText + '\n' +
+            '<b>Words:</b> ' + wordCount + ' | <b>Duration:</b> ' + duration + 's';
 
         await telegramSender.sendAudio(
             answerRecordingBlob, caption,
