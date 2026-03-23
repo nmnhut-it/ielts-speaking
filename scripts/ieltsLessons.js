@@ -1874,16 +1874,11 @@ Keep feedback brief and constructive.`
                 title: 'Practice: Full Response',
                 instructions: 'Now speak/type your full 2-minute response based on your notes. The AI will analyze your structure and content.',
                 practiceMode: 'full_response',
-                cueCards: [
-                    {
-                        topic: 'Describe a memorable journey you have made',
-                        points: ['Where you went', 'Who you went with', 'What you did during the journey', 'Why it was memorable']
-                    },
-                    {
-                        topic: 'Describe a hobby you had as a child',
-                        points: ['What the hobby was', 'When you started it', 'How often you did it', 'Why you enjoyed it']
-                    }
-                ],
+                redirectNote: {
+                    message: 'For Part 2 Long Turn practice with 50 cue cards and Band 7-8 sample answers, go to the dedicated practice module.',
+                    linkUrl: 'ielts-module3-minimal.html',
+                    linkText: 'Open Part 2 Practice'
+                },
                 aiPromptTemplate: `Student learned the Part 2 structure: brief intro, 20-30s per bullet point, specific details, optional conclusion.
 
 Their response: {{studentResponse}}

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IELTS Speaking Practice — AI-Powered</title>
+    <title>IELTS Speaking Practice</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -46,7 +46,6 @@
             overflow-x: hidden;
         }
 
-        /* ─── Grain overlay ─── */
         body::after {
             content: '';
             position: fixed;
@@ -56,11 +55,7 @@
             z-index: 9999;
         }
 
-        .container {
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
+        .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
 
         /* ─── NAV ─── */
         nav {
@@ -88,65 +83,35 @@
             letter-spacing: -0.02em;
         }
 
-        .nav-status {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.8rem;
+        .nav-user {
+            font-size: 0.85rem;
             color: var(--muted);
+            font-weight: 500;
         }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--warm);
-            transition: background 0.3s;
-        }
-
-        .status-dot.active { background: var(--forest); }
 
         /* ─── HERO ─── */
         .hero {
-            padding: 80px 0 60px;
-            position: relative;
-        }
-
-        .hero-overline {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: var(--accent);
-            margin-bottom: 20px;
-            opacity: 0;
-            animation: fadeUp 0.6s 0.1s forwards;
+            padding: 72px 0 56px;
         }
 
         .hero h1 {
             font-family: var(--font-display);
-            font-size: clamp(2.8rem, 7vw, 4.5rem);
-            line-height: 1.05;
+            font-size: clamp(2.4rem, 6vw, 3.8rem);
+            line-height: 1.1;
             letter-spacing: -0.03em;
-            color: var(--ink);
-            margin-bottom: 24px;
+            margin-bottom: 16px;
             opacity: 0;
-            animation: fadeUp 0.6s 0.2s forwards;
-        }
-
-        .hero h1 em {
-            font-style: italic;
-            color: var(--accent);
+            animation: fadeUp 0.6s 0.1s forwards;
         }
 
         .hero-sub {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             color: var(--muted);
-            max-width: 520px;
+            max-width: 540px;
             line-height: 1.7;
-            margin-bottom: 36px;
+            margin-bottom: 32px;
             opacity: 0;
-            animation: fadeUp 0.6s 0.35s forwards;
+            animation: fadeUp 0.6s 0.25s forwards;
         }
 
         .hero-actions {
@@ -154,7 +119,7 @@
             gap: 14px;
             flex-wrap: wrap;
             opacity: 0;
-            animation: fadeUp 0.6s 0.5s forwards;
+            animation: fadeUp 0.6s 0.4s forwards;
         }
 
         .btn {
@@ -194,11 +159,230 @@
             transform: translateY(-2px);
         }
 
+        /* ─── SECTIONS ─── */
+        .section-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(1.6rem, 4vw, 2.2rem);
+            letter-spacing: -0.02em;
+            margin-bottom: 32px;
+        }
+
+        /* ─── WHAT IS IELTS SPEAKING ─── */
+        .about-section {
+            margin-bottom: 72px;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        @media (max-width: 700px) {
+            .about-grid { grid-template-columns: 1fr; }
+        }
+
+        .about-text {
+            font-size: 0.95rem;
+            color: var(--muted);
+            line-height: 1.75;
+            margin-bottom: 20px;
+        }
+
+        .parts-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .parts-list li {
+            padding: 16px 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        .parts-list li strong {
+            display: block;
+            font-size: 0.95rem;
+            margin-bottom: 2px;
+        }
+
+        .parts-list li span {
+            font-size: 0.82rem;
+            color: var(--muted);
+        }
+
+        .about-meta {
+            font-size: 0.82rem;
+            color: var(--muted);
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: var(--cream);
+            border-radius: 8px;
+            line-height: 1.7;
+        }
+
+        /* ─── PRACTICE TOOLS ─── */
+        .tools-section {
+            margin-bottom: 72px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .tool-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px 24px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: transparent;
+        }
+
+        .tool-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            margin-bottom: 6px;
+            letter-spacing: -0.01em;
+        }
+
+        .tool-card .tool-desc {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+
+        .tool-card ul {
+            list-style: none;
+            margin-bottom: 20px;
+            flex: 1;
+        }
+
+        .tool-card ul li {
+            font-size: 0.82rem;
+            color: var(--ink);
+            padding: 4px 0;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .tool-card ul li::before {
+            content: '\2013';
+            position: absolute;
+            left: 0;
+            color: var(--warm);
+        }
+
+        .tool-card .tool-btn {
+            display: block;
+            text-align: center;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .tool-btn-blue { background: #eff6ff; color: var(--ocean); }
+        .tool-btn-blue:hover { background: var(--ocean); color: white; }
+        .tool-btn-green { background: #f0fdf4; color: var(--forest); }
+        .tool-btn-green:hover { background: var(--forest); color: white; }
+        .tool-btn-red { background: #fef2f2; color: var(--accent); }
+        .tool-btn-red:hover { background: var(--accent); color: white; }
+        .tool-btn-amber { background: #fefce8; color: var(--amber); }
+        .tool-btn-amber:hover { background: var(--amber); color: white; }
+        .tool-btn-ink { background: var(--cream); color: var(--ink); }
+        .tool-btn-ink:hover { background: var(--ink); color: var(--paper); }
+
+        /* ─── SCORING SECTION ─── */
+        .scoring-section {
+            margin-bottom: 72px;
+        }
+
+        .criteria-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        @media (max-width: 600px) {
+            .criteria-grid { grid-template-columns: 1fr; }
+        }
+
+        .criteria-card {
+            padding: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        .criteria-card strong {
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .criteria-card span {
+            font-size: 0.82rem;
+            color: var(--muted);
+        }
+
+        .band-scale {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .band-item {
+            text-align: center;
+        }
+
+        .band-item .band-num {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            color: var(--ink);
+        }
+
+        .band-item .band-label {
+            font-size: 0.7rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
         /* ─── SETUP PANEL ─── */
         .setup-section {
-            margin-bottom: 64px;
-            opacity: 0;
-            animation: fadeUp 0.6s 0.6s forwards;
+            margin-bottom: 48px;
         }
 
         .setup-toggle {
@@ -216,9 +400,7 @@
             font-size: 0.9rem;
         }
 
-        .setup-toggle:hover {
-            border-color: var(--ink);
-        }
+        .setup-toggle:hover { border-color: var(--ink); }
 
         .setup-toggle-left {
             display: flex;
@@ -276,16 +458,6 @@
             border-radius: 0 0 var(--radius) var(--radius);
         }
 
-        .setup-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-
-        @media (max-width: 600px) {
-            .setup-row { grid-template-columns: 1fr; }
-        }
-
         .setup-field label {
             display: block;
             font-size: 0.78rem;
@@ -298,6 +470,7 @@
 
         .setup-field input {
             width: 100%;
+            max-width: 360px;
             padding: 12px 16px;
             border: 1.5px solid var(--border);
             border-radius: 8px;
@@ -309,27 +482,14 @@
             transition: border-color 0.2s;
         }
 
-        .setup-field input:focus {
-            border-color: var(--ocean);
-        }
-
-        .setup-field input.saved {
-            border-color: var(--forest);
-            background: #f0fdf4;
-        }
+        .setup-field input:focus { border-color: var(--ocean); }
+        .setup-field input.saved { border-color: var(--forest); background: #f0fdf4; }
 
         .setup-field .field-hint {
             font-size: 0.75rem;
             color: var(--muted);
             margin-top: 6px;
         }
-
-        .setup-field .field-hint a {
-            color: var(--ocean);
-            text-decoration: none;
-        }
-
-        .setup-field .field-hint a:hover { text-decoration: underline; }
 
         .setup-saved-indicator {
             display: inline-flex;
@@ -343,303 +503,6 @@
         }
 
         .setup-saved-indicator.visible { opacity: 1; }
-
-        /* ─── PATHWAYS ─── */
-        .pathways {
-            margin-bottom: 80px;
-        }
-
-        .section-label {
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.18em;
-            color: var(--muted);
-            margin-bottom: 12px;
-        }
-
-        .section-title {
-            font-family: var(--font-display);
-            font-size: clamp(1.6rem, 4vw, 2.2rem);
-            letter-spacing: -0.02em;
-            margin-bottom: 40px;
-        }
-
-        .pathway-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .pathway-grid { grid-template-columns: 1fr; }
-        }
-
-        .pathway-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 32px 28px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: default;
-        }
-
-        .pathway-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .pathway-card:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-lift);
-            border-color: transparent;
-        }
-
-        .pathway-card:hover::before { transform: scaleX(1); }
-
-        .pathway-card.learn::before { background: var(--ocean); }
-        .pathway-card.practice::before { background: var(--forest); }
-        .pathway-card.test::before { background: var(--accent); }
-
-        .pathway-number {
-            font-family: var(--font-display);
-            font-size: 3rem;
-            line-height: 1;
-            margin-bottom: 16px;
-            opacity: 0.08;
-            position: absolute;
-            top: 20px;
-            right: 24px;
-        }
-
-        .pathway-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            margin-bottom: 20px;
-        }
-
-        .pathway-card.learn .pathway-icon { background: #eff6ff; color: var(--ocean); }
-        .pathway-card.practice .pathway-icon { background: #f0fdf4; color: var(--forest); }
-        .pathway-card.test .pathway-icon { background: #fef2f2; color: var(--accent); }
-
-        .pathway-card h3 {
-            font-family: var(--font-display);
-            font-size: 1.35rem;
-            margin-bottom: 6px;
-            letter-spacing: -0.01em;
-        }
-
-        .pathway-subtitle {
-            font-size: 0.85rem;
-            color: var(--muted);
-            margin-bottom: 24px;
-        }
-
-        .pathway-links {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .pathway-link {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            background: var(--paper);
-            border-radius: 8px;
-            text-decoration: none;
-            color: var(--ink);
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .pathway-link:hover {
-            background: var(--cream);
-            padding-left: 20px;
-        }
-
-        .pathway-link-meta {
-            font-size: 0.72rem;
-            color: var(--muted);
-            font-weight: 400;
-            white-space: nowrap;
-            margin-left: 12px;
-        }
-
-        .pathway-link-arrow {
-            opacity: 0;
-            transform: translateX(-4px);
-            transition: all 0.2s;
-            color: var(--muted);
-            font-size: 0.8rem;
-        }
-
-        .pathway-link:hover .pathway-link-arrow {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        /* ─── FEATURES STRIP ─── */
-        .features-strip {
-            padding: 48px 0;
-            margin-bottom: 60px;
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 32px;
-        }
-
-        @media (max-width: 600px) {
-            .features-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        .feature-item {
-            text-align: center;
-        }
-
-        .feature-value {
-            font-family: var(--font-display);
-            font-size: 1.8rem;
-            color: var(--ink);
-            letter-spacing: -0.02em;
-        }
-
-        .feature-label {
-            font-size: 0.75rem;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            font-weight: 600;
-            margin-top: 2px;
-        }
-
-        /* ─── HOW IT WORKS ─── */
-        .how-section {
-            margin-bottom: 80px;
-        }
-
-        .steps-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-            position: relative;
-        }
-
-        .steps-list::before {
-            content: '';
-            position: absolute;
-            left: 23px;
-            top: 48px;
-            bottom: 48px;
-            width: 1px;
-            background: var(--border);
-        }
-
-        @media (max-width: 600px) {
-            .steps-list::before { left: 19px; }
-        }
-
-        .step-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 24px;
-            padding: 24px 0;
-        }
-
-        .step-num {
-            width: 48px;
-            height: 48px;
-            min-width: 48px;
-            border-radius: 50%;
-            background: var(--card);
-            border: 2px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-display);
-            font-size: 1.1rem;
-            color: var(--ink);
-            position: relative;
-            z-index: 1;
-        }
-
-        @media (max-width: 600px) {
-            .step-num { width: 40px; height: 40px; min-width: 40px; font-size: 0.95rem; }
-        }
-
-        .step-content h4 {
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .step-content p {
-            font-size: 0.88rem;
-            color: var(--muted);
-            line-height: 1.6;
-        }
-
-        /* ─── FOOTER ─── */
-        footer {
-            padding: 40px 0;
-            border-top: 1px solid var(--border);
-            text-align: center;
-        }
-
-        .footer-text {
-            font-size: 0.78rem;
-            color: var(--muted);
-            line-height: 1.8;
-        }
-
-        .footer-text a {
-            color: var(--ink);
-            text-decoration: none;
-        }
-
-        .footer-text a:hover { text-decoration: underline; }
-
-        /* ─── ANIMATIONS ─── */
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .reveal {
-            opacity: 0;
-            transform: translateY(24px);
-            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* ─── SCROLLBAR ─── */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--paper); }
-        ::-webkit-scrollbar-thumb { background: var(--warm); border-radius: 3px; }
 
         /* ─── Cache badges ─── */
         .cache-badge {
@@ -684,6 +547,40 @@
         .cache-btn-download:disabled { opacity: 0.5; cursor: not-allowed; }
         .cache-btn-clear { background: var(--cream); color: var(--ink); }
         .cache-btn-clear:hover { background: var(--warm); }
+
+        /* ─── FOOTER ─── */
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .footer-text {
+            font-size: 0.78rem;
+            color: var(--muted);
+            line-height: 1.8;
+        }
+
+        /* ─── ANIMATIONS ─── */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--paper); }
+        ::-webkit-scrollbar-thumb { background: var(--warm); border-radius: 3px; }
     </style>
 </head>
 <body>
@@ -692,34 +589,167 @@
     <nav>
         <div class="container nav-inner">
             <a href="/" class="nav-brand">IELTS Speaking</a>
-            <div class="nav-status">
-                <div class="status-dot" id="statusDot"></div>
-                <span id="statusText">Not configured</span>
-            </div>
+            <span class="nav-user" id="navUser"></span>
         </div>
     </nav>
 
     <!-- ─── HERO ─── -->
     <section class="hero">
         <div class="container">
-            <div class="hero-overline">AI-Powered IELTS Preparation</div>
-            <h1>Master the art of<br><em>Speaking</em> English</h1>
+            <h1>IELTS Speaking Practice</h1>
             <p class="hero-sub">
-                Practice with an AI examiner, get instant band scores, and build confidence
-                across all three parts of the IELTS Speaking test.
+                Practice all three parts of the IELTS Speaking test with sample answers, cue cards, and AI-powered conversation.
             </p>
             <div class="hero-actions">
-                <a href="ielts-speaking-test.html" class="btn btn-primary">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                    Take a Practice Test
-                </a>
-                <a href="#pathways" class="btn btn-outline">Explore Modules</a>
+                <a href="ielts-module2-minimal.html" class="btn btn-primary">Start Practicing</a>
+                <a href="ielts-speaking-test.html" class="btn btn-outline">Take a Test</a>
             </div>
         </div>
     </section>
 
-    <!-- ─── SETUP ─── -->
-    <section class="container setup-section">
+    <!-- ─── WHAT IS IELTS SPEAKING? ─── -->
+    <section class="container about-section reveal">
+        <div class="section-label">The Exam</div>
+        <h2 class="section-title">What is IELTS Speaking?</h2>
+        <div class="about-grid">
+            <div>
+                <p class="about-text">
+                    The IELTS Speaking test is a face-to-face interview with an examiner lasting 11 to 14 minutes. It has three parts, each testing different skills.
+                </p>
+                <ul class="parts-list">
+                    <li>
+                        <strong>Part 1: Interview (4-5 min)</strong>
+                        <span>General questions about yourself, your home, work, studies, and familiar topics.</span>
+                    </li>
+                    <li>
+                        <strong>Part 2: Long Turn (3-4 min)</strong>
+                        <span>You receive a cue card with a topic. One minute to prepare, then speak for up to two minutes.</span>
+                    </li>
+                    <li>
+                        <strong>Part 3: Discussion (4-5 min)</strong>
+                        <span>Abstract questions related to the Part 2 topic. Requires deeper analysis and opinion.</span>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <div class="about-meta">
+                    <strong>Total duration:</strong> 11-14 minutes<br>
+                    <strong>Format:</strong> One-on-one with an examiner<br>
+                    <strong>Scored on:</strong> Fluency &amp; Coherence, Lexical Resource, Grammatical Range &amp; Accuracy, Pronunciation<br>
+                    <strong>Band scale:</strong> 0 to 9 (half-band increments)
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── YOUR PRACTICE TOOLS ─── -->
+    <section class="container tools-section reveal">
+        <div class="section-label">Practice</div>
+        <h2 class="section-title">Your Practice Tools</h2>
+        <div class="tools-grid">
+
+            <div class="tool-card">
+                <h3>Part 1 Practice</h3>
+                <p class="tool-desc">100 questions across 7 answer techniques</p>
+                <ul>
+                    <li>Real Part 1 topics: home, work, hobbies, travel</li>
+                    <li>Band 7-8 sample answers for every question</li>
+                    <li>Techniques: 5W1H, STAR, PREP, and more</li>
+                </ul>
+                <a href="ielts-module2-minimal.html" class="tool-btn tool-btn-blue">Practice Part 1</a>
+            </div>
+
+            <div class="tool-card">
+                <h3>Part 2 Practice</h3>
+                <p class="tool-desc">50 cue cards with Band 7-8 sample answers</p>
+                <ul>
+                    <li>Full cue cards with bullet points and prep time</li>
+                    <li>Topics: people, places, events, experiences</li>
+                    <li>Model answers with vocabulary highlights</li>
+                </ul>
+                <a href="ielts-module3-minimal.html" class="tool-btn tool-btn-green">Practice Part 2</a>
+            </div>
+
+            <div class="tool-card">
+                <h3>Full Test</h3>
+                <p class="tool-desc">Simulate all 3 parts with AI scoring</p>
+                <ul>
+                    <li>Timed test following real IELTS format</li>
+                    <li>AI examiner asks follow-up questions</li>
+                    <li>Band score across all 4 criteria</li>
+                </ul>
+                <a href="ielts-speaking-test.html" class="tool-btn tool-btn-red">Take a Test</a>
+            </div>
+
+            <div class="tool-card">
+                <h3>Lessons</h3>
+                <p class="tool-desc">5 modules: strategies, vocabulary, sentence building</p>
+                <ul>
+                    <li>Part 1, 2, and 3 answer strategies</li>
+                    <li>Vocabulary and grammar for band 7+</li>
+                    <li>Audio lessons with practice exercises</li>
+                </ul>
+                <a href="ielts-speaking-lessons.html" class="tool-btn tool-btn-amber">Start Learning</a>
+            </div>
+
+            <div class="tool-card">
+                <h3>Free Conversation</h3>
+                <p class="tool-desc">Practice speaking on any topic with an AI tutor</p>
+                <ul>
+                    <li>Open-ended conversation practice</li>
+                    <li>AI gives corrections and suggestions</li>
+                    <li>Build fluency and confidence</li>
+                </ul>
+                <a href="conversation-practice.html" class="tool-btn tool-btn-ink">Start Talking</a>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ─── HOW YOU'LL BE SCORED ─── -->
+    <section class="container scoring-section reveal">
+        <div class="section-label">Scoring</div>
+        <h2 class="section-title">How You'll Be Scored</h2>
+        <div class="criteria-grid">
+            <div class="criteria-card">
+                <strong>Fluency &amp; Coherence</strong>
+                <span>Speak smoothly without long pauses. Connect your ideas logically using linking words.</span>
+            </div>
+            <div class="criteria-card">
+                <strong>Lexical Resource</strong>
+                <span>Use varied vocabulary. Avoid repeating the same words. Use idiomatic expressions naturally.</span>
+            </div>
+            <div class="criteria-card">
+                <strong>Grammatical Range &amp; Accuracy</strong>
+                <span>Use a mix of simple and complex sentence structures. Minimize errors.</span>
+            </div>
+            <div class="criteria-card">
+                <strong>Pronunciation</strong>
+                <span>Speak clearly. Use natural stress and intonation. Be understood without effort.</span>
+            </div>
+        </div>
+        <div class="band-scale">
+            <div class="band-item">
+                <div class="band-num">5.0</div>
+                <div class="band-label">Limited</div>
+            </div>
+            <div class="band-item">
+                <div class="band-num">6.0</div>
+                <div class="band-label">Competent</div>
+            </div>
+            <div class="band-item">
+                <div class="band-num">7.0</div>
+                <div class="band-label">Good</div>
+            </div>
+            <div class="band-item">
+                <div class="band-num">8.0</div>
+                <div class="band-label">Expert</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── QUICK SETUP ─── -->
+    <section class="container setup-section reveal">
         <button class="setup-toggle" id="setupToggle" onclick="toggleSetup()">
             <div class="setup-toggle-left">
                 <div class="setup-toggle-icon" id="setupIcon">&#9881;</div>
@@ -746,7 +776,7 @@
     </section>
 
     <!-- ─── MODEL CACHE ─── -->
-    <section class="container setup-section" style="animation-delay:0.7s">
+    <section class="container setup-section reveal">
         <button class="setup-toggle" id="cacheToggle" onclick="toggleCache()">
             <div class="setup-toggle-left">
                 <div class="setup-toggle-icon" id="cacheIcon">&#128230;</div>
@@ -762,14 +792,11 @@
                 <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px">
                     Download speech recognition models ahead of time so practice sessions start instantly.
                 </p>
-                <div id="cacheModelList" style="display:flex;flex-direction:column;gap:12px">
-                    <!-- Populated by JS -->
-                </div>
+                <div id="cacheModelList" style="display:flex;flex-direction:column;gap:12px"></div>
                 <div style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
                     <span id="cacheTotalSize" style="font-size:0.78rem;color:var(--muted)"></span>
                     <button onclick="clearAllModelCache()" class="btn btn-outline" style="padding:8px 18px;font-size:0.78rem;border-radius:8px">Clear All Cache</button>
                 </div>
-                <!-- Progress bar (hidden by default) -->
                 <div id="cacheProgressWrap" style="display:none;margin-top:16px">
                     <div style="font-size:0.8rem;color:var(--muted);margin-bottom:6px" id="cacheProgressLabel">Downloading...</div>
                     <div style="width:100%;height:6px;background:var(--cream);border-radius:3px;overflow:hidden">
@@ -780,144 +807,11 @@
         </div>
     </section>
 
-    <!-- ─── PATHWAYS ─── -->
-    <section class="container pathways reveal" id="pathways">
-        <div class="section-label">Your Learning Path</div>
-        <h2 class="section-title">Choose how you want to improve</h2>
-        <div class="pathway-grid">
-
-            <!-- LEARN -->
-            <div class="pathway-card learn">
-                <div class="pathway-number">01</div>
-                <div class="pathway-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                </div>
-                <h3>Learn</h3>
-                <p class="pathway-subtitle">Build your foundation with strategies and examples</p>
-                <div class="pathway-links">
-                    <a href="ielts-speaking-lessons.html" class="pathway-link">
-                        <span>Speaking Lessons</span>
-                        <span class="pathway-link-meta">5 modules</span>
-                        <span class="pathway-link-arrow">&rarr;</span>
-                    </a>
-                </div>
-            </div>
-
-            <!-- PRACTICE -->
-            <div class="pathway-card practice">
-                <div class="pathway-number">02</div>
-                <div class="pathway-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
-                </div>
-                <h3>Practice</h3>
-                <p class="pathway-subtitle">Sharpen your skills with guided exercises</p>
-                <div class="pathway-links">
-                    <a href="ielts-module2-minimal.html" class="pathway-link">
-                        <span>Part 1 &mdash; Quick Answers</span>
-                        <span class="pathway-link-meta">100 questions</span>
-                        <span class="pathway-link-arrow">&rarr;</span>
-                    </a>
-                    <a href="ielts-module3-minimal.html" class="pathway-link">
-                        <span>Part 2 &mdash; Long Turn</span>
-                        <span class="pathway-link-meta">50 cue cards</span>
-                        <span class="pathway-link-arrow">&rarr;</span>
-                    </a>
-                    <a href="conversation-practice.html" class="pathway-link">
-                        <span>Free Conversation</span>
-                        <span class="pathway-link-meta">AI tutor</span>
-                        <span class="pathway-link-arrow">&rarr;</span>
-                    </a>
-                </div>
-            </div>
-
-            <!-- TEST -->
-            <div class="pathway-card test">
-                <div class="pathway-number">03</div>
-                <div class="pathway-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                </div>
-                <h3>Test</h3>
-                <p class="pathway-subtitle">Simulate the real IELTS exam with AI scoring</p>
-                <div class="pathway-links">
-                    <a href="ielts-speaking-test.html" class="pathway-link">
-                        <span>Full Speaking Test</span>
-                        <span class="pathway-link-meta">Parts 1–3</span>
-                        <span class="pathway-link-arrow">&rarr;</span>
-                    </a>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- ─── FEATURES STRIP ─── -->
-    <section class="features-strip reveal">
-        <div class="container">
-            <div class="features-grid">
-                <div class="feature-item">
-                    <div class="feature-value">150+</div>
-                    <div class="feature-label">Practice Questions</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-value">Band</div>
-                    <div class="feature-label">AI Scoring</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-value">3 Parts</div>
-                    <div class="feature-label">Real Test Format</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-value">5</div>
-                    <div class="feature-label">Audio Lessons</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-value">7</div>
-                    <div class="feature-label">Answer Techniques</div>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-value">&infin;</div>
-                    <div class="feature-label">AI Conversations</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ─── HOW IT WORKS ─── -->
-    <section class="container how-section reveal">
-        <div class="section-label">Getting Started</div>
-        <h2 class="section-title">Three steps to a higher band score</h2>
-        <div class="steps-list">
-            <div class="step-item">
-                <div class="step-num">1</div>
-                <div class="step-content">
-                    <h4>Set up your profile</h4>
-                    <p>Enter your name above to personalize your practice sessions. All AI features run locally using built-in models.</p>
-                </div>
-            </div>
-            <div class="step-item">
-                <div class="step-num">2</div>
-                <div class="step-content">
-                    <h4>Learn the techniques</h4>
-                    <p>Work through the 5 lesson modules to learn answer strategies like 5W1H, STAR, and PREP methods used by band 7+ speakers.</p>
-                </div>
-            </div>
-            <div class="step-item">
-                <div class="step-num">3</div>
-                <div class="step-content">
-                    <h4>Practice and test yourself</h4>
-                    <p>Use the practice modules for targeted skills, then take a full simulated test with AI scoring across all four band criteria.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- ─── FOOTER ─── -->
     <footer>
         <div class="container">
             <p class="footer-text">
-                &copy; 2025 IELTS Speaking Practice &mdash; Built by
-                <a href="https://github.com/nmnhut-it" target="_blank" rel="noopener">Nguy&#7877;n Minh Nh&#7921;t</a>
-                <br>
+                &copy; 2025 IELTS Speaking Practice<br>
                 Not affiliated with British Council, IDP, or Cambridge.
             </p>
         </div>
@@ -954,29 +848,27 @@
                     document.getElementById('nameInput').classList.remove('saved');
                     hideSaved('nameSaved');
                 }
-                updateStatus();
+                updateNav();
             }, 400);
         }
 
         function showSaved(id) { document.getElementById(id).classList.add('visible'); }
         function hideSaved(id) { document.getElementById(id).classList.remove('visible'); }
 
-        function updateStatus() {
-            const hasName = !!localStorage.getItem('studentName');
-            const dot = document.getElementById('statusDot');
-            const text = document.getElementById('statusText');
+        function updateNav() {
+            const name = localStorage.getItem('studentName');
+            const navUser = document.getElementById('navUser');
             const subtext = document.getElementById('setupSubtext');
             const icon = document.getElementById('setupIcon');
 
-            dot.classList.add('active');
-            if (hasName) {
-                text.textContent = localStorage.getItem('studentName');
+            if (name) {
+                navUser.textContent = name;
                 subtext.textContent = 'Ready to practice';
                 icon.innerHTML = '&#10003;';
                 icon.style.background = '#f0fdf4';
                 icon.style.color = 'var(--forest)';
             } else {
-                text.textContent = 'Ready';
+                navUser.textContent = '';
                 subtext.textContent = 'Add your name to personalize your sessions';
                 icon.innerHTML = '&#9881;';
                 icon.style.background = '';
@@ -987,14 +879,12 @@
         // ─── Init ───
         function init() {
             const savedName = localStorage.getItem('studentName');
-
             if (savedName) {
                 document.getElementById('nameInput').value = savedName;
                 document.getElementById('nameInput').classList.add('saved');
                 showSaved('nameSaved');
             }
-
-            updateStatus();
+            updateNav();
         }
 
         // ─── Scroll reveal ───
@@ -1029,7 +919,6 @@
             }
         }
 
-        // ─── Render cache status for all models ───
         async function refreshCacheUI() {
             const mgr = window.modelCacheManager;
             if (!mgr) return;
@@ -1038,13 +927,10 @@
                 const status = await mgr.getCacheStatus();
                 const list = document.getElementById('cacheModelList');
                 list.innerHTML = '';
-
                 for (const model of window.MODEL_REGISTRY) {
                     const s = status[model.id];
                     list.appendChild(buildModelRow(model, s));
                 }
-
-                // Total storage
                 const totals = await mgr.getCacheSizeTotal();
                 const el = document.getElementById('cacheTotalSize');
                 if (totals.usage > 0) {
@@ -1060,21 +946,18 @@
         function buildModelRow(model, s) {
             const row = document.createElement('div');
             row.className = 'cache-model-row';
-
             let badgeClass = 'not-cached';
             let badgeText = 'Not cached';
             if (s.cached && !s.expired) {
                 badgeClass = s.expiringSoon ? 'expiring' : 'cached';
                 badgeText = s.expiringSoon
                     ? `Expires in ${s.daysLeft}d`
-                    : `Cached${s.daysLeft !== null ? ' — ' + s.daysLeft + 'd left' : ''}`;
+                    : `Cached${s.daysLeft !== null ? ' \u2014 ' + s.daysLeft + 'd left' : ''}`;
             } else if (s.expired) {
                 badgeClass = 'expiring';
                 badgeText = 'Expired';
             }
-
             const sizeInfo = s.cached && s.sizeBytes > 0 ? s.sizeFormatted : model.estimatedSize;
-
             row.innerHTML = `
                 <div class="cache-model-info">
                     <span class="cache-model-name">${model.label}</span>
@@ -1090,7 +973,6 @@
             return row;
         }
 
-        // ─── Download a model (pre-cache) ───
         async function downloadModel(modelId, btn) {
             if (btn) btn.disabled = true;
             const progressWrap = document.getElementById('cacheProgressWrap');
@@ -1099,16 +981,13 @@
             progressWrap.style.display = 'block';
             progressBar.style.width = '0%';
             progressLabel.textContent = 'Starting download...';
-
             try {
                 const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2');
                 env.allowRemoteModels = true;
                 env.allowLocalModels = true;
                 env.localModelPath = '/models/';
-
                 const fileProgress = new Map();
                 let totalFiles = 0;
-
                 await pipeline('automatic-speech-recognition', modelId, {
                     quantized: false,
                     device: 'wasm',
@@ -1124,7 +1003,6 @@
                         }
                     }
                 });
-
                 await window.modelCacheManager.recordModelDownload(modelId);
                 progressBar.style.width = '100%';
                 progressLabel.textContent = 'Download complete!';
@@ -1137,13 +1015,11 @@
             if (btn) btn.disabled = false;
         }
 
-        // ─── Clear a single model ───
         async function clearModel(modelId) {
             await window.modelCacheManager.clearModelCache(modelId);
             refreshCacheUI();
         }
 
-        // ─── Clear all cache ───
         async function clearAllModelCache() {
             await window.modelCacheManager.clearAllCache();
             refreshCacheUI();
