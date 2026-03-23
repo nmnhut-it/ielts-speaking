@@ -1024,6 +1024,14 @@ let timerInterval = null;
 let timerSeconds = 0;
 let timerMode = 'idle'; // 'idle', 'prep', 'speaking'
 
+// Audio recording state
+let answerRecorder = null;
+let answerRecordingBlob = null;
+let answerRecordingTimer = null;
+let isAnswerRecording = false;
+
+const MAX_RECORDING_SECONDS = 150; // 2:30
+
 // Storage keys
 const STORAGE_KEY = 'module3_part2_progress';
 const FAVORITES_KEY = 'module3_part2_favorites';
@@ -1371,6 +1379,14 @@ function renderCurrentCard() {
 
     // Hide feedback
     document.getElementById('feedbackSection').style.display = 'none';
+
+    // Reset recording state
+    if (isAnswerRecording) stopAnswerRecording();
+    answerRecordingBlob = null;
+    document.getElementById('recordingResult').classList.add('hidden');
+    document.getElementById('recordAnswerBtn').classList.remove('hidden');
+    document.getElementById('stopRecordingBtn').classList.add('hidden');
+    document.getElementById('recordingTimer').classList.add('hidden');
 
     // Reset sample expansion
     if (sampleExpanded) toggleSample();
@@ -1903,6 +1919,202 @@ function shuffleArray(array) {
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     return shuffled;
+}
+
+// ========== AUDIO RECORDING FUNCTIONS ==========
+
+async function startAnswerRecording() {
+    try {
+        answerRecorder = new AudioRecorder();
+        await answerRecorder.initialize();
+        answerRecorder.startRecording();
+        isAnswerRecording = true;
+
+        document.getElementById('recordAnswerBtn').classList.add('hidden');
+        document.getElementById('stopRecordingBtn').classList.remove('hidden');
+        document.getElementById('recordingTimer').classList.remove('hidden');
+        document.getElementById('recordingResult').classList.add('hidden');
+
+        startAnswerRecordingTimer();
+    } catch (error) {
+        alert('Recording error: ' + error.message);
+        cleanupAnswerRecording();
+    }
+}
+
+async function stopAnswerRecording() {
+    if (!answerRecorder) return;
+
+    const recording = await answerRecorder.stopRecording();
+    stopAnswerRecordingTimer();
+    isAnswerRecording = false;
+
+    if (recording) {
+        answerRecordingBlob = recording.blob;
+        showRecordingResult(recording.blob);
+    }
+
+    answerRecorder.cleanup();
+    answerRecorder = null;
+
+    document.getElementById('recordAnswerBtn').classList.remove('hidden');
+    document.getElementById('stopRecordingBtn').classList.add('hidden');
+    document.getElementById('recordingTimer').classList.add('hidden');
+}
+
+function startAnswerRecordingTimer() {
+    const elapsed = document.getElementById('recordingElapsed');
+    let seconds = 0;
+    elapsed.textContent = '0:00';
+
+    answerRecordingTimer = setInterval(() => {
+        seconds++;
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        elapsed.textContent = m + ':' + s.toString().padStart(2, '0');
+
+        if (seconds >= MAX_RECORDING_SECONDS) {
+            stopAnswerRecording();
+        }
+    }, 1000);
+}
+
+function stopAnswerRecordingTimer() {
+    if (answerRecordingTimer) {
+        clearInterval(answerRecordingTimer);
+        answerRecordingTimer = null;
+    }
+}
+
+function showRecordingResult(blob) {
+    const resultDiv = document.getElementById('recordingResult');
+    const audio = document.getElementById('recordingPlayback');
+
+    audio.src = URL.createObjectURL(blob);
+    resultDiv.classList.remove('hidden');
+
+    // Hide comparison and transcription from previous
+    document.getElementById('transcriptionArea').classList.add('hidden');
+    document.getElementById('answerComparison').classList.add('hidden');
+}
+
+function cleanupAnswerRecording() {
+    if (answerRecorder) {
+        answerRecorder.cleanup();
+        answerRecorder = null;
+    }
+    isAnswerRecording = false;
+    stopAnswerRecordingTimer();
+}
+
+function downloadAnswerRecording() {
+    if (!answerRecordingBlob) {
+        alert('No recording available');
+        return;
+    }
+    const card = allCards[currentIndex];
+    const safeTopic = card.topic.replace(/[^a-zA-Z0-9\s]/g, '')
+        .trim().substring(0, 30).replace(/\s+/g, '_');
+    const fileName = 'IELTS_Part2_' + safeTopic + '.webm';
+
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(answerRecordingBlob);
+    a.download = fileName;
+    a.click();
+}
+
+async function sendRecordingToTelegram() {
+    if (!answerRecordingBlob) {
+        alert('No recording available');
+        return;
+    }
+    if (!telegramSender) {
+        alert('Telegram not configured');
+        return;
+    }
+
+    try {
+        const card = allCards[currentIndex];
+        const session = studentSession ? studentSession.getSession() : null;
+        const studentName = session ? session.name : 'Unknown';
+        const caption = '<b>Module 3 Recording</b>\n' +
+            '<b>Topic:</b> ' + card.topic + '\n' +
+            '<b>Student:</b> ' + studentName;
+
+        await telegramSender.sendAudio(
+            answerRecordingBlob, caption,
+            studentName + '_part2_' + (currentIndex + 1) + '.ogg'
+        );
+        alert('Sent to Telegram successfully!');
+    } catch (error) {
+        alert('Failed to send: ' + error.message);
+    }
+}
+
+async function transcribeRecording() {
+    if (!answerRecordingBlob) {
+        alert('No recording available');
+        return;
+    }
+
+    const area = document.getElementById('transcriptionArea');
+    const textDiv = document.getElementById('transcriptionText');
+    const wordcountDiv = document.getElementById('transcriptionWordcount');
+
+    area.classList.remove('hidden');
+    textDiv.textContent = 'Transcribing...';
+
+    try {
+        const geminiKey = localStorage.getItem('geminiApiKey');
+        let transcript;
+
+        if (geminiKey) {
+            try {
+                transcript = await window.sttService.transcribe(
+                    answerRecordingBlob,
+                    { mode: 'gemini', geminiApiKey: geminiKey }
+                );
+            } catch (e) {
+                console.warn('Gemini STT failed, trying browser:', e);
+                transcript = await window.sttService.transcribe(
+                    answerRecordingBlob, { mode: 'browser' }
+                );
+            }
+        } else {
+            transcript = await window.sttService.transcribe(
+                answerRecordingBlob, { mode: 'browser' }
+            );
+        }
+
+        textDiv.textContent = transcript;
+        const wordCount = transcript.split(/\s+/).filter(w => w).length;
+        wordcountDiv.textContent = wordCount + ' words';
+
+        showAnswerComparison(transcript);
+    } catch (error) {
+        textDiv.textContent = 'Transcription failed: ' + error.message;
+    }
+}
+
+function showAnswerComparison(transcript) {
+    const card = allCards[currentIndex];
+    if (!card.sampleAnswer || !card.sampleAnswer.text) return;
+
+    const compDiv = document.getElementById('answerComparison');
+    const yoursText = document.getElementById('comparisonYours');
+    const sampleText = document.getElementById('comparisonSample');
+    const yoursWords = document.getElementById('comparisonYoursWords');
+    const sampleWords = document.getElementById('comparisonSampleWords');
+
+    const yourWC = transcript.split(/\s+/).filter(w => w).length;
+    const sampleWC = card.sampleAnswer.text.split(/\s+/).filter(w => w).length;
+
+    yoursText.textContent = transcript;
+    sampleText.textContent = card.sampleAnswer.text;
+    yoursWords.textContent = yourWC + ' words';
+    sampleWords.textContent = sampleWC + ' words';
+
+    compDiv.classList.remove('hidden');
 }
 
 // ========== JUMP MODAL ==========

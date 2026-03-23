@@ -1770,3 +1770,48 @@ function stopSampleAudio() {
     if (stopBtn) stopBtn.style.display = 'none';
     if (listenBtn) listenBtn.style.display = 'inline-block';
 }
+
+// ========== TRANSCRIPTION ==========
+
+async function transcribeM2Recording() {
+    if (!currentRecording) {
+        alert('No recording available');
+        return;
+    }
+
+    const area = document.getElementById('m2Transcription');
+    const textDiv = document.getElementById('m2TranscriptionText');
+    const wordsDiv = document.getElementById('m2TranscriptionWords');
+
+    area.classList.remove('hidden');
+    textDiv.textContent = 'Transcribing...';
+
+    try {
+        const geminiKey = localStorage.getItem('geminiApiKey');
+        let transcript;
+
+        if (geminiKey) {
+            try {
+                transcript = await window.sttService.transcribe(
+                    currentRecording.blob,
+                    { mode: 'gemini', geminiApiKey: geminiKey }
+                );
+            } catch (e) {
+                console.warn('Gemini STT failed, falling back:', e);
+                transcript = await window.sttService.transcribe(
+                    currentRecording.blob, { mode: 'browser' }
+                );
+            }
+        } else {
+            transcript = await window.sttService.transcribe(
+                currentRecording.blob, { mode: 'browser' }
+            );
+        }
+
+        textDiv.textContent = transcript;
+        const wc = transcript.split(/\s+/).filter(w => w).length;
+        wordsDiv.textContent = wc + ' words';
+    } catch (error) {
+        textDiv.textContent = 'Transcription failed: ' + error.message;
+    }
+}

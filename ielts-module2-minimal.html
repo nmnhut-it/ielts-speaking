@@ -147,12 +147,20 @@
                     <audio controls id="audioPlayer"></audio>
                     <div class="audio-actions">
                         <button class="btn-download-audio" id="downloadAudioBtn" onclick="downloadRecording()">
-                            💾 Download
+                            &#x1F4BE; Download
                         </button>
                         <button class="btn-send-telegram" id="sendTelegramBtn" onclick="sendAudioToTelegram()">
-                            📤 Send to nmnhut-it
+                            &#x1F4E4; Send to nmnhut-it
                         </button>
-                        <button class="btn-delete-audio" onclick="deleteRecording()">🗑️ Delete</button>
+                        <button class="btn-transcribe-audio" id="transcribeBtn" onclick="transcribeM2Recording()">
+                            &#x1F4DD; Transcribe
+                        </button>
+                        <button class="btn-delete-audio" onclick="deleteRecording()">&#x1F5D1;&#xFE0F; Delete</button>
+                    </div>
+                    <div class="m2-transcription hidden" id="m2Transcription">
+                        <h4>Transcription</h4>
+                        <div id="m2TranscriptionText"></div>
+                        <div id="m2TranscriptionWords" style="margin-top: 6px; font-size: 0.85em; color: #666;"></div>
                     </div>
                 </div>
             </div>
@@ -237,6 +245,7 @@
     <script src="shared/scripts/cameraCapture.js"></script>
     <script src="shared/scripts/studentSession.js"></script>
     <script src="shared/scripts/audioRecorder.js"></script>
+    <script src="shared/scripts/sttService.js"></script>
     <script src="shared/scripts/telegramSender.js"></script>
     <script src="scripts/ieltsLessons.js"></script>
     <script src="scripts/ieltsCoachAI.js"></script>

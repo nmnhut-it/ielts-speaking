@@ -171,6 +171,50 @@
             ></textarea>
         </section>
 
+        <!-- Record Your Answer Section -->
+        <section class="recording-section" id="recordingSection">
+            <h3 class="section-title">Record Your Answer</h3>
+            <div class="recording-controls">
+                <button class="btn-record-answer" id="recordAnswerBtn" onclick="startAnswerRecording()">
+                    <span class="record-btn-icon" id="recordBtnIcon">&#x1F3A4;</span>
+                    <span class="record-btn-label" id="recordBtnLabel">Record Your Answer</span>
+                </button>
+                <button class="btn-stop-recording hidden" id="stopRecordingBtn" onclick="stopAnswerRecording()">
+                    <span>&#x23F9;&#xFE0F;</span> Stop Recording
+                </button>
+                <div class="recording-timer hidden" id="recordingTimer">
+                    <span class="recording-dot-pulse"></span>
+                    <span id="recordingElapsed">0:00</span>
+                    <span class="recording-limit">/ 2:30</span>
+                </div>
+            </div>
+            <div class="recording-result hidden" id="recordingResult">
+                <audio controls id="recordingPlayback" class="recording-audio"></audio>
+                <div class="recording-actions">
+                    <button class="btn-recording-action" onclick="downloadAnswerRecording()">&#x2B07;&#xFE0F; Download</button>
+                    <button class="btn-recording-action" onclick="sendRecordingToTelegram()">&#x1F4E4; Send to Telegram</button>
+                    <button class="btn-recording-action btn-transcribe" onclick="transcribeRecording()">&#x1F4DD; Get Transcription</button>
+                </div>
+                <div class="transcription-area hidden" id="transcriptionArea">
+                    <h4>Your Transcription</h4>
+                    <div class="transcription-text" id="transcriptionText"></div>
+                    <div class="transcription-wordcount" id="transcriptionWordcount"></div>
+                </div>
+                <div class="answer-comparison hidden" id="answerComparison">
+                    <div class="comparison-col">
+                        <h4>Your Answer</h4>
+                        <div class="comparison-text" id="comparisonYours"></div>
+                        <div class="comparison-words" id="comparisonYoursWords"></div>
+                    </div>
+                    <div class="comparison-col">
+                        <h4>Band 7-8 Sample</h4>
+                        <div class="comparison-text" id="comparisonSample"></div>
+                        <div class="comparison-words" id="comparisonSampleWords"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Input Form (Strategy-based structure) -->
         <section class="input-section">
             <h3 class="section-title">🎯 Build Your 2-Minute Answer</h3>
@@ -234,6 +278,8 @@
     <script src="shared/scripts/cameraCapture.js"></script>
     <script src="shared/scripts/studentSession.js"></script>
     <script src="shared/scripts/telegramSender.js"></script>
+    <script src="shared/scripts/audioRecorder.js"></script>
+    <script src="shared/scripts/sttService.js"></script>
     <script src="scripts/ieltsLessons.js"></script>
     <script src="scripts/ieltsCoachAI.js"></script>
     <script src="scripts/module3-minimal.js"></script>
