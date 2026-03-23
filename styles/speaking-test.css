@@ -1,0 +1,558 @@
+/* Monochrome Minimal Design - Speaking Test */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #ffffff;
+    color: #2c2c2c;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Header */
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+header h1 {
+    font-size: 32px;
+    font-weight: 600;
+    color: #2c2c2c;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #666666;
+}
+
+/* Section */
+.section {
+    background-color: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 30px;
+    margin-bottom: 20px;
+}
+
+.section h2 {
+    font-size: 24px;
+    font-weight: 500;
+    color: #2c2c2c;
+    margin-bottom: 20px;
+}
+
+.section h3 {
+    font-size: 18px;
+    font-weight: 500;
+    color: #2c2c2c;
+    margin-bottom: 16px;
+}
+
+.section h4 {
+    font-size: 16px;
+    font-weight: 500;
+    color: #666666;
+    margin-bottom: 12px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Backend Configuration */
+.config-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.config-form label {
+    display: block;
+    font-size: 14px;
+    color: #666666;
+    margin-bottom: 8px;
+    width: 100%;
+}
+
+.config-form input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #ffffff;
+    color: #2c2c2c;
+}
+
+.config-form input[type="text"]:focus {
+    outline: none;
+    border-color: #2c2c2c;
+}
+
+/* Buttons */
+button {
+    padding: 10px 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #2c2c2c;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #f8f8f8;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.primary-btn {
+    background-color: #2c2c2c;
+    color: #ffffff;
+    border: none;
+}
+
+.primary-btn:hover {
+    background-color: #1a1a1a;
+}
+
+.secondary-btn {
+    background-color: #ffffff;
+    color: #2c2c2c;
+    border: 1px solid #e0e0e0;
+}
+
+/* Test Part Selection */
+.test-parts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.test-part-btn {
+    padding: 24px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.test-part-btn:hover {
+    background-color: #f8f8f8;
+    border-color: #2c2c2c;
+}
+
+.part-number {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2c2c2c;
+    margin-bottom: 8px;
+}
+
+.part-name {
+    font-size: 14px;
+    color: #666666;
+    margin-bottom: 4px;
+}
+
+.part-duration {
+    font-size: 12px;
+    color: #999999;
+}
+
+/* Test Interface */
+.test-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.test-info {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+}
+
+.current-part {
+    font-size: 14px;
+    color: #666666;
+}
+
+.timer {
+    font-size: 24px;
+    font-weight: 600;
+    color: #2c2c2c;
+    font-family: "SF Mono", Consolas, monospace;
+}
+
+/* Question Display */
+.question-container {
+    padding: 24px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+#questionTitle {
+    font-size: 16px;
+    font-weight: 500;
+    color: #666666;
+    margin-bottom: 12px;
+}
+
+#questionText {
+    font-size: 18px;
+    color: #2c2c2c;
+    line-height: 1.8;
+}
+
+.preparation-time {
+    margin-top: 16px;
+    padding: 12px;
+    background-color: #f8f8f8;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 14px;
+    color: #666666;
+}
+
+#prepTimer {
+    font-weight: 600;
+    color: #2c2c2c;
+    font-family: "SF Mono", Consolas, monospace;
+}
+
+/* Recording Section */
+.recording-section {
+    padding: 24px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.waveform-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+#waveform {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+}
+
+.recording-controls {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.record-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    font-size: 16px;
+}
+
+.record-icon {
+    color: #e74c3c;
+    font-size: 20px;
+}
+
+.stop-icon {
+    color: #2c2c2c;
+    font-size: 20px;
+}
+
+.stop-btn {
+    background-color: #2c2c2c;
+    color: #ffffff;
+    border: none;
+}
+
+.stop-btn:hover {
+    background-color: #1a1a1a;
+}
+
+/* Status Messages */
+.status-message {
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.status-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.status-message.info {
+    background-color: #f8f8f8;
+    color: #666666;
+    border: 1px solid #e0e0e0;
+}
+
+/* Analysis Section */
+.analysis-section {
+    padding: 24px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin-top: 20px;
+}
+
+.score-display {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.score-circle {
+    width: 140px;
+    height: 140px;
+    border: 4px solid #2c2c2c;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.score-value {
+    font-size: 48px;
+    font-weight: 600;
+    color: #2c2c2c;
+}
+
+.score-label {
+    font-size: 14px;
+    color: #666666;
+}
+
+.transcription-container {
+    margin-bottom: 24px;
+}
+
+.transcription {
+    padding: 16px;
+    background-color: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 16px;
+    line-height: 1.8;
+    color: #2c2c2c;
+    font-style: italic;
+}
+
+/* Phoneme Analysis */
+.phoneme-analysis {
+    margin-bottom: 24px;
+}
+
+.phoneme-comparison {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.phoneme-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: #ffffff;
+}
+
+.phoneme-item.error {
+    background-color: #fff5f5;
+    border-color: #e74c3c;
+}
+
+.phoneme-item.correct {
+    background-color: #f0f8f0;
+    border-color: #27ae60;
+}
+
+.phoneme-word {
+    font-weight: 600;
+    color: #2c2c2c;
+}
+
+.phoneme-expected,
+.phoneme-actual {
+    font-family: "SF Mono", Consolas, monospace;
+    font-size: 14px;
+}
+
+.phoneme-expected {
+    color: #666666;
+}
+
+.phoneme-actual.error {
+    color: #e74c3c;
+    font-weight: 600;
+}
+
+.phoneme-actual.correct {
+    color: #27ae60;
+}
+
+/* Grammar Feedback */
+.grammar-feedback {
+    margin-bottom: 24px;
+    padding: 16px;
+    background-color: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+}
+
+#grammarFeedback {
+    font-size: 14px;
+    color: #2c2c2c;
+    line-height: 1.8;
+}
+
+/* Analysis Actions */
+.analysis-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+/* Results Summary */
+.results-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 30px;
+}
+
+.result-card {
+    padding: 24px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.result-label {
+    font-size: 14px;
+    color: #666666;
+    margin-bottom: 8px;
+}
+
+.result-value {
+    font-size: 32px;
+    font-weight: 600;
+    color: #2c2c2c;
+}
+
+.detailed-results {
+    padding: 24px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+#detailedResults {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.result-item {
+    padding: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+}
+
+.result-item-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.result-item-question {
+    font-weight: 500;
+    color: #2c2c2c;
+}
+
+.result-item-score {
+    font-weight: 600;
+    color: #666666;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+    color: #666666;
+    font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .test-parts {
+        grid-template-columns: 1fr;
+    }
+
+    .results-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .config-form {
+        flex-direction: column;
+    }
+
+    .recording-controls {
+        flex-direction: column;
+    }
+
+    #waveform {
+        width: 100%;
+    }
+}

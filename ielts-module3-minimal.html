@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 3: Part 2 Long Turn</title>
+    <link rel="stylesheet" href="styles/module3-minimal.css">
+</head>
+<body>
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <a href="ielts-speaking-lessons.html" class="back-link">← Lessons</a>
+        <h1 class="title">Module 3: Part 2 Long Turn</h1>
+        <div class="progress-mini">
+            <span id="progressCount" onclick="openJumpModal()" style="cursor: pointer;" title="Click to jump to topic">0/50</span>
+            <button class="settings-btn" onclick="toggleSettings()" aria-label="Settings">⚙</button>
+        </div>
+    </header>
+
+    <!-- Jump Modal -->
+    <div class="modal-overlay" id="jumpModalOverlay" onclick="closeJumpModal()"></div>
+    <div class="jump-modal" id="jumpModal">
+        <header class="modal-header">
+            <h3>Jump to Topic</h3>
+            <button class="modal-close" onclick="closeJumpModal()" aria-label="Close">✕</button>
+        </header>
+        <div class="modal-body">
+            <div class="jump-input-group">
+                <input type="search" placeholder="Search topics..." id="searchInput" autocomplete="off">
+                <div class="jump-number-group">
+                    <input type="number" placeholder="#" id="jumpNumber" min="1" max="50">
+                    <button class="btn-go" onclick="jumpToNumber()">Go</button>
+                </div>
+            </div>
+            <div class="filter-tabs">
+                <button class="tab-btn active" data-filter="all" onclick="setJumpFilter('all')">All</button>
+                <button class="tab-btn" data-filter="favorites" onclick="setJumpFilter('favorites')">Favorites</button>
+                <button class="tab-btn" data-filter="completed" onclick="setJumpFilter('completed')">Completed</button>
+            </div>
+            <div class="question-list" id="questionList">
+                <!-- Topics populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Overlay -->
+    <div class="settings-overlay" id="settingsOverlay" onclick="toggleSettings()"></div>
+    <aside class="settings-panel" id="settingsPanel">
+        <h2>Settings</h2>
+
+        <div class="setting-group">
+            <label>Mode:</label>
+            <div class="btn-group">
+                <button class="btn-mode active" data-mode="sequential">Sequential</button>
+                <button class="btn-mode" data-mode="random">Random</button>
+                <button class="btn-mode" data-mode="favorites">Favorites</button>
+            </div>
+        </div>
+
+        <div class="setting-group">
+            <label>Strategy:</label>
+            <select id="strategySelect" class="select">
+                <option value="star" selected>STAR (Situation-Task-Action-Result)</option>
+                <option value="ppf">PPF (Past-Present-Future)</option>
+                <option value="5wf">5W+Feelings (Extended)</option>
+                <option value="psi">Problem-Solution-Impact</option>
+                <option value="ibc">Introduction-Body-Conclusion</option>
+            </select>
+        </div>
+
+        <button class="btn-close" onclick="toggleSettings()">Done</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Strategy Info Card -->
+        <section class="strategy-info" id="strategyInfo">
+            <div class="strategy-name" id="strategyName">STAR Structure</div>
+            <div class="strategy-desc" id="strategyDesc">Storytelling framework: Situation → Task → Action → Result</div>
+        </section>
+
+        <!-- Timer Section -->
+        <section class="timer-section" id="timerSection">
+            <div class="timer-display">
+                <div class="timer-label" id="timerLabel">Preparation Time</div>
+                <div class="timer-value" id="timerValue">1:00</div>
+            </div>
+            <div class="timer-controls">
+                <button class="btn-timer" id="startPrepBtn" onclick="startPreparation()">Start 1 Min Prep</button>
+                <button class="btn-timer hidden" id="startSpeakBtn" onclick="startSpeaking()">Start 2 Min Speaking</button>
+                <button class="btn-timer-small" id="resetTimerBtn" onclick="resetTimer()">Reset</button>
+            </div>
+        </section>
+
+        <!-- Cue Card Section -->
+        <section class="cuecard-section">
+            <div class="cuecard-header">
+                <span class="cuecard-num" id="cuecardNum">Cue Card 1</span>
+                <span class="cuecard-category" id="cuecardCategory">Experience</span>
+                <button class="btn-favorite" id="favBtn" onclick="toggleFavorite()" aria-label="Favorite">☆</button>
+            </div>
+            <div class="cuecard-content">
+                <h2 class="cuecard-topic" id="cuecardTopic">Describe a time when you helped someone</h2>
+                <div class="cuecard-prompts" id="cuecardPrompts">
+                    <p>You should say:</p>
+                    <ul>
+                        <li>Who you helped</li>
+                        <li>How you helped them</li>
+                        <li>Why you helped them</li>
+                        <li>And explain how you felt about it</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Notes Area (for 1 min prep) -->
+        <section class="notes-section" id="notesSection">
+            <h3 class="notes-title">📝 Your Notes (1 minute preparation)</h3>
+            <textarea
+                id="notesArea"
+                class="notes-textarea"
+                placeholder="Use this space to jot down key points during your 1-minute preparation...&#10;&#10;Tip: Write keywords, not full sentences!"
+            ></textarea>
+        </section>
+
+        <!-- Input Form (Strategy-based structure) -->
+        <section class="input-section">
+            <h3 class="section-title">🎯 Build Your 2-Minute Answer</h3>
+            <div class="form-container" id="formContainer">
+                <!-- Dynamically generated form fields based on strategy -->
+            </div>
+
+            <!-- Sentence Connectors Guide -->
+            <div class="connector-guide" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #28a745;">
+                <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleConnectors()">
+                    <strong style="color: #333;">🔗 Sentence Connectors & Templates</strong>
+                    <button id="connectorToggleBtn" style="padding: 5px 12px; border: none; background: #28a745; color: white; border-radius: 4px; cursor: pointer; font-size: 0.9em;">Show</button>
+                </div>
+                <div id="connectorContent" style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+                    <div id="connectorText" style="color: #555; line-height: 1.6;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Answer Preview -->
+        <section class="preview-section">
+            <h3 class="preview-title">Your Answer Preview:</h3>
+            <div class="preview-box" id="previewBox">
+                <em>Start filling in the fields to see your answer...</em>
+            </div>
+            <div class="preview-meta">
+                <span id="elementCount">0/4 elements</span>
+                <span id="wordCount">0 words</span>
+                <span id="timeEstimate" class="time-estimate">~0:00 speaking time</span>
+            </div>
+        </section>
+
+        <!-- Sample Answer (Collapsible) -->
+        <section class="sample-section" id="sampleSection" style="display: none;">
+            <button class="sample-toggle" onclick="toggleSample()">
+                <span id="sampleToggleIcon">▶</span>
+                <span>Compare with Band 7-8 Sample (2 minutes)</span>
+            </button>
+            <div class="sample-content" id="sampleContent" style="display: none;">
+                <div class="sample-breakdown" id="sampleBreakdown"></div>
+                <div class="sample-answer" id="sampleAnswer"></div>
+            </div>
+        </section>
+
+        <!-- AI Feedback -->
+        <section class="feedback-section" id="feedbackSection" style="display: none;">
+            <h3>AI Feedback</h3>
+            <div class="feedback-content" id="feedbackContent"></div>
+        </section>
+
+        <!-- Navigation -->
+        <nav class="nav-section">
+            <button class="btn-nav" onclick="previousCard()">← Previous</button>
+            <button class="btn-primary" onclick="getAIFeedback()">Get AI Feedback</button>
+            <button class="btn-nav" onclick="nextCard()">Next →</button>
+        </nav>
+    </main>
+
+    <!-- Scripts -->
+    <script src="scripts/ieltsLessons.js"></script>
+    <script src="scripts/ieltsCoachAI.js"></script>
+    <script src="scripts/module3-minimal.js"></script>
+</body>
+</html>

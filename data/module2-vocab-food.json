@@ -1,0 +1,98 @@
+[
+  {
+    "english": "flavorful",
+    "type": "(adj)",
+    "vietnamese": "đậm đà, nhiều hương vị",
+    "pronunciation": "/ˈfleɪvəfl/"
+  },
+  {
+    "english": "cuisine",
+    "type": "(n)",
+    "vietnamese": "ẩm thực",
+    "pronunciation": "/kwɪˈziːn/"
+  },
+  {
+    "english": "homemade",
+    "type": "(adj)",
+    "vietnamese": "tự làm, nhà làm",
+    "pronunciation": "/ˌhəʊmˈmeɪd/"
+  },
+  {
+    "english": "nutritious",
+    "type": "(adj)",
+    "vietnamese": "bổ dưỡng",
+    "pronunciation": "/njuːˈtrɪʃəs/"
+  },
+  {
+    "english": "economical",
+    "type": "(adj)",
+    "vietnamese": "tiết kiệm",
+    "pronunciation": "/ˌiːkəˈnɒmɪkl/"
+  },
+  {
+    "english": "cooking from scratch",
+    "type": "(phrase)",
+    "vietnamese": "nấu ăn từ đầu",
+    "pronunciation": "/ˈkʊkɪŋ frɒm skrætʃ/"
+  },
+  {
+    "english": "ingredients",
+    "type": "(n)",
+    "vietnamese": "nguyên liệu",
+    "pronunciation": "/ɪnˈɡriːdiənts/"
+  },
+  {
+    "english": "recipe",
+    "type": "(n)",
+    "vietnamese": "công thức nấu ăn",
+    "pronunciation": "/ˈresəpi/"
+  },
+  {
+    "english": "traditional dish",
+    "type": "(n phrase)",
+    "vietnamese": "món ăn truyền thống",
+    "pronunciation": "/trəˈdɪʃənl dɪʃ/"
+  },
+  {
+    "english": "savory",
+    "type": "(adj)",
+    "vietnamese": "mặn, có vị ngon",
+    "pronunciation": "/ˈseɪvəri/"
+  },
+  {
+    "english": "culinary",
+    "type": "(adj)",
+    "vietnamese": "thuộc về nấu nướng",
+    "pronunciation": "/ˈkʌlɪnəri/"
+  },
+  {
+    "english": "palate",
+    "type": "(n)",
+    "vietnamese": "khẩu vị",
+    "pronunciation": "/ˈpælət/"
+  },
+  {
+    "english": "adventurous",
+    "type": "(adj)",
+    "vietnamese": "thích phiêu lưu, dám thử",
+    "pronunciation": "/ədˈventʃərəs/"
+  },
+  {
+    "english": "appetite",
+    "type": "(n)",
+    "vietnamese": "sự thèm ăn",
+    "pronunciation": "/ˈæpɪtaɪt/"
+  },
+  {
+    "english": "portion",
+    "type": "(n)",
+    "vietnamese": "khẩu phần",
+    "pronunciation": "/ˈpɔːʃn/"
+  },
+  {
+    "english": "well-balanced",
+    "type": "(adj)",
+    "vietnamese": "cân bằng dinh dưỡng",
+    "pronunciation": "/wel ˈbælənst/"
+  }
+]

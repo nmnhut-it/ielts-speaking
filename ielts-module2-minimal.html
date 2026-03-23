@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 2: Finding Ideas Fast</title>
+    <link rel="stylesheet" href="shared/styles/module2-minimal.css">
+</head>
+<body>
+    <!-- Global TTS Status Indicator -->
+    <div id="ttsStatusGlobal" class="tts-status-global hidden">
+        <div class="tts-status-content">
+            <div class="spinner"></div>
+            <div class="tts-status-message">Loading AI voice...</div>
+            <div class="tts-progress-bar">
+                <div class="tts-progress-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Identification Modal -->
+    <div class="identification-overlay" id="identificationOverlay"></div>
+    <div class="identification-modal" id="identificationModal">
+        <div class="modal-header">
+            <h3>👤 Student Identification</h3>
+        </div>
+        <div class="modal-body">
+            <p class="identification-intro">Please enter your name and take a photo to start your practice session.</p>
+
+            <div class="form-field">
+                <label for="studentName">Your Name</label>
+                <input type="text" id="studentName" placeholder="Enter your full name" autocomplete="name" required>
+            </div>
+
+            <div class="camera-section">
+                <div class="camera-preview" id="cameraPreview">
+                    <video id="cameraVideo" autoplay playsinline></video>
+                    <div class="camera-placeholder" id="cameraPlaceholder">
+                        <span class="camera-icon">📷</span>
+                        <p>Camera will appear here</p>
+                    </div>
+                </div>
+
+                <div class="photo-preview" id="photoPreview" style="display: none;">
+                    <img id="capturedPhoto" alt="Your photo">
+                </div>
+
+                <div class="camera-controls">
+                    <button class="btn-camera" id="startCameraBtn" onclick="startIdentificationCamera()">
+                        📷 Start Camera
+                    </button>
+                    <button class="btn-camera" id="capturePhotoBtn" onclick="captureIdentificationPhoto()" style="display: none;">
+                        📸 Capture Photo
+                    </button>
+                    <button class="btn-camera-secondary" id="retakePhotoBtn" onclick="retakeIdentificationPhoto()" style="display: none;">
+                        🔄 Retake
+                    </button>
+                </div>
+            </div>
+
+            <button class="btn-primary btn-submit-identification" id="submitIdentificationBtn" onclick="submitIdentification()" disabled>
+                Start Practice Session
+            </button>
+
+            <p class="identification-note">⚠️ Your photo will be sent to your instructor via Telegram.</p>
+        </div>
+    </div>
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <a href="ielts-speaking-lessons.html" class="back-link">← Lessons</a>
+        <h1 class="title">Module 2 Practice</h1>
+        <div class="progress-mini">
+            <span class="student-name" id="studentNameDisplay" style="display: none; margin-right: 1rem; font-weight: 500;"></span>
+            <div class="quick-jump">
+                <input type="number" id="quickJumpInput" class="quick-jump-input" placeholder="#" min="1" max="100" title="Jump to question">
+                <button class="quick-jump-btn" onclick="quickJumpToQuestion()" aria-label="Go">→</button>
+            </div>
+            <span id="progressCount" style="cursor: default;">0/100</span>
+            <button class="settings-btn" onclick="toggleSettings()" aria-label="Settings">⚙</button>
+        </div>
+    </header>
+
+    <!-- Settings Overlay -->
+    <div class="settings-overlay" id="settingsOverlay" onclick="toggleSettings()"></div>
+    <aside class="settings-panel" id="settingsPanel">
+        <h2>Settings</h2>
+
+        <div class="setting-group">
+            <label>Mode:</label>
+            <div class="btn-group">
+                <button class="btn-mode active" data-mode="sequential">Sequential</button>
+                <button class="btn-mode" data-mode="random">Random</button>
+                <button class="btn-mode" data-mode="favorites">Favorites</button>
+            </div>
+        </div>
+
+        <div class="setting-group">
+            <label>Technique:</label>
+            <select id="techniqueSelect" class="select">
+                <option value="5w1h" selected>5W1H Method (100 questions)</option>
+                <option value="prep">PREP Method (15 questions)</option>
+                <option value="past_present">Past vs Present (15 questions)</option>
+                <option value="personal_general">Personal + General (15 questions)</option>
+                <option value="contrast">Contrast Technique (15 questions)</option>
+                <option value="feelings">Feelings + Reasons (15 questions)</option>
+                <option value="frequency">Frequency + Details (15 questions)</option>
+            </select>
+        </div>
+
+        <div class="setting-group" style="border-top: 1px solid var(--color-border); padding-top: 1rem; margin-top: 1rem;">
+            <button class="btn-end-session" onclick="endStudentSession()">🚪 End Session</button>
+        </div>
+
+        <button class="btn-close" onclick="toggleSettings()">Done</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="container hidden" id="mainContainer">
+        <!-- Question -->
+        <section class="question-section">
+            <div class="question-meta">
+                <span class="question-num" id="questionNum">Question 1</span>
+                <span class="question-category" id="questionCategory">Hobbies & Interests</span>
+                <button class="btn-favorite" id="favBtn" onclick="toggleFavorite()" aria-label="Favorite">☆</button>
+            </div>
+            <h2 class="question-text" id="questionText">Loading question...</h2>
+        </section>
+
+        <!-- Input Form -->
+        <section class="input-section">
+            <div class="form-container" id="formContainer">
+                <!-- Dynamically generated form fields -->
+            </div>
+
+            <!-- Audio Recording Section -->
+            <div class="audio-recording-section">
+                <div class="audio-controls">
+                    <button class="btn-record" id="recordBtn" onclick="toggleRecording()" aria-label="Record Audio">
+                        <span class="record-icon" id="recordIcon">🎤</span>
+                        <span class="record-label" id="recordLabel">Record Answer</span>
+                    </button>
+                    <span class="record-timer" id="recordTimer" style="display: none;">0:00</span>
+                </div>
+
+                <div class="audio-preview" id="audioPreview" style="display: none;">
+                    <audio controls id="audioPlayer"></audio>
+                    <div class="audio-actions">
+                        <button class="btn-download-audio" id="downloadAudioBtn" onclick="downloadRecording()">
+                            💾 Download
+                        </button>
+                        <button class="btn-send-telegram" id="sendTelegramBtn" onclick="sendAudioToTelegram()">
+                            📤 Send to nmnhut-it
+                        </button>
+                        <button class="btn-delete-audio" onclick="deleteRecording()">🗑️ Delete</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Answer Template Guide -->
+            <div class="template-guide" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #007bff;">
+                <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleTemplate()">
+                    <strong style="color: #333;">📐 Answer Template & Examples</strong>
+                    <button id="templateToggleBtn" style="padding: 5px 12px; border: none; background: #007bff; color: white; border-radius: 4px; cursor: pointer; font-size: 0.9em;">Show</button>
+                </div>
+                <div id="templateContent" style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+                    <div id="templateText" style="color: #555; line-height: 1.6;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Answer Preview -->
+        <section class="preview-section">
+            <h3 class="preview-title">Your Answer:</h3>
+            <div class="preview-box" id="previewBox">
+                <em>Start typing to see your answer...</em>
+            </div>
+            <div class="preview-meta">
+                <span id="elementCount">0/6 elements</span>
+                <span id="wordCount">0 words</span>
+            </div>
+
+            <!-- 5W1H Breakdown (only shown for 5W1H technique) -->
+            <div class="preview-breakdown" id="previewBreakdown" style="display: none;">
+                <div class="preview-breakdown-title">Elements Breakdown:</div>
+                <div id="breakdownContent"></div>
+            </div>
+        </section>
+
+        <!-- Sample Answers (Collapsible) -->
+        <section class="sample-section" id="sampleSection" style="display: none;">
+            <div class="sample-header">
+                <button class="sample-toggle" onclick="toggleSample()">
+                    <span id="sampleToggleIcon">▶</span>
+                    <span>Compare with Band 7-7.5 Samples</span>
+                </button>
+            </div>
+            <div class="sample-content" id="sampleContent" style="display: none;">
+                <!-- Multiple sample cards will be rendered here -->
+                <div id="sampleCardsContainer"></div>
+            </div>
+        </section>
+
+        <!-- Vocabulary Section (Collapsible) -->
+        <section class="vocab-section" id="vocabSection" style="display: none;">
+            <button class="vocab-toggle" onclick="toggleVocab()">
+                <span id="vocabToggleIcon">▶</span>
+                <span>💡 Useful Vocabulary for This Topic</span>
+            </button>
+            <div class="vocab-content" id="vocabContent" style="display: none;">
+                <div class="vocab-loading" id="vocabLoading" style="display: none;">
+                    <p>Loading vocabulary...</p>
+                </div>
+                <div class="vocab-list" id="vocabList"></div>
+            </div>
+        </section>
+
+        <!-- AI Feedback -->
+        <section class="feedback-section" id="feedbackSection" style="display: none;">
+            <h3>AI Feedback</h3>
+            <div class="feedback-content" id="feedbackContent"></div>
+        </section>
+
+        <!-- Navigation -->
+        <nav class="nav-section">
+            <button class="btn-nav" onclick="previousQuestion()">← Previous</button>
+            <button class="btn-primary" onclick="getAIFeedback()">Get AI Feedback</button>
+            <button class="btn-nav" onclick="nextQuestion()">Next →</button>
+        </nav>
+    </main>
+
+    <!-- Scripts -->
+    <script src="shared/telegram.js"></script>
+    <script src="shared/scripts/audioConverter.js"></script>
+    <script src="shared/scripts/ttsService.js"></script>
+    <script src="shared/scripts/sampleAudioService.js"></script>
+    <script src="shared/scripts/cameraCapture.js"></script>
+    <script src="shared/scripts/studentSession.js"></script>
+    <script src="shared/scripts/audioRecorder.js"></script>
+    <script src="shared/scripts/telegramSender.js"></script>
+    <script src="scripts/ieltsLessons.js"></script>
+    <script src="scripts/ieltsCoachAI.js"></script>
+    <script src="scripts/module2-config.js"></script>
+    <script src="scripts/module2-minimal.js"></script>
+</body>
+</html>

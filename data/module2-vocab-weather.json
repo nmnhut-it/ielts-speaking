@@ -1,0 +1,98 @@
+[
+  {
+    "english": "tropical climate",
+    "type": "(n phrase)",
+    "vietnamese": "khí hậu nhiệt đới",
+    "pronunciation": "/ˈtrɒpɪkl ˈklaɪmət/"
+  },
+  {
+    "english": "humid",
+    "type": "(adj)",
+    "vietnamese": "ẩm ướt",
+    "pronunciation": "/ˈhjuːmɪd/"
+  },
+  {
+    "english": "temperate",
+    "type": "(adj)",
+    "vietnamese": "ôn hòa",
+    "pronunciation": "/ˈtempərət/"
+  },
+  {
+    "english": "mild",
+    "type": "(adj)",
+    "vietnamese": "ôn hòa, nhẹ nhàng",
+    "pronunciation": "/maɪld/"
+  },
+  {
+    "english": "pleasant",
+    "type": "(adj)",
+    "vietnamese": "dễ chịu",
+    "pronunciation": "/ˈpleznt/"
+  },
+  {
+    "english": "intense",
+    "type": "(adj)",
+    "vietnamese": "mạnh, dữ dội",
+    "pronunciation": "/ɪnˈtens/"
+  },
+  {
+    "english": "gloomy",
+    "type": "(adj)",
+    "vietnamese": "u ám, ảm đạm",
+    "pronunciation": "/ˈɡluːmi/"
+  },
+  {
+    "english": "uplifting",
+    "type": "(adj)",
+    "vietnamese": "làm vui vẻ, nâng cao tinh thần",
+    "pronunciation": "/ʌpˈlɪftɪŋ/"
+  },
+  {
+    "english": "seasonal changes",
+    "type": "(n phrase)",
+    "vietnamese": "thay đổi theo mùa",
+    "pronunciation": "/ˈsiːznəl ˈtʃeɪndʒɪz/"
+  },
+  {
+    "english": "forecast",
+    "type": "(n/v)",
+    "vietnamese": "dự báo",
+    "pronunciation": "/ˈfɔːkɑːst/"
+  },
+  {
+    "english": "suitable",
+    "type": "(adj)",
+    "vietnamese": "phù hợp",
+    "pronunciation": "/ˈsuːtəbl/"
+  },
+  {
+    "english": "comfortable",
+    "type": "(adj)",
+    "vietnamese": "thoải mái",
+    "pronunciation": "/ˈkʌmftəbl/"
+  },
+  {
+    "english": "lethargic",
+    "type": "(adj)",
+    "vietnamese": "uể oải, thiếu năng lượng",
+    "pronunciation": "/ləˈθɑːdʒɪk/"
+  },
+  {
+    "english": "cheerful",
+    "type": "(adj)",
+    "vietnamese": "vui vẻ, phấn khởi",
+    "pronunciation": "/ˈtʃɪəfl/"
+  },
+  {
+    "english": "vitamin D",
+    "type": "(n)",
+    "vietnamese": "vitamin D",
+    "pronunciation": "/ˈvaɪtəmɪn diː/"
+  },
+  {
+    "english": "natural light",
+    "type": "(n phrase)",
+    "vietnamese": "ánh sáng tự nhiên",
+    "pronunciation": "/ˈnætʃrəl laɪt/"
+  }
+]

@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Speaking Lessons - Learn Strategies & Practice with AI</title>
+    <link rel="stylesheet" href="styles/ielts-lessons.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 IELTS Speaking Lessons</h1>
+            <p class="subtitle">Learn strategies from teacher audio, then practice with AI feedback</p>
+            <nav class="header-nav">
+                <a href="ielts-speaking-library.html">📚 Library</a>
+                <a href="ielts-speaking-test.html">🎤 Full Test</a>
+            </nav>
+        </header>
+
+        <!-- API Key Setup -->
+        <div id="apiKeySection" class="setup-card hidden">
+            <h3>🔑 Setup Required</h3>
+            <p>To get personalized AI feedback during practice, you need a free Gemini API key:</p>
+            <ol class="setup-steps">
+                <li>Visit <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a></li>
+                <li>Sign in and click "Create API Key"</li>
+                <li>Copy and paste it below</li>
+            </ol>
+            <div class="input-group">
+                <input type="password" id="apiKeyInput" placeholder="AIza...">
+                <button class="btn" id="saveApiKeyBtn">Save Key</button>
+            </div>
+            <p class="note">✓ You can listen to lessons without API key, but need it for AI practice</p>
+        </div>
+
+        <!-- Module Selection -->
+        <section id="moduleSelection" class="module-grid">
+            <div class="module-card" data-module="module1">
+                <div class="module-icon">📋</div>
+                <h2>Module 1</h2>
+                <h3>Understanding the Test</h3>
+                <p>Learn what examiners look for and common mistakes to avoid</p>
+                <div class="module-meta">
+                    <span class="duration">⏱️ 10 min</span>
+                    <span class="progress">Progress: <span class="progress-percent" data-module="module1">0%</span></span>
+                </div>
+                <button class="btn" onclick="startModule('module1')">Start Module</button>
+            </div>
+
+            <div class="module-card" data-module="module2">
+                <div class="module-icon">💡</div>
+                <h2>Module 2</h2>
+                <h3>Finding Ideas Fast</h3>
+                <p>Learn the 5W1H method and never run out of ideas</p>
+                <div class="module-meta">
+                    <span class="duration">⏱️ 20 min</span>
+                    <span class="progress">Progress: <span class="progress-percent" data-module="module2">0%</span></span>
+                </div>
+                <button class="btn" onclick="startModule('module2')">Start Module</button>
+            </div>
+
+            <div class="module-card" data-module="module3">
+                <div class="module-icon">✏️</div>
+                <h2>Module 3</h2>
+                <h3>Building Better Sentences</h3>
+                <p>Transform simple sentences into Band 7+ responses</p>
+                <div class="module-meta">
+                    <span class="duration">⏱️ 25 min</span>
+                    <span class="progress">Progress: <span class="progress-percent" data-module="module3">0%</span></span>
+                </div>
+                <button class="btn" onclick="startModule('module3')">Start Module</button>
+            </div>
+
+            <div class="module-card" data-module="module4">
+                <div class="module-icon">🎯</div>
+                <h2>Module 4</h2>
+                <h3>Mastering Part 2</h3>
+                <p>Learn how to speak for 2 minutes confidently on any topic</p>
+                <div class="module-meta">
+                    <span class="duration">⏱️ 30 min</span>
+                    <span class="progress">Progress: <span class="progress-percent" data-module="module4">0%</span></span>
+                </div>
+                <button class="btn" onclick="startModule('module4')">Start Module</button>
+            </div>
+
+            <div class="module-card" data-module="module5">
+                <div class="module-icon">💬</div>
+                <h2>Module 5</h2>
+                <h3>Part 3 Discussion Skills</h3>
+                <p>Master abstract questions and give sophisticated answers</p>
+                <div class="module-meta">
+                    <span class="duration">⏱️ 25 min</span>
+                    <span class="progress">Progress: <span class="progress-percent" data-module="module5">0%</span></span>
+                </div>
+                <button class="btn" onclick="startModule('module5')">Start Module</button>
+            </div>
+        </section>
+
+        <!-- Lesson Interface -->
+        <section id="lessonInterface" class="hidden">
+            <!-- Navigation -->
+            <div class="lesson-nav">
+                <button class="btn btn-secondary" id="backToModulesBtn">⬅️ Back to Modules</button>
+                <div class="lesson-progress-bar">
+                    <div class="lesson-progress-fill" id="lessonProgressFill"></div>
+                </div>
+                <span id="lessonProgressText">Section 1 of 5</span>
+            </div>
+
+            <!-- Module Title -->
+            <div class="module-header">
+                <h2 id="currentModuleTitle">Module Title</h2>
+                <p id="currentModuleDesc">Module description</p>
+            </div>
+
+            <!-- Section Container -->
+            <div id="sectionContainer" class="section-container">
+                <!-- Dynamic content loads here -->
+            </div>
+
+            <!-- Section Navigation -->
+            <div class="section-nav">
+                <button class="btn btn-secondary" id="prevSectionBtn" disabled>⬅️ Previous</button>
+                <button class="btn" id="nextSectionBtn">Next ➡️</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Templates -->
+
+    <!-- Audio Lesson Template -->
+    <template id="audioLessonTemplate">
+        <div class="audio-lesson">
+            <div class="lesson-icon">🎧</div>
+            <h3 class="section-title"></h3>
+
+            <div class="audio-player">
+                <button class="audio-play-btn" id="audioPlayBtn">
+                    <span class="play-icon">▶️</span>
+                    <span class="btn-text">Play Teacher Audio</span>
+                </button>
+
+                <div class="audio-progress-container hidden" id="audioProgressContainer">
+                    <div class="audio-timeline" id="audioTimeline">
+                        <div class="audio-timeline-fill" id="audioTimelineFill"></div>
+                    </div>
+                    <div class="audio-time">
+                        <span id="audioCurrentTime">0:00</span>
+                        <span id="audioDuration">0:00</span>
+                    </div>
+                </div>
+
+                <div class="audio-controls hidden" id="audioControls">
+                    <button class="control-btn" id="audioPauseBtn" title="Pause">⏸️</button>
+                    <button class="control-btn" id="audioReplayBtn" title="Replay">↻</button>
+                    <button class="control-btn" id="audioSpeedBtn" title="Speed">1.0x</button>
+                </div>
+            </div>
+
+            <div class="transcript-box">
+                <div class="transcript-header">
+                    <span>📝 Transcript</span>
+                    <button class="toggle-btn" id="toggleTranscript">Show</button>
+                </div>
+                <div class="transcript-content hidden" id="transcriptContent"></div>
+            </div>
+
+            <div class="lesson-content" id="lessonContent"></div>
+
+            <div class="completion-check">
+                <label>
+                    <input type="checkbox" id="sectionCompleteCheck">
+                    <span>I've listened and understood this section</span>
+                </label>
+            </div>
+        </div>
+    </template>
+
+    <!-- Quiz Template -->
+    <template id="quizTemplate">
+        <div class="quiz-section">
+            <div class="lesson-icon">❓</div>
+            <h3 class="section-title"></h3>
+            <p class="quiz-instructions">Test your understanding of what you just learned</p>
+
+            <div class="quiz-questions" id="quizQuestions"></div>
+
+            <button class="btn" id="submitQuizBtn">Submit Answers</button>
+
+            <div class="quiz-results hidden" id="quizResults">
+                <div class="score-display">
+                    <span class="score-emoji"></span>
+                    <span class="score-text"></span>
+                </div>
+                <div class="quiz-feedback"></div>
+            </div>
+        </div>
+    </template>
+
+    <!-- AI Practice Template -->
+    <template id="aiPracticeTemplate">
+        <div class="ai-practice">
+            <div class="lesson-icon">🤖</div>
+            <h3 class="section-title"></h3>
+            <p class="practice-instructions"></p>
+
+            <div class="practice-question" id="practiceQuestion">
+                <!-- Dynamic question content -->
+            </div>
+
+            <div class="practice-input-area">
+                <textarea
+                    class="practice-textarea"
+                    id="studentResponseArea"
+                    placeholder="Type your answer here..."
+                    rows="6"
+                ></textarea>
+
+                <div class="practice-actions">
+                    <button class="btn" id="getAIFeedbackBtn">Get AI Feedback</button>
+                    <button class="btn btn-secondary" id="tryAnotherBtn" style="display: none;">Try Another</button>
+                </div>
+            </div>
+
+            <div class="ai-feedback-box hidden" id="aiFeedbackBox">
+                <div class="feedback-header">
+                    <span>💬 AI Teacher Feedback</span>
+                </div>
+                <div class="feedback-content" id="aiFeedbackContent"></div>
+            </div>
+
+            <div class="practice-timer" id="practiceTimer" style="display: none;">
+                <span>⏱️ Time: </span>
+                <span id="timerDisplay">1:00</span>
+            </div>
+        </div>
+    </template>
+
+    <!-- Dual View Template (Student vs Teacher) -->
+    <template id="dualViewTemplate">
+        <div class="dual-view">
+            <div class="lesson-icon">👥</div>
+            <h3 class="section-title"></h3>
+
+            <div class="dual-view-container">
+                <div class="view-panel student-view">
+                    <div class="panel-header">
+                        <span class="panel-icon">🧑‍🎓</span>
+                        <span>Your Approach</span>
+                    </div>
+                    <div class="panel-content" id="studentViewContent">
+                        <p class="placeholder">Your ideas will appear here after you practice</p>
+                    </div>
+                </div>
+
+                <div class="view-panel teacher-view">
+                    <div class="panel-header">
+                        <span class="panel-icon">👨‍🏫</span>
+                        <span>Teacher's Approach</span>
+                    </div>
+                    <div class="panel-content" id="teacherViewContent">
+                        <!-- Teacher's demonstration -->
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn" id="revealTeacherBtn">🔓 Reveal Teacher's Approach</button>
+        </div>
+    </template>
+
+    <!-- Conversation Practice Template -->
+    <template id="conversationTemplate">
+        <div class="conversation-practice">
+            <div class="lesson-icon">💬</div>
+            <h3 class="section-title"></h3>
+            <p class="practice-instructions"></p>
+
+            <div class="conversation-container" id="conversationContainer">
+                <!-- Messages appear here -->
+            </div>
+
+            <div class="conversation-input">
+                <textarea
+                    id="conversationResponse"
+                    placeholder="Type your response..."
+                    rows="3"
+                ></textarea>
+                <button class="btn" id="sendResponseBtn">Send Response</button>
+            </div>
+
+            <div class="conversation-actions">
+                <button class="btn btn-secondary" id="endConversationBtn">End Practice & Get Feedback</button>
+            </div>
+
+            <div class="conversation-feedback hidden" id="conversationFeedback"></div>
+        </div>
+    </template>
+
+    <!-- Scripts -->
+    <script src="scripts/ieltsLessons.js"></script>
+    <script src="scripts/audioManager.js"></script>
+    <script src="scripts/ieltsCoachAI.js"></script>
+    <script>
+        // Main Application Logic
+        let currentModule = null;
+        let currentSectionIndex = 0;
+        let audioInitialized = false;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize systems
+            await window.audioManager.initialize();
+            audioInitialized = true;
+
+            // Check API key
+            checkApiKey();
+
+            // Update progress displays
+            updateAllProgress();
+
+            // Setup API key handlers
+            document.getElementById('saveApiKeyBtn').addEventListener('click', saveApiKey);
+
+            // Setup navigation
+            document.getElementById('backToModulesBtn').addEventListener('click', backToModules);
+            document.getElementById('prevSectionBtn').addEventListener('click', () => navigateSection(-1));
+            document.getElementById('nextSectionBtn').addEventListener('click', () => navigateSection(1));
+        });
+
+        function checkApiKey() {
+            const hasKey = window.ieltsCoachAI.hasApiKey();
+            if (!hasKey) {
+                document.getElementById('apiKeySection').classList.remove('hidden');
+            }
+        }
+
+        function saveApiKey() {
+            const key = document.getElementById('apiKeyInput').value.trim();
+            if (!key) {
+                alert('Please enter a valid API key');
+                return;
+            }
+            if (!key.startsWith('AIza')) {
+                alert('API key should start with "AIza"');
+                return;
+            }
+
+            window.ieltsCoachAI.setApiKey(key);
+            document.getElementById('apiKeySection').classList.add('hidden');
+            alert('✓ API key saved! You can now use AI practice features.');
+        }
+
+        function updateAllProgress() {
+            Object.keys(IELTS_LESSONS).forEach(moduleId => {
+                const progress = window.lessonProgress.getModuleProgress(moduleId);
+                const element = document.querySelector(`[data-module="${moduleId}"] .progress-percent`);
+                if (element) {
+                    element.textContent = `${progress.percentage}%`;
+                }
+
+                // Highlight completed modules
+                const card = document.querySelector(`[data-module="${moduleId}"]`);
+                if (card && progress.percentage === 100) {
+                    card.classList.add('completed');
+                }
+            });
+        }
+
+        function startModule(moduleId) {
+            currentModule = IELTS_LESSONS[moduleId];
+            currentSectionIndex = 0;
+
+            if (!currentModule) {
+                console.error('Module not found:', moduleId);
+                return;
+            }
+
+            // Update UI
+            document.getElementById('moduleSelection').classList.add('hidden');
+            document.getElementById('lessonInterface').classList.remove('hidden');
+
+            // Set module header
+            document.getElementById('currentModuleTitle').textContent = currentModule.title;
+            document.getElementById('currentModuleDesc').textContent = currentModule.description;
+
+            // Load first section
+            loadSection(0);
+
+            // Update last accessed
+            window.lessonProgress.updateLastAccessed();
+        }
+
+        function loadSection(index) {
+            currentSectionIndex = index;
+            const section = currentModule.sections[index];
+
+            if (!section) {
+                console.error('Section not found at index:', index);
+                return;
+            }
+
+            // Update progress bar
+            const progress = ((index + 1) / currentModule.sections.length) * 100;
+            document.getElementById('lessonProgressFill').style.width = `${progress}%`;
+            document.getElementById('lessonProgressText').textContent =
+                `Section ${index + 1} of ${currentModule.sections.length}`;
+
+            // Update navigation buttons
+            document.getElementById('prevSectionBtn').disabled = index === 0;
+            document.getElementById('nextSectionBtn').textContent =
+                index === currentModule.sections.length - 1 ? 'Complete Module ✓' : 'Next ➡️';
+
+            // Render section based on type
+            const container = document.getElementById('sectionContainer');
+            container.innerHTML = '';
+
+            switch (section.type) {
+                case 'audio_lesson':
+                    renderAudioLesson(section, container);
+                    break;
+                case 'interactive_quiz':
+                    renderQuiz(section, container);
+                    break;
+                case 'ai_practice':
+                    renderAIPractice(section, container);
+                    break;
+                case 'dual_view':
+                    renderDualView(section, container);
+                    break;
+                case 'ai_conversation':
+                    renderConversation(section, container);
+                    break;
+                default:
+                    container.innerHTML = '<p>Unknown section type</p>';
+            }
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderAudioLesson(section, container) {
+            const template = document.getElementById('audioLessonTemplate');
+            const clone = template.content.cloneNode(true);
+
+            clone.querySelector('.section-title').textContent = section.title;
+            clone.querySelector('#transcriptContent').textContent = section.audioScript.text;
+
+            // If lesson content exists, display it
+            if (section.content) {
+                const contentDiv = clone.querySelector('#lessonContent');
+                if (section.content.text) {
+                    const p = document.createElement('p');
+                    p.textContent = section.content.text;
+                    contentDiv.appendChild(p);
+                }
+
+                // Render transformation example if exists
+                if (section.content.transformation) {
+                    const trans = section.content.transformation;
+                    const transDiv = document.createElement('div');
+                    transDiv.className = 'transformation-demo';
+                    transDiv.innerHTML = `
+                        <h4>📊 Sentence Transformation Levels</h4>
+                        ${Object.values(trans).map(level => `
+                            <div class="trans-level band-${level.band.toFixed(1).replace('.', '-')}">
+                                <span class="band-tag">Band ${level.band}</span>
+                                <p>${level.text}</p>
+                            </div>
+                        `).join('')}
+                    `;
+                    contentDiv.appendChild(transDiv);
+                }
+
+                // Render connector types if exists
+                if (section.content.connectorTypes) {
+                    const types = section.content.connectorTypes;
+                    const connDiv = document.createElement('div');
+                    connDiv.className = 'connector-reference';
+                    connDiv.innerHTML = `
+                        <h4>🔗 Useful Connectors</h4>
+                        ${Object.entries(types).map(([type, words]) => `
+                            <div class="connector-category">
+                                <strong>${type.charAt(0).toUpperCase() + type.slice(1)}:</strong>
+                                <span class="connector-list">${words.join(', ')}</span>
+                            </div>
+                        `).join('')}
+                    `;
+                    contentDiv.appendChild(connDiv);
+                }
+            }
+
+            container.appendChild(clone);
+
+            // Setup audio player
+            setupAudioPlayer(section.audioScript, section.id);
+
+            // Setup transcript toggle
+            document.getElementById('toggleTranscript').addEventListener('click', function() {
+                const content = document.getElementById('transcriptContent');
+                content.classList.toggle('hidden');
+                this.textContent = content.classList.contains('hidden') ? 'Show' : 'Hide';
+            });
+
+            // Setup completion checkbox
+            document.getElementById('sectionCompleteCheck').addEventListener('change', function() {
+                if (this.checked) {
+                    markSectionComplete();
+                }
+            });
+        }
+
+        async function setupAudioPlayer(audioScript, audioId) {
+            const playBtn = document.getElementById('audioPlayBtn');
+            const pauseBtn = document.getElementById('audioPauseBtn');
+            const replayBtn = document.getElementById('audioReplayBtn');
+            const speedBtn = document.getElementById('audioSpeedBtn');
+            const progressContainer = document.getElementById('audioProgressContainer');
+            const controls = document.getElementById('audioControls');
+            const timeline = document.getElementById('audioTimeline');
+            const fill = document.getElementById('audioTimelineFill');
+            const currentTimeSpan = document.getElementById('audioCurrentTime');
+            const durationSpan = document.getElementById('audioDuration');
+
+            let currentSpeed = 1.0;
+
+            // Check if audio exists in cache
+            const hasAudio = await window.audioManager.hasAudio(audioId);
+
+            if (!hasAudio) {
+                playBtn.innerHTML = `
+                    <span class="warning-icon">⚠️</span>
+                    <span class="btn-text">Audio not generated yet</span>
+                `;
+                playBtn.disabled = true;
+                playBtn.title = 'Generate audio using the Audio Generator tool first';
+                return;
+            }
+
+            playBtn.addEventListener('click', async () => {
+                try {
+                    await window.audioManager.play(audioId);
+                    playBtn.style.display = 'none';
+                    progressContainer.classList.remove('hidden');
+                    controls.classList.remove('hidden');
+                } catch (error) {
+                    alert('Error playing audio: ' + error.message);
+                }
+            });
+
+            pauseBtn.addEventListener('click', () => {
+                if (window.audioManager.isPlaying) {
+                    window.audioManager.pause();
+                    pauseBtn.textContent = '▶️';
+                } else {
+                    window.audioManager.resume();
+                    pauseBtn.textContent = '⏸️';
+                }
+            });
+
+            replayBtn.addEventListener('click', () => {
+                window.audioManager.seek(0);
+                window.audioManager.resume();
+            });
+
+            speedBtn.addEventListener('click', () => {
+                currentSpeed = currentSpeed >= 2.0 ? 0.75 : currentSpeed + 0.25;
+                window.audioManager.setPlaybackRate(currentSpeed);
+                speedBtn.textContent = `${currentSpeed.toFixed(2)}x`;
+            });
+
+            // Timeline seeking
+            timeline.addEventListener('click', (e) => {
+                const rect = timeline.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const percentage = clickX / rect.width;
+                const duration = window.audioManager.getDuration();
+                window.audioManager.seek(duration * percentage);
+            });
+
+            // Time update
+            window.audioManager.on('timeupdate', (currentTime, duration) => {
+                const percentage = (currentTime / duration) * 100;
+                fill.style.width = `${percentage}%`;
+                currentTimeSpan.textContent = formatTime(currentTime);
+                durationSpan.textContent = formatTime(duration);
+            });
+
+            // On end
+            window.audioManager.on('end', () => {
+                document.getElementById('sectionCompleteCheck').checked = true;
+                markSectionComplete();
+            });
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function renderQuiz(section, container) {
+            const template = document.getElementById('quizTemplate');
+            const clone = template.content.cloneNode(true);
+
+            clone.querySelector('.section-title').textContent = section.title;
+
+            const questionsDiv = clone.querySelector('#quizQuestions');
+            section.questions.forEach((q, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'quiz-question';
+                qDiv.innerHTML = `
+                    <p class="question-text"><strong>Question ${index + 1}:</strong> ${q.question}</p>
+                    <div class="quiz-options">
+                        ${q.options.map((opt, optIndex) => `
+                            <label class="quiz-option">
+                                <input type="radio" name="q${index}" value="${optIndex}">
+                                <span>${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div class="question-feedback hidden" data-question="${index}"></div>
+                `;
+                questionsDiv.appendChild(qDiv);
+            });
+
+            container.appendChild(clone);
+
+            // Submit quiz
+            document.getElementById('submitQuizBtn').addEventListener('click', () => {
+                submitQuiz(section.questions);
+            });
+        }
+
+        function submitQuiz(questions) {
+            const results = [];
+
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const feedbackDiv = document.querySelector(`[data-question="${index}"]`);
+
+                if (!selected) {
+                    results.push({ correct: false });
+                    return;
+                }
+
+                const userAnswer = parseInt(selected.value);
+                const isCorrect = userAnswer === q.correct;
+
+                results.push({ correct: isCorrect });
+
+                // Show feedback
+                feedbackDiv.classList.remove('hidden');
+                feedbackDiv.className = `question-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+                feedbackDiv.textContent = q.explanation;
+            });
+
+            // Calculate score
+            const score = QuizValidator.calculateScore(results);
+
+            // Display results
+            const resultsDiv = document.getElementById('quizResults');
+            resultsDiv.classList.remove('hidden');
+            resultsDiv.querySelector('.score-emoji').textContent = score.passed ? '🎉' : '📚';
+            resultsDiv.querySelector('.score-text').textContent = `Score: ${score.correct}/${score.total} (${score.percentage}%)`;
+            resultsDiv.querySelector('.quiz-feedback').textContent = score.message;
+
+            // Mark complete if passed
+            if (score.passed) {
+                markSectionComplete();
+            }
+
+            // Hide submit button
+            document.getElementById('submitQuizBtn').style.display = 'none';
+        }
+
+        function renderAIPractice(section, container) {
+            const template = document.getElementById('aiPracticeTemplate');
+            const clone = template.content.cloneNode(true);
+
+            clone.querySelector('.section-title').textContent = section.title;
+            clone.querySelector('.practice-instructions').textContent = section.instructions;
+
+            // Initialize practice state
+            let currentQuestionIndex = 0;
+            let totalQuestions = 0;
+            let completedExercises = 0;
+            let practiceScores = [];
+
+            // Determine total questions
+            if (section.practiceQuestions) {
+                totalQuestions = section.practiceQuestions.length;
+            } else if (section.exercises) {
+                totalQuestions = section.exercises.length;
+            } else if (section.practiceQuestion) {
+                totalQuestions = 1;
+            }
+
+            // Add progress counter
+            const instructionsEl = clone.querySelector('.practice-instructions');
+            const progressCounter = document.createElement('div');
+            progressCounter.className = 'exercise-progress';
+            progressCounter.style.cssText = 'margin: 15px 0; padding: 10px; background: #e8f4f8; border-radius: 4px; text-align: center; font-weight: 600;';
+            progressCounter.innerHTML = `<span id="exerciseCounter">Exercise <span id="currentEx">1</span>/<span id="totalEx">${totalQuestions}</span></span> | <span id="completedCount">Completed: 0</span>`;
+            instructionsEl.parentNode.insertBefore(progressCounter, instructionsEl.nextSibling);
+
+            // Set up first question
+            const questionDiv = clone.querySelector('#practiceQuestion');
+
+            container.appendChild(clone);
+
+            // Now update question after elements are in DOM
+            updateQuestion();
+
+            // Setup AI feedback button
+            document.getElementById('getAIFeedbackBtn').addEventListener('click', async () => {
+                await getAIPracticeFeedback(section, currentQuestionIndex);
+                completedExercises++;
+                document.getElementById('completedCount').textContent = `Completed: ${completedExercises}`;
+
+                // Show "Try Another" button after feedback
+                document.getElementById('tryAnotherBtn').style.display = 'inline-block';
+            });
+
+            // Setup "Try Another" button
+            document.getElementById('tryAnotherBtn').addEventListener('click', () => {
+                // Move to next question
+                currentQuestionIndex++;
+                if (currentQuestionIndex >= totalQuestions) {
+                    currentQuestionIndex = 0; // Loop back to start
+                }
+
+                // Clear previous answer and feedback
+                document.getElementById('studentResponseArea').value = '';
+                document.getElementById('aiFeedbackBox').classList.add('hidden');
+                document.getElementById('tryAnotherBtn').style.display = 'none';
+
+                // Update question
+                updateQuestion();
+
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            function updateQuestion() {
+                document.getElementById('currentEx').textContent = currentQuestionIndex + 1;
+
+                if (section.practiceQuestions) {
+                    const currentQ = section.practiceQuestions[currentQuestionIndex];
+
+                    // Handle both string format (old) and object format (new)
+                    let questionText, sampleAnswer;
+                    if (typeof currentQ === 'string') {
+                        questionText = currentQ;
+                        sampleAnswer = null;
+                    } else {
+                        questionText = currentQ.question;
+                        sampleAnswer = currentQ.sampleAnswer;
+                    }
+
+                    // Build question HTML
+                    let html = `<p class="practice-q"><strong>Question:</strong> ${questionText}</p>`;
+
+                    // Add sample answer section if available
+                    if (sampleAnswer) {
+                        html += `
+                            <div class="sample-answer-section" style="margin-top: 20px;">
+                                <button class="btn btn-secondary" id="toggleSampleBtn" style="font-size: 14px; padding: 8px 16px;">
+                                    💡 Show Sample Answer
+                                </button>
+                                <div class="sample-answer-box" id="sampleAnswerBox" style="display: none; margin-top: 15px; padding: 15px; background: #f8f9fa; border-left: 4px solid #667eea; border-radius: 4px;">
+                                    <div class="sample-header" style="font-weight: 600; color: #667eea; margin-bottom: 10px;">
+                                        📝 Model Answer (Band 7-7.5)
+                                    </div>
+                                    <p class="sample-text" style="line-height: 1.6; margin-bottom: 15px; font-style: italic;">
+                                        ${sampleAnswer}
+                                    </p>
+                                    <div class="sample-tip" style="font-size: 13px; color: #666; padding: 10px; background: white; border-radius: 4px;">
+                                        <strong>💡 Tip:</strong> Try to answer first, then compare your ideas with this sample. Notice which 5W1H elements (What, When, Where, Who, Why, How) are included.
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    questionDiv.innerHTML = html;
+
+                    // Add toggle functionality if sample answer exists
+                    if (sampleAnswer) {
+                        setTimeout(() => {
+                            const toggleBtn = document.getElementById('toggleSampleBtn');
+                            const sampleBox = document.getElementById('sampleAnswerBox');
+
+                            if (toggleBtn && sampleBox) {
+                                toggleBtn.addEventListener('click', function() {
+                                    if (sampleBox.style.display === 'none') {
+                                        sampleBox.style.display = 'block';
+                                        this.textContent = '🔼 Hide Sample Answer';
+                                    } else {
+                                        sampleBox.style.display = 'none';
+                                        this.textContent = '💡 Show Sample Answer';
+                                    }
+                                });
+                            }
+                        }, 0);
+                    }
+
+                } else if (section.exercises) {
+                    const exercise = section.exercises[currentQuestionIndex];
+                    questionDiv.innerHTML = `
+                        <p class="practice-q"><strong>Basic sentence:</strong> ${exercise.basic}</p>
+                        <p class="practice-hints"><strong>Hints:</strong> ${exercise.hints.join(', ')}</p>
+                    `;
+                } else if (section.practiceQuestion) {
+                    questionDiv.innerHTML = `<p class="practice-q"><strong>Question:</strong> ${section.practiceQuestion}</p>`;
+                }
+            }
+        }
+
+        async function getAIPracticeFeedback(section, questionIndex = 0) {
+            const responseArea = document.getElementById('studentResponseArea');
+            const studentResponse = responseArea.value.trim();
+
+            if (!studentResponse) {
+                alert('Please type your answer first');
+                return;
+            }
+
+            if (!window.ieltsCoachAI.hasApiKey()) {
+                alert('Please set up your API key first');
+                document.getElementById('apiKeySection').classList.remove('hidden');
+                return;
+            }
+
+            const feedbackBox = document.getElementById('aiFeedbackBox');
+            const feedbackContent = document.getElementById('aiFeedbackContent');
+            const btn = document.getElementById('getAIFeedbackBtn');
+
+            try {
+                btn.disabled = true;
+                btn.textContent = '⏳ Getting AI Feedback...';
+
+                let feedback;
+                let currentQuestion;
+
+                // Get the current question (handle both string and object format)
+                if (section.practiceQuestions) {
+                    const q = section.practiceQuestions[questionIndex];
+                    currentQuestion = typeof q === 'string' ? q : q.question;
+                } else if (section.exercises) {
+                    currentQuestion = section.exercises[questionIndex].basic;
+                } else {
+                    currentQuestion = section.practiceQuestion;
+                }
+
+                // Determine feedback type based on section
+                if (section.id && section.id.includes('m2')) {
+                    // Module 2: Idea generation
+                    feedback = await window.ieltsCoachAI.feedbackOnIdeas(
+                        currentQuestion,
+                        studentResponse
+                    );
+                } else if (section.id && section.id.includes('m3')) {
+                    // Module 3: Sentence building
+                    feedback = await window.ieltsCoachAI.improveSentence(studentResponse, 7.0, currentQuestion);
+                } else if (section.id && section.id.includes('m4')) {
+                    // Module 4: Part 2 practice
+                    if (section.cueCard) {
+                        feedback = await window.ieltsCoachAI.analyzePreparationNotes(
+                            section.cueCard.topic,
+                            section.cueCard.points,
+                            studentResponse
+                        );
+                    } else {
+                        feedback = await window.ieltsCoachAI.feedbackOnIdeas(currentQuestion, studentResponse);
+                    }
+                } else {
+                    // Generic feedback
+                    feedback = await window.ieltsCoachAI.feedbackOnIdeas(
+                        currentQuestion || section.title,
+                        studentResponse
+                    );
+                }
+
+                feedbackContent.innerHTML = feedback.replace(/\n/g, '<br>');
+                feedbackBox.classList.remove('hidden');
+
+                // Mark section complete after first successful feedback
+                markSectionComplete();
+
+            } catch (error) {
+                console.error('AI Feedback Error:', error);
+                alert('Error getting feedback: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Get AI Feedback';
+            }
+        }
+
+        function renderDualView(section, container) {
+            const template = document.getElementById('dualViewTemplate');
+            const clone = template.content.cloneNode(true);
+
+            clone.querySelector('.section-title').textContent = section.title;
+
+            // Teacher view content
+            const teacherContent = clone.querySelector('#teacherViewContent');
+            if (section.teacherView && section.teacherView.ideas) {
+                const ideas = section.teacherView.ideas;
+                teacherContent.innerHTML = `
+                    <div class="idea-map">
+                        ${Object.entries(ideas).map(([key, value]) => `
+                            <div class="idea-item">
+                                <span class="idea-key">${key.toUpperCase()}:</span>
+                                <span class="idea-value">${value}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            container.appendChild(clone);
+
+            // Reveal teacher approach button
+            const revealBtn = document.getElementById('revealTeacherBtn');
+            const teacherPanel = container.querySelector('.teacher-view .panel-content');
+            teacherPanel.style.filter = 'blur(10px)';
+
+            revealBtn.addEventListener('click', async () => {
+                teacherPanel.style.filter = 'none';
+                revealBtn.disabled = true;
+                revealBtn.textContent = '✓ Revealed';
+
+                // Play teacher audio if available
+                if (section.teacherView && section.teacherView.audioScript) {
+                    const audioId = section.id + '_teacher';
+                    const hasAudio = await window.audioManager.hasAudio(audioId);
+                    if (hasAudio) {
+                        await window.audioManager.play(audioId);
+                    }
+                }
+
+                markSectionComplete();
+            });
+        }
+
+        function renderConversation(section, container) {
+            const template = document.getElementById('conversationTemplate');
+            const clone = template.content.cloneNode(true);
+
+            clone.querySelector('.section-title').textContent = section.title;
+            clone.querySelector('.practice-instructions').textContent = section.instructions;
+
+            container.appendChild(clone);
+
+            let conversationHistory = [];
+            let questionCount = 0;
+            const maxQuestions = section.conversationSettings?.numberOfQuestions || 5;
+
+            // Start conversation
+            startConversation();
+
+            async function startConversation() {
+                // Get first question from AI
+                const result = await window.ieltsCoachAI.conductPart1Practice(0);
+                addMessage('teacher', result.content);
+                questionCount++;
+            }
+
+            // Send response
+            document.getElementById('sendResponseBtn').addEventListener('click', async () => {
+                const textarea = document.getElementById('conversationResponse');
+                const response = textarea.value.trim();
+
+                if (!response) return;
+
+                // Add student message
+                addMessage('student', response);
+                conversationHistory.push({ role: 'student', message: response });
+                textarea.value = '';
+
+                // Get AI response
+                if (questionCount < maxQuestions) {
+                    const result = await window.ieltsCoachAI.conductPart1Practice(
+                        questionCount,
+                        conversationHistory,
+                        response
+                    );
+                    addMessage('teacher', result.content);
+                    conversationHistory.push({ role: 'teacher', message: result.content });
+                    questionCount++;
+                } else {
+                    // End conversation
+                    endConversation();
+                }
+            });
+
+            // End conversation
+            document.getElementById('endConversationBtn').addEventListener('click', () => {
+                endConversation();
+            });
+
+            async function endConversation() {
+                document.getElementById('conversationResponse').disabled = true;
+                document.getElementById('sendResponseBtn').disabled = true;
+                document.getElementById('endConversationBtn').disabled = true;
+
+                // Get comprehensive feedback
+                const feedbackDiv = document.getElementById('conversationFeedback');
+                feedbackDiv.innerHTML = '<p>⏳ Analyzing your performance...</p>';
+                feedbackDiv.classList.remove('hidden');
+
+                const feedback = await window.ieltsCoachAI.providePart3Feedback(
+                    section.title,
+                    conversationHistory
+                );
+
+                feedbackDiv.innerHTML = `<div class="feedback-content">${feedback.replace(/\n/g, '<br>')}</div>`;
+
+                markSectionComplete();
+            }
+
+            function addMessage(role, text) {
+                const messagesContainer = document.getElementById('conversationContainer');
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `conversation-message ${role}`;
+                msgDiv.innerHTML = `
+                    <div class="msg-avatar">${role === 'teacher' ? '👨‍🏫' : '🧑‍🎓'}</div>
+                    <div class="msg-content">${text}</div>
+                `;
+                messagesContainer.appendChild(msgDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+
+        function navigateSection(direction) {
+            const newIndex = currentSectionIndex + direction;
+
+            if (newIndex < 0 || newIndex >= currentModule.sections.length) {
+                if (newIndex >= currentModule.sections.length) {
+                    // Module completed
+                    completeModule();
+                }
+                return;
+            }
+
+            loadSection(newIndex);
+        }
+
+        function markSectionComplete() {
+            if (!currentModule || currentSectionIndex < 0) return;
+
+            const section = currentModule.sections[currentSectionIndex];
+            window.lessonProgress.markSectionComplete(currentModule.id, section.id);
+        }
+
+        function completeModule() {
+            alert(`🎉 Congratulations! You've completed ${currentModule.title}!`);
+            backToModules();
+        }
+
+        function backToModules() {
+            document.getElementById('lessonInterface').classList.add('hidden');
+            document.getElementById('moduleSelection').classList.remove('hidden');
+
+            // Stop any playing audio
+            window.audioManager.stop();
+
+            // Update progress
+            updateAllProgress();
+
+            currentModule = null;
+            currentSectionIndex = 0;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS Speaking Test Practice</title>
+    <link rel="stylesheet" href="styles/conversation.css">
+    <style>
+        /* Results Section */
+        .results-section {
+            background: #fff;
+            border: 2px solid #2c2c2c;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .band-score-display {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            color: #fff;
+            margin-bottom: 30px;
+        }
+
+        .overall-band {
+            font-size: 72px;
+            font-weight: 700;
+            line-height: 1;
+            margin: 10px 0;
+        }
+
+        .band-label {
+            font-size: 16px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .criteria-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .criterion-card {
+            background: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .criterion-name {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .criterion-band {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2c2c2c;
+        }
+
+        .analysis-section {
+            margin-bottom: 25px;
+        }
+
+        .analysis-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #2c2c2c;
+        }
+
+        .strength-list, .weakness-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .strength-list li {
+            padding: 8px 8px 8px 30px;
+            margin-bottom: 6px;
+            position: relative;
+            background: #efe;
+            border-radius: 4px;
+            border-left: 3px solid #363;
+        }
+
+        .strength-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 10px;
+            color: #363;
+            font-weight: bold;
+        }
+
+        .weakness-list li {
+            padding: 8px 8px 8px 30px;
+            margin-bottom: 6px;
+            position: relative;
+            background: #fff3cd;
+            border-radius: 4px;
+            border-left: 3px solid #ffc107;
+        }
+
+        .weakness-list li:before {
+            content: "⚠";
+            position: absolute;
+            left: 10px;
+            color: #ffc107;
+        }
+
+        .recommendations {
+            background: #e8f4f8;
+            border: 1px solid #b3d9e6;
+            border-radius: 4px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .recommendations h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .recommendations ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .recommendations li {
+            padding: 8px 0 8px 25px;
+            position: relative;
+        }
+
+        .recommendations li:before {
+            content: "→";
+            position: absolute;
+            left: 5px;
+            font-weight: bold;
+        }
+
+        .statistics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c2c2c;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2c2c2c;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .analysis-tabs {
+            display: flex;
+            gap: 10px;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .analysis-tab {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .analysis-tab:hover {
+            color: #2c2c2c;
+        }
+
+        .analysis-tab.active {
+            color: #2c2c2c;
+            border-bottom-color: #2c2c2c;
+            font-weight: 600;
+        }
+
+        .analysis-content {
+            display: none;
+        }
+
+        .analysis-content.active {
+            display: block;
+        }
+
+        /* Audio Playback */
+        .audio-playback {
+            background: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .play-pause-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: #2c2c2c;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .play-pause-btn:hover {
+            background: #1a1a1a;
+            transform: scale(1.05);
+        }
+
+        .audio-progress {
+            flex: 1;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .audio-progress-fill {
+            height: 100%;
+            background: #2c2c2c;
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.1s;
+        }
+
+        .audio-time {
+            font-family: "SF Mono", Consolas, monospace;
+            font-size: 13px;
+            color: #666;
+            min-width: 45px;
+        }
+
+        .recording-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: #fee;
+            border: 1px solid #fcc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .recording-dot {
+            width: 12px;
+            height: 12px;
+            background: #e74c3c;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .test-part {
+            background: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .part-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .part-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c2c2c;
+        }
+
+        .part-duration {
+            font-size: 12px;
+            color: #666;
+            font-family: "SF Mono", Consolas, monospace;
+        }
+
+        .topic-card {
+            background: #fff;
+            border: 2px solid #2c2c2c;
+            border-radius: 4px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .topic-card h3 {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .topic-card ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .prep-timer {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 4px;
+            padding: 15px;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .prep-timer.active {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .prep-time {
+            font-size: 32px;
+            font-weight: 600;
+            font-family: "SF Mono", Consolas, monospace;
+            color: #2c2c2c;
+        }
+
+        .question-mode {
+            margin: 20px 0;
+        }
+
+        .mode-option {
+            display: flex;
+            align-items: flex-start;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-option:hover {
+            background: #f8f8f8;
+            border-color: #2c2c2c;
+        }
+
+        .mode-option input[type="radio"] {
+            margin-right: 10px;
+            margin-top: 3px;
+        }
+
+        .mode-details {
+            flex: 1;
+        }
+
+        .custom-questions {
+            width: 100%;
+            min-height: 100px;
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .test-timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2c2c2c;
+            color: #fff;
+            padding: 15px 20px;
+            border-radius: 4px;
+            font-family: "SF Mono", Consolas, monospace;
+            font-size: 24px;
+            font-weight: 600;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>IELTS Speaking Test Practice</h1>
+            <p class="subtitle">Practice with AI examiner following official IELTS format</p>
+            <div class="header-actions" style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+                <a href="ielts-speaking-lessons.html" class="header-btn" style="padding: 8px 16px; background: #667eea; color: white; text-decoration: none; border-radius: 4px; font-size: 14px;">
+                    🎓 Learn Strategies First
+                </a>
+                <a href="ielts-speaking-library.html" class="header-btn" style="padding: 8px 16px; background: white; color: #2c2c2c; border: 1px solid #2c2c2c; text-decoration: none; border-radius: 4px; font-size: 14px;">
+                    📚 Library
+                </a>
+            </div>
+        </header>
+
+        <!-- Usage Counter -->
+        <div id="usageCounter" class="usage-counter hidden">
+            <div class="usage-header">
+                <span class="usage-label">Session Usage</span>
+                <span class="usage-time" id="usageTime">0:00</span>
+            </div>
+            <div class="usage-bar">
+                <div class="usage-fill" id="usageFill"></div>
+            </div>
+            <div class="usage-stats">
+                <span id="usageTokens">0 tokens</span>
+                <span id="usageRate">0 tok/min</span>
+            </div>
+            <div class="usage-breakdown">
+                <span id="usagePrompt">↑ 0</span>
+                <span id="usageResponse">↓ 0</span>
+            </div>
+        </div>
+
+        <!-- Test Timer -->
+        <div id="testTimer" class="test-timer hidden">0:00</div>
+
+        <!-- Setup Section -->
+        <section id="setupSection">
+            <!-- API Key Setup (if needed) -->
+            <div id="apiKeySetup" class="test-part hidden">
+                <h2>🔑 Setup Required</h2>
+                <p style="margin: 15px 0; line-height: 1.8;">To use this IELTS speaking test, you need a free Google AI (Gemini) API key:</p>
+
+                <div style="background: #e8f4f8; border: 1px solid #b3d9e6; border-radius: 4px; padding: 15px; margin: 15px 0;">
+                    <h3 style="font-size: 15px; margin-bottom: 10px;">📝 How to get your API key (2 minutes):</h3>
+                    <ol style="margin-left: 20px; line-height: 1.8;">
+                        <li>Visit <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #2c2c2c; text-decoration: underline;">Google AI Studio</a></li>
+                        <li>Sign in with your Google account (Gmail)</li>
+                        <li>Click "Create API Key"</li>
+                        <li>Copy the key and paste it below</li>
+                    </ol>
+                    <p style="margin-top: 10px; font-size: 13px; color: #666;">
+                        ✓ Free tier: 60 requests/minute<br>
+                        ✓ Your key stays on your device (not stored on our servers)<br>
+                        ✓ You can test the speaking for free
+                    </p>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Enter your API Key:</label>
+                    <input type="password" id="apiKeyInput" placeholder="AIza..." style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 4px; font-family: monospace;">
+                    <div style="margin-top: 15px;">
+                        <button class="btn" id="saveApiKeyBtn">Save & Continue</button>
+                        <button class="btn btn-secondary" id="skipApiKeyBtn" style="margin-left: 10px;">I'll enter it later</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="test-part">
+                <h2>IELTS Speaking Test Format</h2>
+                <p style="margin: 10px 0; color: #666;">The test consists of 3 parts (11-14 minutes total):</p>
+
+                <div class="test-part">
+                    <div class="part-header">
+                        <span class="part-title">Part 1: Introduction & Interview</span>
+                        <span class="part-duration">4-5 minutes</span>
+                    </div>
+                    <p style="font-size: 14px; color: #666;">General questions about yourself, home, family, work, studies, interests</p>
+                </div>
+
+                <div class="test-part">
+                    <div class="part-header">
+                        <span class="part-title">Part 2: Long Turn (Cue Card)</span>
+                        <span class="part-duration">3-4 minutes</span>
+                    </div>
+                    <p style="font-size: 14px; color: #666;">1 minute to prepare, 2 minutes to speak on given topic</p>
+                </div>
+
+                <div class="test-part">
+                    <div class="part-header">
+                        <span class="part-title">Part 3: Discussion</span>
+                        <span class="part-duration">4-5 minutes</span>
+                    </div>
+                    <p style="font-size: 14px; color: #666;">Abstract questions related to Part 2 topic</p>
+                </div>
+            </div>
+
+            <div class="test-part">
+                <h3>Question Mode</h3>
+                <div class="question-mode">
+                    <label class="mode-option">
+                        <input type="radio" name="questionMode" value="ai" checked>
+                        <div class="mode-details">
+                            <strong>AI Generated Questions</strong>
+                            <p style="font-size: 13px; color: #666; margin: 5px 0 0 0;">AI will generate authentic IELTS questions for all 3 parts</p>
+                        </div>
+                    </label>
+
+                    <label class="mode-option">
+                        <input type="radio" name="questionMode" value="custom">
+                        <div class="mode-details">
+                            <strong>Custom Questions</strong>
+                            <p style="font-size: 13px; color: #666; margin: 5px 0;">Paste your own questions (one per line)</p>
+                            <textarea id="customQuestions" class="custom-questions hidden" placeholder="Part 1 questions:&#10;Do you work or study?&#10;What do you do?&#10;&#10;Part 2 topic:&#10;Describe a place you like to visit&#10;&#10;Part 3 questions:&#10;Why do people travel?"></textarea>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="topic-buttons">
+                <button class="btn" id="startTestBtn">🎤 Start IELTS Speaking Test</button>
+            </div>
+        </section>
+
+        <!-- Test Section -->
+        <section id="testSection" class="hidden">
+            <!-- Current Part Indicator -->
+            <div id="currentPart" class="test-part">
+                <div class="part-header">
+                    <span class="part-title" id="partTitle">Part 1: Introduction & Interview</span>
+                    <span class="part-duration" id="partDuration">4-5 minutes</span>
+                </div>
+            </div>
+
+            <!-- Part 2 Topic Card (only shown in Part 2) -->
+            <div id="topicCard" class="topic-card hidden">
+                <h3 id="topicTitle">Describe a person who influenced you</h3>
+                <p style="margin: 10px 0; font-weight: 500;">You should say:</p>
+                <ul id="topicPoints">
+                    <li>Who this person is</li>
+                    <li>How you know them</li>
+                    <li>What they did to influence you</li>
+                    <li>And explain why this person is important to you</li>
+                </ul>
+            </div>
+
+            <!-- Preparation Timer (only shown in Part 2) -->
+            <div id="prepTimer" class="prep-timer hidden">
+                <div style="font-size: 14px; margin-bottom: 5px;">Preparation Time</div>
+                <div class="prep-time" id="prepTime">1:00</div>
+                <div style="font-size: 12px; margin-top: 5px; color: #666;">Make notes if you wish</div>
+            </div>
+
+            <!-- Part 2 Speaking Timer -->
+            <div id="speakingTimer" class="prep-timer hidden">
+                <div style="font-size: 14px; margin-bottom: 5px;">Speaking Time (Target: 2 minutes)</div>
+                <div class="prep-time" id="speakTime">0:00</div>
+                <div style="font-size: 12px; margin-top: 5px;" id="timerHint">Keep speaking...</div>
+            </div>
+
+            <!-- Messages Area -->
+            <div class="messages-area" id="messagesArea">
+                <div class="message assistant">
+                    <div class="message-avatar">👔</div>
+                    <div>
+                        <div class="message-bubble">
+                            Good morning. My name is the AI examiner. Can you tell me your full name, please?
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Voice Controls -->
+            <div class="input-area">
+                <div id="voiceStatus" class="voice-status">
+                    <span class="status-icon">🔴</span>
+                    <span class="status-text">Disconnected</span>
+                </div>
+
+                <div class="voice-controls">
+                    <button class="voice-btn hidden" id="connectVoiceBtn">🎤 Start Speaking</button>
+                    <button class="voice-btn" id="turnCompleteBtn">✅ I'm Done Speaking</button>
+                    <button class="voice-btn hidden" id="disconnectVoiceBtn">⏹️ End Test</button>
+                </div>
+
+                <div id="voiceActivity" class="voice-activity hidden">
+                    <div class="activity-bar"></div>
+                    <span class="activity-text">Listening...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons hidden" id="actionButtons">
+            <button class="btn btn-secondary" id="endTestBtn">End Test</button>
+            <button class="btn" id="getFeedbackBtn">Get AI Feedback & Score</button>
+            <button class="btn btn-secondary" id="newTestBtn">New Test</button>
+        </div>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="results-section hidden">
+            <h2 style="text-align: center; margin-bottom: 30px;">📊 Your Test Results</h2>
+
+            <div id="loadingResults" class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Analyzing your performance...</p>
+            </div>
+
+            <div id="resultsContent" class="hidden">
+                <!-- Overall Band Score -->
+                <div class="band-score-display">
+                    <div class="band-label">Overall Band Score</div>
+                    <div class="overall-band" id="overallBand">-</div>
+                    <div class="band-label" id="cefrLevel">CEFR: -</div>
+                </div>
+
+                <!-- Criteria Breakdown -->
+                <div class="criteria-breakdown">
+                    <div class="criterion-card">
+                        <div class="criterion-name">Fluency & Coherence</div>
+                        <div class="criterion-band" id="fluencyBand">-</div>
+                    </div>
+                    <div class="criterion-card">
+                        <div class="criterion-name">Lexical Resource</div>
+                        <div class="criterion-band" id="vocabularyBand">-</div>
+                    </div>
+                    <div class="criterion-card">
+                        <div class="criterion-name">Grammar Range & Accuracy</div>
+                        <div class="criterion-band" id="grammarBand">-</div>
+                    </div>
+                    <div class="criterion-card">
+                        <div class="criterion-name">Pronunciation</div>
+                        <div class="criterion-band" id="pronunciationBand">-</div>
+                    </div>
+                </div>
+
+                <!-- Audio Playback -->
+                <div id="audioPlaybackSection" class="audio-playback hidden">
+                    <h3 style="margin-bottom: 10px;">🎧 Your Recording</h3>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Listen to your performance and identify areas for improvement</p>
+
+                    <div class="recording-indicator hidden" id="recordingStatus">
+                        <div class="recording-dot"></div>
+                        <span>Recording in progress...</span>
+                    </div>
+
+                    <div class="audio-controls">
+                        <button class="play-pause-btn" id="playPauseBtn">▶</button>
+                        <div class="audio-progress" id="audioProgress">
+                            <div class="audio-progress-fill" id="audioProgressFill"></div>
+                        </div>
+                        <span class="audio-time" id="audioTime">0:00</span>
+                    </div>
+
+                    <audio id="recordingAudio" style="display: none;"></audio>
+
+                    <div style="margin-top: 15px; display: flex; gap: 10px;">
+                        <button class="btn btn-secondary" id="downloadAudioBtn">⬇️ Download Audio</button>
+                        <button class="btn btn-secondary" id="replayBtn">🔄 Replay from Start</button>
+                    </div>
+                </div>
+
+                <!-- Statistics -->
+                <h3 style="margin: 30px 0 15px 0;">Performance Statistics</h3>
+                <div class="statistics-grid" id="statisticsGrid"></div>
+
+                <!-- Detailed Analysis -->
+                <h3 style="margin: 30px 0 15px 0;">Detailed Analysis</h3>
+                <div class="analysis-tabs">
+                    <button class="analysis-tab active" data-criterion="fluency">Fluency</button>
+                    <button class="analysis-tab" data-criterion="vocabulary">Vocabulary</button>
+                    <button class="analysis-tab" data-criterion="grammar">Grammar</button>
+                    <button class="analysis-tab" data-criterion="pronunciation">Pronunciation</button>
+                </div>
+
+                <div id="analysisContainer"></div>
+
+                <!-- Progress Tracking -->
+                <div id="progressSection" class="hidden" style="background: #f8f8f8; border: 1px solid #e0e0e0; border-radius: 4px; padding: 25px; margin: 25px 0;">
+                    <h3 style="margin-bottom: 15px;">📈 Your Progress</h3>
+                    <div id="progressContent"></div>
+                </div>
+
+                <!-- Recommendations -->
+                <div class="recommendations">
+                    <h3>💡 Recommendations for Improvement</h3>
+                    <div id="recommendationsContainer"></div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div style="text-align: center; margin-top: 30px; display: flex; gap: 10px; justify-content: center;">
+                    <button class="btn btn-secondary" id="downloadTranscriptBtn">Download Transcript</button>
+                    <button class="btn btn-secondary" id="viewLibraryBtn">View Learning Library</button>
+                    <button class="btn" id="retakeTestBtn">Take Another Test</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Scripts -->
+    <script src="scripts/ieltsLibrary.js"></script>
+    <script src="scripts/ieltsScoring.js"></script>
+    <script src="scripts/progressTracker.js"></script>
+    <script src="shared/scripts/geminiLiveService.js"></script>
+    <script src="scripts/conversationAgent.js"></script>
+    <script>
+        // Main Application Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM Elements
+            const setupSection = document.getElementById('setupSection');
+            const testSection = document.getElementById('testSection');
+            const startTestBtn = document.getElementById('startTestBtn');
+            const customQuestions = document.getElementById('customQuestions');
+            const messagesArea = document.getElementById('messagesArea');
+            const currentPart = document.getElementById('currentPart');
+            const topicCard = document.getElementById('topicCard');
+            const prepTimer = document.getElementById('prepTimer');
+            const testTimer = document.getElementById('testTimer');
+            const voiceStatus = document.getElementById('voiceStatus');
+            const voiceActivity = document.getElementById('voiceActivity');
+            const connectVoiceBtn = document.getElementById('connectVoiceBtn');
+            const turnCompleteBtn = document.getElementById('turnCompleteBtn');
+            const disconnectVoiceBtn = document.getElementById('disconnectVoiceBtn');
+            const actionButtons = document.getElementById('actionButtons');
+
+            // State
+            let currentTestPart = 1;
+            let testStartTime = null;
+            let prepStartTime = null;
+            let prepTimerInterval = null;
+            let testTimerInterval = null;
+            let speakingTimerInterval = null;
+            let speakingStartTime = null;
+
+            // Check for API key on load
+            if (!window.conversationAgent.hasApiKey()) {
+                document.getElementById('apiKeySetup').classList.remove('hidden');
+            }
+
+            // API Key Setup Handlers
+            document.getElementById('saveApiKeyBtn').addEventListener('click', () => {
+                const apiKey = document.getElementById('apiKeyInput').value.trim();
+                if (!apiKey) {
+                    alert('Please enter your API key');
+                    return;
+                }
+                if (!apiKey.startsWith('AIza')) {
+                    alert('API key should start with "AIza". Please check your key.');
+                    return;
+                }
+                window.conversationAgent.setApiKey(apiKey);
+                document.getElementById('apiKeySetup').classList.add('hidden');
+                alert('API key saved! You can now start the test.');
+            });
+
+            document.getElementById('skipApiKeyBtn').addEventListener('click', () => {
+                document.getElementById('apiKeySetup').classList.add('hidden');
+            });
+
+            // Check for topic parameter from library
+            const urlParams = new URLSearchParams(window.location.search);
+            const practiceMode = urlParams.get('mode');
+            const topicId = urlParams.get('topic');
+            let selectedTopic = null;
+
+            if (practiceMode === 'practice' && topicId) {
+                const storedTopic = localStorage.getItem('ielts_selected_topic');
+                if (storedTopic) {
+                    selectedTopic = JSON.parse(storedTopic);
+                    // Show a note about the selected topic
+                    const noteDiv = document.createElement('div');
+                    noteDiv.className = 'test-part';
+                    noteDiv.style.background = '#e8f4f8';
+                    noteDiv.style.border = '2px solid #2c2c2c';
+                    noteDiv.innerHTML = `
+                        <h3 style="margin-bottom: 10px;">📌 Practice Topic Selected</h3>
+                        <p style="font-size: 14px; margin-bottom: 8px;"><strong>${selectedTopic.title}</strong></p>
+                        <p style="font-size: 13px; color: #666;">The AI will use this topic for Part 2. Part 1 and Part 3 will be related to this theme.</p>
+                    `;
+                    document.querySelector('#setupSection').insertBefore(noteDiv, document.querySelector('#setupSection > .test-part:first-child'));
+                }
+            }
+
+            // Question mode toggle
+            document.querySelectorAll('input[name="questionMode"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    customQuestions.classList.toggle('hidden', e.target.value === 'ai');
+                });
+            });
+
+            // Setup Gemini Live API callbacks
+            window.geminiLiveService.onStatusChange = (status) => {
+                updateVoiceStatus(status);
+            };
+
+            window.geminiLiveService.onTranscript = (text) => {
+                addMessageToUI('assistant', text);
+                // Track AI responses in scoring system
+                window.ieltsScoring.addTurn('assistant', text, currentTestPart);
+            };
+
+            window.geminiLiveService.onUsageUpdate = (usage) => {
+                updateUsageCounter(usage);
+            };
+
+            // Start Test
+            startTestBtn.addEventListener('click', async () => {
+                if (!window.conversationAgent.hasApiKey()) {
+                    const apiKey = prompt('Enter your Gemini API key:\n(Get it from https://aistudio.google.com/app/apikey)');
+                    if (!apiKey) return;
+                    window.conversationAgent.setApiKey(apiKey);
+                }
+
+                const mode = document.querySelector('input[name="questionMode"]:checked').value;
+                const customQs = customQuestions.value.trim();
+
+                if (mode === 'custom' && !customQs) {
+                    alert('Please enter custom questions');
+                    return;
+                }
+
+                startTestBtn.disabled = true;
+
+                // Initialize scoring system
+                window.ieltsScoring.setApiKey(window.conversationAgent.apiKey);
+                window.ieltsScoring.reset();
+
+                try {
+                    // Build system instruction
+                    let systemInstruction = `You are an IELTS speaking test examiner. Conduct a full IELTS speaking test with 3 parts:
+
+PART 1 (4-5 min): Ask 4-5 general questions about the student (work/study, hometown, hobbies, daily routine).
+
+PART 2 (3-4 min): Give the student a topic card. They get 1 minute to prepare, then speak for 2 minutes. After they finish, ask 1-2 follow-up questions.
+
+PART 3 (4-5 min): Ask 4-5 abstract discussion questions related to the Part 2 topic.
+
+`;
+
+                    if (mode === 'custom') {
+                        systemInstruction += `\nUse these questions:\n${customQs}`;
+                    } else if (selectedTopic) {
+                        // Use the selected topic from library
+                        systemInstruction += `\nGenerate authentic IELTS questions. Be natural and conversational like a real examiner.
+
+FOR PART 2, use this specific topic:
+Topic: ${selectedTopic.part2Card.topic}
+
+You should say:
+${selectedTopic.part2Card.prompts.map(p => '- ' + p).join('\n')}
+
+FOR PART 3, ask these discussion questions (or similar):
+${selectedTopic.part3Questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
+
+Try to naturally incorporate these vocabulary words if the student uses them:
+${selectedTopic.vocabulary.slice(0, 5).join(', ')}`;
+                    } else {
+                        systemInstruction += `\nGenerate authentic IELTS questions. Be natural and conversational like a real examiner.`;
+                    }
+
+                    systemInstruction += `\n\nImportant:
+- Introduce yourself as the examiner at the start
+- Clearly indicate when moving to Part 2 and show the topic
+- For Part 2, tell the student they have 1 minute to prepare
+- After Part 2 prep, tell them to start speaking
+- Be encouraging and professional
+- Keep track of time for each part`;
+
+                    // Connect to Live API with VAD disabled (prevents AI interrupting student)
+                    await window.geminiLiveService.connect(window.conversationAgent.apiKey, {
+                        systemInstruction: {
+                            parts: [{ text: systemInstruction }]
+                        },
+                        disableVAD: true  // Student controls when to pass turn to AI
+                    });
+
+                    // Start listening
+                    await window.geminiLiveService.startListening();
+
+                    // Show test section
+                    setupSection.classList.add('hidden');
+                    testSection.classList.remove('hidden');
+                    actionButtons.classList.remove('hidden');
+                    document.getElementById('usageCounter').classList.remove('hidden');
+
+                    // Start test timer
+                    testStartTime = Date.now();
+                    testTimer.classList.remove('hidden');
+                    startTestTimer();
+
+                    connectVoiceBtn.classList.remove('hidden');
+
+                } catch (error) {
+                    console.error('Test start error:', error);
+                    alert('Could not start test: ' + error.message);
+                    startTestBtn.disabled = false;
+                }
+            });
+
+            // Voice button handlers
+            connectVoiceBtn.addEventListener('click', () => {
+                connectVoiceBtn.classList.add('hidden');
+                disconnectVoiceBtn.classList.remove('hidden');
+            });
+
+            // Signal to AI that student finished speaking
+            turnCompleteBtn.addEventListener('click', () => {
+                console.log('Student finished speaking');
+                window.geminiLiveService.sendTurnComplete();
+
+                // Visual feedback
+                turnCompleteBtn.disabled = true;
+                turnCompleteBtn.textContent = '⏳ Waiting for examiner...';
+
+                setTimeout(() => {
+                    turnCompleteBtn.disabled = false;
+                    turnCompleteBtn.textContent = '✅ I\'m Done Speaking';
+                }, 2000);
+            });
+
+            disconnectVoiceBtn.addEventListener('click', () => {
+                endTest();
+            });
+
+            document.getElementById('endTestBtn').addEventListener('click', () => {
+                if (confirm('Are you sure you want to end the test?')) {
+                    endTest();
+                }
+            });
+
+            document.getElementById('newTestBtn').addEventListener('click', () => {
+                if (confirm('Start a new test? Current progress will be lost.')) {
+                    location.reload();
+                }
+            });
+
+            // Get AI Feedback & Score
+            document.getElementById('getFeedbackBtn').addEventListener('click', async () => {
+                // End test if still running
+                if (window.geminiLiveService.isConnected) {
+                    endTest();
+                }
+
+                // Save test duration
+                const duration = testStartTime ? (Date.now() - testStartTime) / 1000 : 0;
+                window.ieltsScoring.testDuration = duration;
+
+                // Show results section
+                document.getElementById('resultsSection').classList.remove('hidden');
+                document.getElementById('loadingResults').classList.remove('hidden');
+                document.getElementById('resultsContent').classList.add('hidden');
+
+                // Scroll to results
+                document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+
+                try {
+                    // Get AI analysis
+                    const scoringResult = await window.ieltsScoring.analyzePerformance();
+                    const report = window.ieltsScoring.generateReport(scoringResult);
+
+                    // Save to progress tracker
+                    window.progressTracker.saveTestResult(scoringResult);
+
+                    // Display results
+                    displayResults(report);
+
+                    document.getElementById('loadingResults').classList.add('hidden');
+                    document.getElementById('resultsContent').classList.remove('hidden');
+
+                } catch (error) {
+                    console.error('Scoring error:', error);
+                    document.getElementById('loadingResults').innerHTML = `
+                        <p style="color: #c33;">Error analyzing performance: ${error.message}</p>
+                        <p style="margin-top: 10px; font-size: 14px; color: #666;">Please make sure you spoke enough during the test.</p>
+                    `;
+                }
+            });
+
+            // Results action buttons
+            document.getElementById('downloadTranscriptBtn').addEventListener('click', () => {
+                const transcript = window.ieltsScoring.exportTranscript();
+                const blob = new Blob([transcript], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `IELTS_Speaking_Transcript_${new Date().toISOString().split('T')[0]}.txt`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            document.getElementById('viewLibraryBtn').addEventListener('click', () => {
+                window.location.href = 'ielts-speaking-library.html';
+            });
+
+            document.getElementById('retakeTestBtn').addEventListener('click', () => {
+                location.reload();
+            });
+
+            function endTest() {
+                window.geminiLiveService.disconnect();
+                disconnectVoiceBtn.classList.add('hidden');
+                connectVoiceBtn.classList.remove('hidden');
+                stopTestTimer();
+                testTimer.classList.add('hidden');
+            }
+
+            function startTestTimer() {
+                testTimerInterval = setInterval(() => {
+                    const elapsed = Math.floor((Date.now() - testStartTime) / 1000);
+                    const minutes = Math.floor(elapsed / 60);
+                    const seconds = elapsed % 60;
+                    testTimer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }, 1000);
+            }
+
+            function stopTestTimer() {
+                if (testTimerInterval) {
+                    clearInterval(testTimerInterval);
+                    testTimerInterval = null;
+                }
+            }
+
+            function updateVoiceStatus(status) {
+                const statusIcon = voiceStatus.querySelector('.status-icon');
+                const statusText = voiceStatus.querySelector('.status-text');
+
+                switch (status) {
+                    case 'connected':
+                        statusIcon.textContent = '🟢';
+                        statusText.textContent = 'Connected';
+                        voiceActivity.classList.add('hidden');
+                        break;
+                    case 'listening':
+                        statusIcon.textContent = '🎤';
+                        statusText.textContent = 'Your turn to speak';
+                        voiceActivity.classList.remove('hidden');
+                        voiceActivity.querySelector('.activity-text').textContent = 'Listening...';
+                        break;
+                    case 'speaking':
+                        statusIcon.textContent = '👔';
+                        statusText.textContent = 'Examiner speaking';
+                        voiceActivity.querySelector('.activity-text').textContent = 'Examiner speaking...';
+                        break;
+                    case 'disconnected':
+                        statusIcon.textContent = '🔴';
+                        statusText.textContent = 'Disconnected';
+                        voiceActivity.classList.add('hidden');
+                        break;
+                }
+            }
+
+            function updateUsageCounter(usage) {
+                const minutes = Math.floor(usage.duration / 60);
+                const seconds = usage.duration % 60;
+                document.getElementById('usageTime').textContent =
+                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+                document.getElementById('usageTokens').textContent =
+                    `${usage.tokens.toLocaleString()} tokens`;
+
+                document.getElementById('usageRate').textContent =
+                    `${usage.tokensPerMinute.toLocaleString()} tok/min`;
+
+                document.getElementById('usagePrompt').textContent =
+                    `↑ ${usage.promptTokens?.toLocaleString() || 0}`;
+                document.getElementById('usageResponse').textContent =
+                    `↓ ${usage.responseTokens?.toLocaleString() || 0}`;
+
+                const percentage = Math.min(usage.percentage, 100);
+                const fill = document.getElementById('usageFill');
+                fill.style.width = `${percentage}%`;
+
+                if (percentage >= 90) {
+                    fill.style.backgroundColor = '#e74c3c';
+                } else if (percentage >= 80) {
+                    fill.style.backgroundColor = '#f39c12';
+                } else {
+                    fill.style.backgroundColor = '#2c2c2c';
+                }
+            }
+
+            function addMessageToUI(role, content) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${role}`;
+
+                const avatar = role === 'user' ? '🗣️' : '👔';
+                const time = new Date().toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">${avatar}</div>
+                    <div>
+                        <div class="message-bubble">${content}</div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                `;
+
+                messagesArea.appendChild(messageDiv);
+                messagesArea.scrollTop = messagesArea.scrollHeight;
+
+                // Track user messages for scoring (if user speaking)
+                if (role === 'user') {
+                    window.ieltsScoring.addTurn('user', content, currentTestPart);
+                }
+            }
+
+            // Display scoring results
+            function displayResults(report) {
+                // Setup audio playback
+                setupAudioPlayback();
+
+                // Overall band score
+                document.getElementById('overallBand').textContent = report.summary.overallBand.toFixed(1);
+                document.getElementById('cefrLevel').textContent = `CEFR: ${report.summary.cefrLevel}`;
+
+                // Criteria breakdown
+                document.getElementById('fluencyBand').textContent = report.summary.breakdown['Fluency & Coherence'].toFixed(1);
+                document.getElementById('vocabularyBand').textContent = report.summary.breakdown['Lexical Resource'].toFixed(1);
+                document.getElementById('grammarBand').textContent = report.summary.breakdown['Grammatical Range & Accuracy'].toFixed(1);
+                document.getElementById('pronunciationBand').textContent = report.summary.breakdown['Pronunciation'].toFixed(1);
+
+                // Statistics
+                const statsGrid = document.getElementById('statisticsGrid');
+                const stats = report.summary.statistics;
+                statsGrid.innerHTML = `
+                    <div class="stat-box">
+                        <div class="stat-value">${stats.totalWords}</div>
+                        <div class="stat-label">Total Words</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">${stats.averageResponseLength}</div>
+                        <div class="stat-label">Avg Response Length</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">${stats.wordsPerMinute}</div>
+                        <div class="stat-label">Words/Minute</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">${stats.testDurationMinutes}m</div>
+                        <div class="stat-label">Test Duration</div>
+                    </div>
+                `;
+
+                // Detailed analysis
+                displayDetailedAnalysis(report.detailedAnalysis);
+
+                // Progress tracking
+                displayProgress();
+
+                // Recommendations
+                const recContainer = document.getElementById('recommendationsContainer');
+                recContainer.innerHTML = `
+                    <h4 style="margin-top: 15px; margin-bottom: 8px;">Immediate Actions:</h4>
+                    <ul>
+                        ${report.recommendations.immediate.map(tip => `<li>${tip}</li>`).join('')}
+                    </ul>
+                    <h4 style="margin-top: 15px; margin-bottom: 8px;">Long-term Development:</h4>
+                    <ul>
+                        ${report.recommendations.longTerm.map(tip => `<li>${tip}</li>`).join('')}
+                    </ul>
+                `;
+            }
+
+            // Display progress tracking
+            function displayProgress() {
+                const improvement = window.progressTracker.getImprovementStats();
+                const progressSection = document.getElementById('progressSection');
+                const progressContent = document.getElementById('progressContent');
+
+                if (!improvement.hasImprovement) {
+                    progressContent.innerHTML = `
+                        <p style="color: #666; text-align: center; padding: 20px;">
+                            ${improvement.message}<br>
+                            <span style="font-size: 13px;">This is test #${window.progressTracker.testHistory.length}</span>
+                        </p>
+                    `;
+                    progressSection.classList.remove('hidden');
+                    return;
+                }
+
+                const { current, previous, improvement: imp, totalTests } = improvement;
+
+                progressContent.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                        <div style="background: #fff; padding: 15px; border-radius: 4px; text-align: center;">
+                            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Total Tests</div>
+                            <div style="font-size: 28px; font-weight: 700;">${totalTests}</div>
+                        </div>
+                        <div style="background: #fff; padding: 15px; border-radius: 4px; text-align: center;">
+                            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Overall Change</div>
+                            <div style="font-size: 28px; font-weight: 700; color: ${imp.overall >= 0 ? '#28a745' : '#e74c3c'}">
+                                ${imp.overall >= 0 ? '+' : ''}${imp.overall.toFixed(1)}
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 style="margin: 20px 0 10px 0;">Comparison with Previous Test:</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+                        ${['Fluency', 'Vocabulary', 'Grammar', 'Pronunciation'].map((name, i) => {
+                            const key = ['fluency', 'vocabulary', 'grammar', 'pronunciation'][i];
+                            const change = imp[key];
+                            const color = change > 0 ? '#28a745' : change < 0 ? '#e74c3c' : '#666';
+                            return `
+                                <div style="background: #fff; padding: 12px; border-radius: 4px;">
+                                    <div style="font-size: 11px; color: #666; margin-bottom: 5px;">${name}</div>
+                                    <div style="font-size: 18px; font-weight: 600;">${current[key + 'Band'].toFixed(1)}</div>
+                                    <div style="font-size: 12px; color: ${color}; margin-top: 3px;">
+                                        ${change >= 0 ? '↑' : '↓'} ${Math.abs(change).toFixed(1)}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+
+                    <p style="margin-top: 15px; font-size: 13px; color: #666; text-align: center;">
+                        Keep practicing! Your ${imp.overall > 0 ? 'improvement' : 'efforts'} ${imp.overall > 0 ? 'shows you\'re on the right track' : 'will pay off with more practice'}.
+                    </p>
+                `;
+
+                progressSection.classList.remove('hidden');
+            }
+
+            // Display detailed analysis with tabs
+            function displayDetailedAnalysis(analysis) {
+                const container = document.getElementById('analysisContainer');
+
+                // Create content for each criterion
+                const criteria = ['fluency', 'vocabulary', 'grammar', 'pronunciation'];
+                const labels = {
+                    fluency: 'Fluency & Coherence',
+                    vocabulary: 'Lexical Resource',
+                    grammar: 'Grammatical Range & Accuracy',
+                    pronunciation: 'Pronunciation'
+                };
+
+                criteria.forEach((criterion, index) => {
+                    const data = analysis[criterion];
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = 'analysis-content';
+                    if (index === 0) contentDiv.classList.add('active');
+                    contentDiv.dataset.criterion = criterion;
+
+                    contentDiv.innerHTML = `
+                        <h3 style="margin-bottom: 15px;">${labels[criterion]}</h3>
+
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="font-size: 15px; margin-bottom: 10px;">✓ Strengths</h4>
+                            <ul class="strength-list">
+                                ${data.strengths.map(s => `<li>${s}</li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="font-size: 15px; margin-bottom: 10px;">⚠ Areas for Improvement</h4>
+                            <ul class="weakness-list">
+                                ${data.weaknesses.map(w => `<li>${w}</li>`).join('')}
+                            </ul>
+                        </div>
+
+                        ${data.evidence && data.evidence.length > 0 ? `
+                            <div>
+                                <h4 style="font-size: 15px; margin-bottom: 10px;">Examples from your speech:</h4>
+                                <ul style="list-style: none; padding: 0;">
+                                    ${data.evidence.map(ex => `
+                                        <li style="padding: 10px; background: #f8f8f8; margin-bottom: 6px; border-radius: 4px; font-style: italic; font-size: 14px;">"${ex}"</li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
+                    `;
+
+                    container.appendChild(contentDiv);
+                });
+
+                // Tab switching
+                document.querySelectorAll('.analysis-tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const criterion = tab.dataset.criterion;
+
+                        document.querySelectorAll('.analysis-tab').forEach(t => t.classList.remove('active'));
+                        document.querySelectorAll('.analysis-content').forEach(c => c.classList.remove('active'));
+
+                        tab.classList.add('active');
+                        document.querySelector(`.analysis-content[data-criterion="${criterion}"]`).classList.add('active');
+                    });
+                });
+            }
+
+            // Setup audio playback
+            function setupAudioPlayback() {
+                const recording = window.geminiLiveService.getRecording();
+                const audioSection = document.getElementById('audioPlaybackSection');
+                const audioElement = document.getElementById('recordingAudio');
+                const playPauseBtn = document.getElementById('playPauseBtn');
+                const progressBar = document.getElementById('audioProgress');
+                const progressFill = document.getElementById('audioProgressFill');
+                const timeDisplay = document.getElementById('audioTime');
+
+                if (!recording) {
+                    console.log('No recording available');
+                    return;
+                }
+
+                // Show audio section
+                audioSection.classList.remove('hidden');
+
+                // Create audio URL
+                const audioUrl = URL.createObjectURL(recording);
+                audioElement.src = audioUrl;
+
+                // Play/Pause
+                playPauseBtn.addEventListener('click', () => {
+                    if (audioElement.paused) {
+                        audioElement.play();
+                        playPauseBtn.textContent = '⏸';
+                    } else {
+                        audioElement.pause();
+                        playPauseBtn.textContent = '▶';
+                    }
+                });
+
+                // Update progress
+                audioElement.addEventListener('timeupdate', () => {
+                    const progress = (audioElement.currentTime / audioElement.duration) * 100;
+                    progressFill.style.width = `${progress}%`;
+
+                    const minutes = Math.floor(audioElement.currentTime / 60);
+                    const seconds = Math.floor(audioElement.currentTime % 60);
+                    timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                });
+
+                // Reset on end
+                audioElement.addEventListener('ended', () => {
+                    playPauseBtn.textContent = '▶';
+                    progressFill.style.width = '0%';
+                    timeDisplay.textContent = '0:00';
+                });
+
+                // Click progress bar to seek
+                progressBar.addEventListener('click', (e) => {
+                    const rect = progressBar.getBoundingClientRect();
+                    const clickX = e.clientX - rect.left;
+                    const percentage = clickX / rect.width;
+                    audioElement.currentTime = audioElement.duration * percentage;
+                });
+
+                // Download audio
+                document.getElementById('downloadAudioBtn').addEventListener('click', () => {
+                    const a = document.createElement('a');
+                    a.href = audioUrl;
+                    a.download = `IELTS_Speaking_${new Date().toISOString().split('T')[0]}.webm`;
+                    a.click();
+                });
+
+                // Replay from start
+                document.getElementById('replayBtn').addEventListener('click', () => {
+                    audioElement.currentTime = 0;
+                    audioElement.play();
+                    playPauseBtn.textContent = '⏸';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

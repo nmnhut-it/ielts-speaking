@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversation Practice - AI Tutor</title>
+    <link rel="stylesheet" href="styles/conversation.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Conversation Practice</h1>
+            <p class="subtitle">Practice English conversation with AI tutor on any topic</p>
+        </header>
+
+        <!-- Voice Connection Status -->
+        <div id="voiceStatusGlobal" class="voice-status-global hidden">
+            <div class="voice-status-content">
+                <div class="voice-status-icon">🎤</div>
+                <div class="voice-status-message">Connecting...</div>
+            </div>
+        </div>
+
+        <!-- Usage Counter -->
+        <div id="usageCounter" class="usage-counter hidden">
+            <div class="usage-header">
+                <span class="usage-label">Session Usage</span>
+                <span class="usage-time" id="usageTime">0:00</span>
+            </div>
+            <div class="usage-bar">
+                <div class="usage-fill" id="usageFill"></div>
+            </div>
+            <div class="usage-stats">
+                <span id="usageTokens">0 tokens</span>
+                <span id="usageRate">0 tok/min</span>
+            </div>
+            <div class="usage-breakdown">
+                <span id="usagePrompt">↑ 0</span>
+                <span id="usageResponse">↓ 0</span>
+            </div>
+        </div>
+
+        <!-- Topic Input Section -->
+        <section class="topic-section" id="topicSection">
+            <h2>1. Paste Your Topic / Lesson Notes OR Role-Play Scenario</h2>
+            <textarea
+                id="topicInput"
+                placeholder="Paste lesson notes OR role-play dialogues here...
+
+📚 LESSON NOTES Example:
+Photosynthesis - plants convert light energy
+- chlorophyll green pigment
+- oxygen produced as byproduct
+Main equation: 6CO2 + 6H2O + light → C6H12O6 + 6O2
+
+🎭 ROLE-PLAY Example:
+Asking and answering about prices
+
+Conversation practice:
+Mark: How much is a bottle of mineral water?
+Mi: It's 5,000 dong.
+Mark: And how much are two kilos of apples?
+Mi: They're 50,000 dong.
+
+Restaurant Menu:
+- Bowl of beef noodle soup: 30,000 dong
+- Glass of milk: 9,000 dong
+- Cup of green tea: 5,000 dong"></textarea>
+            <div class="topic-buttons">
+                <button class="btn" id="processTopicBtn">Process Topic</button>
+                <button class="btn btn-secondary" id="skipTopicBtn">Skip (Chat Without Topic)</button>
+            </div>
+            <div id="topicStatus" class="status-message hidden"></div>
+        </section>
+
+        <!-- Topic Summary (appears after processing) -->
+        <section class="topic-summary hidden" id="topicSummary">
+            <h2>Topic Summary</h2>
+            <div class="summary-content" id="summaryContent"></div>
+        </section>
+
+        <!-- Chat Interface -->
+        <section class="chat-container hidden" id="chatContainer">
+            <!-- Suggested Questions -->
+            <div class="suggested-questions" id="suggestedQuestionsPanel">
+                <h3>Suggested Questions:</h3>
+                <div class="question-chips" id="questionChips"></div>
+            </div>
+
+            <!-- Messages Area -->
+            <div class="messages-area" id="messagesArea">
+                <div class="message assistant">
+                    <div class="message-avatar">🤖</div>
+                    <div>
+                        <div class="message-bubble">
+                            Hi! I'm your AI tutor. I'm here to help you practice conversational English. What would you like to talk about?
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <!-- Voice Chat Status -->
+                <div id="voiceStatus" class="voice-status hidden">
+                    <span class="status-icon">🔴</span>
+                    <span class="status-text">Disconnected</span>
+                </div>
+
+                <!-- Voice Controls -->
+                <div class="voice-controls">
+                    <button class="voice-btn" id="connectVoiceBtn">🎤 Start Voice Chat</button>
+                    <button class="voice-btn hidden" id="pauseVoiceBtn">⏸️ Pause</button>
+                    <button class="voice-btn hidden" id="resumeVoiceBtn">▶️ Resume</button>
+                    <button class="voice-btn btn-secondary hidden" id="disconnectVoiceBtn">⏹️ Stop Voice Chat</button>
+                </div>
+
+                <!-- Voice Activity Indicator -->
+                <div id="voiceActivity" class="voice-activity hidden">
+                    <div class="activity-bar"></div>
+                    <span class="activity-text">Listening...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons hidden" id="actionButtons">
+            <button class="btn btn-secondary" id="exportBtn">Export Conversation</button>
+            <button class="btn btn-secondary" id="clearBtn">Clear All</button>
+            <button class="btn btn-secondary" id="newTopicBtn">New Topic</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="shared/scripts/geminiLiveService.js"></script>
+    <script src="scripts/conversationAgent.js"></script>
+    <script>
+        // Main Application Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM Elements
+            const topicSection = document.getElementById('topicSection');
+            const topicInput = document.getElementById('topicInput');
+            const processTopicBtn = document.getElementById('processTopicBtn');
+            const skipTopicBtn = document.getElementById('skipTopicBtn');
+            const topicStatus = document.getElementById('topicStatus');
+            const topicSummary = document.getElementById('topicSummary');
+            const summaryContent = document.getElementById('summaryContent');
+            const chatContainer = document.getElementById('chatContainer');
+            const messagesArea = document.getElementById('messagesArea');
+            const questionChips = document.getElementById('questionChips');
+            const connectVoiceBtn = document.getElementById('connectVoiceBtn');
+            const pauseVoiceBtn = document.getElementById('pauseVoiceBtn');
+            const resumeVoiceBtn = document.getElementById('resumeVoiceBtn');
+            const disconnectVoiceBtn = document.getElementById('disconnectVoiceBtn');
+            const voiceStatus = document.getElementById('voiceStatus');
+            const voiceActivity = document.getElementById('voiceActivity');
+            const voiceStatusGlobal = document.getElementById('voiceStatusGlobal');
+            const exportBtn = document.getElementById('exportBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const newTopicBtn = document.getElementById('newTopicBtn');
+            const actionButtons = document.getElementById('actionButtons');
+
+            // State
+            let isVoiceConnected = false;
+            let conversationTranscript = [];
+
+            // Initialize - check for existing conversation
+            if (window.conversationAgent.conversationHistory.length > 0) {
+                loadExistingConversation();
+            }
+
+            // Setup Gemini Live API callbacks
+            window.geminiLiveService.onStatusChange = (status) => {
+                updateVoiceStatus(status);
+            };
+
+            window.geminiLiveService.onError = (error) => {
+                console.error('Live API error:', error);
+                showStatus('Voice error: ' + error, 'error');
+            };
+
+            window.geminiLiveService.onTranscript = (text) => {
+                // Add AI transcript to chat
+                addMessageToUI('assistant', text);
+                conversationTranscript.push({ role: 'assistant', text });
+            };
+
+            window.geminiLiveService.onUsageUpdate = (usage) => {
+                updateUsageCounter(usage);
+            };
+
+            // Process Topic
+            processTopicBtn.addEventListener('click', async () => {
+                const rawNotes = topicInput.value.trim();
+                if (!rawNotes) {
+                    showStatus('Please enter some topic notes first!', 'error');
+                    return;
+                }
+
+                if (!window.conversationAgent.hasApiKey()) {
+                    const apiKey = prompt('Enter your Gemini API key:\n(Get it from https://aistudio.google.com/app/apikey)');
+                    if (!apiKey) return;
+                    window.conversationAgent.setApiKey(apiKey);
+                }
+
+                processTopicBtn.disabled = true;
+                showStatus('Processing topic with AI...', 'info');
+
+                try {
+                    const summary = await window.conversationAgent.processTopic(rawNotes);
+
+                    // Show summary
+                    summaryContent.innerHTML = formatMarkdown(summary);
+                    topicSummary.classList.remove('hidden');
+
+                    // Set context for Live API
+                    window.geminiLiveService.setContext(summary);
+
+                    // Start chat
+                    startChat();
+
+                    showStatus('Topic processed! Click "Start Voice Chat" to begin.', 'success');
+                    setTimeout(() => hideStatus(), 3000);
+
+                } catch (error) {
+                    console.error('Topic processing error:', error);
+                    showStatus('Error: ' + error.message, 'error');
+                } finally {
+                    processTopicBtn.disabled = false;
+                }
+            });
+
+            // Skip Topic
+            skipTopicBtn.addEventListener('click', () => {
+                if (!window.conversationAgent.hasApiKey()) {
+                    const apiKey = prompt('Enter your Gemini API key:\n(Get it from https://aistudio.google.com/app/apikey)');
+                    if (!apiKey) return;
+                    window.conversationAgent.setApiKey(apiKey);
+                }
+                startChat();
+            });
+
+            // Start Chat
+            function startChat() {
+                topicSection.classList.add('hidden');
+                chatContainer.classList.remove('hidden');
+                actionButtons.classList.remove('hidden');
+                updateSuggestedQuestions();
+                voiceStatus.classList.remove('hidden');
+            }
+
+            // Load existing conversation
+            function loadExistingConversation() {
+                if (window.conversationAgent.topicSummary) {
+                    summaryContent.innerHTML = formatMarkdown(window.conversationAgent.topicSummary);
+                    topicSummary.classList.remove('hidden');
+                }
+
+                topicSection.classList.add('hidden');
+                chatContainer.classList.remove('hidden');
+                actionButtons.classList.remove('hidden');
+
+                // Render conversation history
+                messagesArea.innerHTML = '';
+                window.conversationAgent.conversationHistory.forEach(msg => {
+                    addMessageToUI(msg.role, msg.content, false);
+                });
+
+                updateSuggestedQuestions();
+            }
+
+            // Update Suggested Questions
+            function updateSuggestedQuestions() {
+                const questions = window.conversationAgent.getSuggestedQuestions();
+                questionChips.innerHTML = questions
+                    .map(q => `<div class="question-chip">${q}</div>`)
+                    .join('');
+
+                // Add click handlers
+                questionChips.querySelectorAll('.question-chip').forEach((chip, index) => {
+                    chip.addEventListener('click', () => {
+                        userInput.value = questions[index];
+                        sendMessage();
+                    });
+                });
+            }
+
+            // Voice Chat Controls
+            connectVoiceBtn.addEventListener('click', async () => {
+                if (!window.conversationAgent.hasApiKey()) {
+                    const apiKey = prompt('Enter your Gemini API key:\n(Get it from https://aistudio.google.com/app/apikey)');
+                    if (!apiKey) return;
+                    window.conversationAgent.setApiKey(apiKey);
+                }
+
+                connectVoiceBtn.disabled = true;
+                showVoiceStatusGlobal('Connecting to voice chat...');
+
+                try {
+                    const apiKey = window.conversationAgent.apiKey;
+                    const topicSummary = window.conversationAgent.topicSummary;
+
+                    // Connect to Live API
+                    await window.geminiLiveService.connect(apiKey, {
+                        systemInstruction: topicSummary ? {
+                            parts: [{
+                                text: `You are a friendly AI tutor helping with English conversation practice.
+
+Topic: ${topicSummary}
+
+Engage in natural conversation, ask follow-up questions, and encourage speaking practice.`
+                            }]
+                        } : undefined
+                    });
+
+                    // Start listening
+                    await window.geminiLiveService.startListening();
+
+                    isVoiceConnected = true;
+                    connectVoiceBtn.classList.add('hidden');
+                    pauseVoiceBtn.classList.remove('hidden');
+                    disconnectVoiceBtn.classList.remove('hidden');
+                    hideVoiceStatusGlobal();
+
+                    // Show usage counter
+                    document.getElementById('usageCounter').classList.remove('hidden');
+
+                } catch (error) {
+                    console.error('Voice connection error:', error);
+                    showStatus('Could not connect to voice chat: ' + error.message, 'error');
+                    connectVoiceBtn.disabled = false;
+                    hideVoiceStatusGlobal();
+                }
+            });
+
+            pauseVoiceBtn.addEventListener('click', () => {
+                window.geminiLiveService.pause();
+                pauseVoiceBtn.classList.add('hidden');
+                resumeVoiceBtn.classList.remove('hidden');
+            });
+
+            resumeVoiceBtn.addEventListener('click', async () => {
+                await window.geminiLiveService.resume();
+                resumeVoiceBtn.classList.add('hidden');
+                pauseVoiceBtn.classList.remove('hidden');
+            });
+
+            disconnectVoiceBtn.addEventListener('click', () => {
+                window.geminiLiveService.disconnect();
+                isVoiceConnected = false;
+                disconnectVoiceBtn.classList.add('hidden');
+                pauseVoiceBtn.classList.add('hidden');
+                resumeVoiceBtn.classList.add('hidden');
+                connectVoiceBtn.classList.remove('hidden');
+                connectVoiceBtn.disabled = false;
+                voiceActivity.classList.add('hidden');
+
+                // Hide usage counter
+                document.getElementById('usageCounter').classList.add('hidden');
+            });
+
+            // Export Conversation
+            exportBtn.addEventListener('click', () => {
+                const text = window.conversationAgent.exportConversation();
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `conversation-${Date.now()}.txt`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            // Clear All
+            clearBtn.addEventListener('click', () => {
+                if (confirm('Clear all conversation data? This cannot be undone.')) {
+                    window.conversationAgent.clearAll();
+                    location.reload();
+                }
+            });
+
+            // New Topic
+            newTopicBtn.addEventListener('click', () => {
+                if (confirm('Start a new topic? Current conversation will be cleared.')) {
+                    window.conversationAgent.clearAll();
+                    location.reload();
+                }
+            });
+
+            // UI Helper Functions
+            function addMessageToUI(role, content, animate = true) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${role}`;
+                if (!animate) messageDiv.style.animation = 'none';
+
+                const avatar = role === 'user' ? '👤' : '🤖';
+                const time = new Date().toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">${avatar}</div>
+                    <div>
+                        <div class="message-bubble">${formatMarkdown(content)}</div>
+                        <div class="message-time">${time}</div>
+                    </div>
+                `;
+
+                messagesArea.appendChild(messageDiv);
+                messagesArea.scrollTop = messagesArea.scrollHeight;
+            }
+
+            function showTypingIndicator() {
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'message assistant';
+                typingDiv.id = 'typing-indicator';
+                typingDiv.innerHTML = `
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-bubble">
+                        <div class="typing-indicator">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                `;
+                messagesArea.appendChild(typingDiv);
+                messagesArea.scrollTop = messagesArea.scrollHeight;
+                return 'typing-indicator';
+            }
+
+            function removeTypingIndicator(id) {
+                const indicator = document.getElementById(id);
+                if (indicator) indicator.remove();
+            }
+
+            function showStatus(message, type) {
+                topicStatus.textContent = message;
+                topicStatus.className = `status-message ${type}`;
+                topicStatus.classList.remove('hidden');
+            }
+
+            function hideStatus() {
+                topicStatus.classList.add('hidden');
+            }
+
+            function updateVoiceStatus(status) {
+                const statusIcon = voiceStatus.querySelector('.status-icon');
+                const statusText = voiceStatus.querySelector('.status-text');
+
+                switch (status) {
+                    case 'connected':
+                        statusIcon.textContent = '🟢';
+                        statusText.textContent = 'Connected';
+                        voiceActivity.classList.add('hidden');
+                        break;
+                    case 'listening':
+                        statusIcon.textContent = '🎤';
+                        statusText.textContent = 'Listening';
+                        voiceActivity.classList.remove('hidden');
+                        voiceActivity.querySelector('.activity-text').textContent = 'Listening...';
+                        break;
+                    case 'speaking':
+                        statusIcon.textContent = '🔊';
+                        statusText.textContent = 'Speaking';
+                        voiceActivity.querySelector('.activity-text').textContent = 'AI Speaking...';
+                        break;
+                    case 'paused':
+                        statusIcon.textContent = '🟡';
+                        statusText.textContent = 'Paused';
+                        voiceActivity.classList.add('hidden');
+                        break;
+                    case 'disconnected':
+                        statusIcon.textContent = '🔴';
+                        statusText.textContent = 'Disconnected';
+                        voiceActivity.classList.add('hidden');
+                        break;
+                }
+            }
+
+            function showVoiceStatusGlobal(message) {
+                const messageEl = voiceStatusGlobal.querySelector('.voice-status-message');
+                if (messageEl) {
+                    messageEl.textContent = message;
+                }
+                voiceStatusGlobal.classList.remove('hidden');
+            }
+
+            function hideVoiceStatusGlobal() {
+                voiceStatusGlobal.classList.add('hidden');
+            }
+
+            function updateUsageCounter(usage) {
+                // Format time
+                const minutes = Math.floor(usage.duration / 60);
+                const seconds = usage.duration % 60;
+                document.getElementById('usageTime').textContent =
+                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+                // Update tokens (REAL counts from API!)
+                document.getElementById('usageTokens').textContent =
+                    `${usage.tokens.toLocaleString()} tokens`;
+
+                // Update rate
+                document.getElementById('usageRate').textContent =
+                    `${usage.tokensPerMinute.toLocaleString()} tok/min`;
+
+                // Update breakdown
+                document.getElementById('usagePrompt').textContent =
+                    `↑ ${usage.promptTokens?.toLocaleString() || 0}`;
+                document.getElementById('usageResponse').textContent =
+                    `↓ ${usage.responseTokens?.toLocaleString() || 0}`;
+
+                // Update progress bar
+                const percentage = Math.min(usage.percentage, 100);
+                const fill = document.getElementById('usageFill');
+                fill.style.width = `${percentage}%`;
+
+                // Color based on usage
+                if (percentage >= 90) {
+                    fill.style.backgroundColor = '#e74c3c'; // Red
+                } else if (percentage >= 80) {
+                    fill.style.backgroundColor = '#f39c12'; // Orange
+                } else {
+                    fill.style.backgroundColor = '#2c2c2c'; // Black
+                }
+            }
+
+            // Simple Markdown formatting
+            function formatMarkdown(text) {
+                return text
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/\n/g, '<br>');
+            }
+        });
+    </script>
+</body>
+</html>

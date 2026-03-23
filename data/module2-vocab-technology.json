@@ -1,0 +1,104 @@
+[
+  {
+    "english": "stay connected",
+    "type": "(phrase)",
+    "vietnamese": "giữ liên lạc",
+    "pronunciation": "/steɪ kəˈnektɪd/"
+  },
+  {
+    "english": "convenient",
+    "type": "(adj)",
+    "vietnamese": "tiện lợi",
+    "pronunciation": "/kənˈviːniənt/"
+  },
+  {
+    "english": "scroll through",
+    "type": "(v phrase)",
+    "vietnamese": "lướt qua",
+    "pronunciation": "/skrəʊl θruː/"
+  },
+  {
+    "english": "browse",
+    "type": "(v)",
+    "vietnamese": "duyệt web",
+    "pronunciation": "/braʊz/"
+  },
+  {
+    "english": "time-consuming",
+    "type": "(adj)",
+    "vietnamese": "tốn thời gian",
+    "pronunciation": "/taɪm kənˈsjuːmɪŋ/"
+  },
+  {
+    "english": "distracted",
+    "type": "(adj)",
+    "vietnamese": "bị phân tâm",
+    "pronunciation": "/dɪˈstræktɪd/"
+  },
+  {
+    "english": "addictive",
+    "type": "(adj)",
+    "vietnamese": "gây nghiện",
+    "pronunciation": "/əˈdɪktɪv/"
+  },
+  {
+    "english": "kept informed",
+    "type": "(phrase)",
+    "vietnamese": "được cập nhật thông tin",
+    "pronunciation": "/kept ɪnˈfɔːmd/"
+  },
+  {
+    "english": "streaming service",
+    "type": "(n phrase)",
+    "vietnamese": "dịch vụ phát trực tuyến",
+    "pronunciation": "/ˈstriːmɪŋ ˈsɜːvɪs/"
+  },
+  {
+    "english": "binge-watch",
+    "type": "(v)",
+    "vietnamese": "xem liên tục nhiều tập",
+    "pronunciation": "/bɪndʒ wɒtʃ/"
+  },
+  {
+    "english": "e-commerce platform",
+    "type": "(n phrase)",
+    "vietnamese": "nền tảng thương mại điện tử",
+    "pronunciation": "/iː ˈkɒmɜːs ˈplætfɔːm/"
+  },
+  {
+    "english": "compare prices",
+    "type": "(v phrase)",
+    "vietnamese": "so sánh giá cả",
+    "pronunciation": "/kəmˈpeə ˈpraɪsɪz/"
+  },
+  {
+    "english": "navigation",
+    "type": "(n)",
+    "vietnamese": "điều hướng, chỉ đường",
+    "pronunciation": "/ˌnævɪˈɡeɪʃn/"
+  },
+  {
+    "english": "research",
+    "type": "(n/v)",
+    "vietnamese": "nghiên cứu, tìm hiểu",
+    "pronunciation": "/rɪˈsɜːtʃ/"
+  },
+  {
+    "english": "entertainment",
+    "type": "(n)",
+    "vietnamese": "giải trí",
+    "pronunciation": "/ˌentəˈteɪnmənt/"
+  },
+  {
+    "english": "typical",
+    "type": "(adj)",
+    "vietnamese": "điển hình",
+    "pronunciation": "/ˈtɪpɪkl/"
+  },
+  {
+    "english": "at my own pace",
+    "type": "(phrase)",
+    "vietnamese": "theo tốc độ của riêng tôi",
+    "pronunciation": "/ət maɪ əʊn peɪs/"
+  }
+]

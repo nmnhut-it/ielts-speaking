@@ -1,0 +1,98 @@
+[
+  {
+    "english": "convenient location",
+    "type": "(n phrase)",
+    "vietnamese": "vị trí thuận tiện",
+    "pronunciation": "/kənˈviːniənt ləʊˈkeɪʃn/"
+  },
+  {
+    "english": "amenities",
+    "type": "(n)",
+    "vietnamese": "tiện nghi",
+    "pronunciation": "/əˈmiːnətiz/"
+  },
+  {
+    "english": "commute",
+    "type": "(n/v)",
+    "vietnamese": "đi lại, chuyến đi làm",
+    "pronunciation": "/kəˈmjuːt/"
+  },
+  {
+    "english": "spacious",
+    "type": "(adj)",
+    "vietnamese": "rộng rãi",
+    "pronunciation": "/ˈspeɪʃəs/"
+  },
+  {
+    "english": "cozy",
+    "type": "(adj)",
+    "vietnamese": "ấm cúng",
+    "pronunciation": "/ˈkəʊzi/"
+  },
+  {
+    "english": "minimalist",
+    "type": "(adj)",
+    "vietnamese": "tối giản",
+    "pronunciation": "/ˈmɪnɪməlɪst/"
+  },
+  {
+    "english": "décor",
+    "type": "(n)",
+    "vietnamese": "trang trí nội thất",
+    "pronunciation": "/ˈdeɪkɔː/"
+  },
+  {
+    "english": "clutter",
+    "type": "(n/v)",
+    "vietnamese": "sự lộn xộn, làm bừa bộn",
+    "pronunciation": "/ˈklʌtə/"
+  },
+  {
+    "english": "organized",
+    "type": "(adj)",
+    "vietnamese": "ngăn nắp, có tổ chức",
+    "pronunciation": "/ˈɔːɡənaɪzd/"
+  },
+  {
+    "english": "sanctuary",
+    "type": "(n)",
+    "vietnamese": "nơi trú ẩn, nơi yên bình",
+    "pronunciation": "/ˈsæŋktʃuəri/"
+  },
+  {
+    "english": "privacy",
+    "type": "(n)",
+    "vietnamese": "sự riêng tư",
+    "pronunciation": "/ˈprɪvəsi/"
+  },
+  {
+    "english": "independence",
+    "type": "(n)",
+    "vietnamese": "sự độc lập",
+    "pronunciation": "/ˌɪndɪˈpendəns/"
+  },
+  {
+    "english": "companionship",
+    "type": "(n)",
+    "vietnamese": "sự đồng hành",
+    "pronunciation": "/kəmˈpæniənʃɪp/"
+  },
+  {
+    "english": "maintenance",
+    "type": "(n)",
+    "vietnamese": "bảo trì, bảo dưỡng",
+    "pronunciation": "/ˈmeɪntənəns/"
+  },
+  {
+    "english": "neighborhood",
+    "type": "(n)",
+    "vietnamese": "khu vực lân cận",
+    "pronunciation": "/ˈneɪbəhʊd/"
+  },
+  {
+    "english": "surroundings",
+    "type": "(n)",
+    "vietnamese": "môi trường xung quanh",
+    "pronunciation": "/səˈraʊndɪŋz/"
+  }
+]

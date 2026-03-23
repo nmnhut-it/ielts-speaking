@@ -1,0 +1,1554 @@
+[
+  {
+    "id": 1,
+    "topic": "What kind of music do you like?",
+    "filename": "01-What-kind-of-music-do-you-like.mp3",
+    "text": "I really enjoy listening to jazz music, particularly in the evenings when I want to unwind after a long day. I usually play it at home or during my commute, often by myself while relaxing. The smooth melodies help me feel relaxed and focused because they create a calming atmosphere. What I love most is how jazz makes me feel both peaceful and intellectually engaged.",
+    "word_count": 65,
+    "file_size_kb": 135.84
+  },
+  {
+    "id": 2,
+    "topic": "Do you enjoy watching movies?",
+    "filename": "02-Do-you-enjoy-watching-movies.mp3",
+    "text": "Yes, I absolutely love watching movies, especially thriller and sci-fi films. I typically watch them on weekends at home with my family, though occasionally I go to the cinema for big releases. Movies help me escape from daily stress because the immersive stories take my mind off work. They make me feel entertained and intellectually stimulated by thought-provoking themes.",
+    "word_count": 59,
+    "file_size_kb": 139.08
+  },
+  {
+    "id": 3,
+    "topic": "What do you like to do on weekends?",
+    "filename": "03-What-do-you-like-to-do-on-weekends.mp3",
+    "text": "On weekends, I usually spend time exploring new cafés and restaurants around the city with my friends. We typically go out on Saturday afternoons because it gives us a chance to relax and catch up after a busy week. I enjoy trying different cuisines, which makes me feel adventurous and socially connected, and these outings are both fun and interesting.",
+    "word_count": 60,
+    "file_size_kb": 126.0
+  },
+  {
+    "id": 4,
+    "topic": "Do you have any hobbies?",
+    "filename": "04-Do-you-have-any-hobbies.mp3",
+    "text": "Yes, I'm really into photography, which I've been practicing for about three years now. I usually take photos during my travels or on weekends around my neighborhood, often by myself when I need creative time. Photography helps me see the world differently and capture meaningful moments because it trains my eye for detail. It makes me feel creative and fulfilled.",
+    "word_count": 60,
+    "file_size_kb": 131.34
+  },
+  {
+    "id": 5,
+    "topic": "What do you do in your free time?",
+    "filename": "05-What-do-you-do-in-your-free-time.mp3",
+    "text": "In my free time, I enjoy reading mystery novels and playing tennis. I usually read alone before bed at home, and I play tennis twice a week at a local court with some friends. Reading helps me relax because it takes my mind off daily worries, while tennis keeps me physically active. Both make me feel balanced and energized.",
+    "word_count": 59,
+    "file_size_kb": 123.61
+  },
+  {
+    "id": 6,
+    "topic": "Do you prefer studying alone or with others?",
+    "filename": "06-Do-you-prefer-studying-alone-or-with-others.mp3",
+    "text": "I generally prefer studying alone, especially when I need to focus on complex material. I usually study in my room or at the library during evenings or weekends. However, I do study with classmates sometimes when we have group projects because quiet environments help me concentrate better while collaboration brings different perspectives. Studying this way makes me feel focused and productive.",
+    "word_count": 61,
+    "file_size_kb": 141.75
+  },
+  {
+    "id": 7,
+    "topic": "What time do you usually wake up?",
+    "filename": "07-What-time-do-you-usually-wake-up.mp3",
+    "text": "I typically wake up around 6:30 AM on weekdays in my bedroom, usually by myself with an alarm clock. I do this so I have enough time to prepare for work and avoid the morning rush. On weekends, I sleep in until about 8 or 9 AM because I like to catch up on rest. Waking up early during the week makes me feel more energized and productive throughout the day.",
+    "word_count": 71,
+    "file_size_kb": 134.02
+  },
+  {
+    "id": 8,
+    "topic": "How do you usually spend your evenings?",
+    "filename": "08-How-do-you-usually-spend-your-evenings.mp3",
+    "text": "Most evenings, I spend time at home either cooking dinner or watching series on Netflix to relax, usually by myself or sometimes with my partner. I usually finish work around 6 PM, so my evenings from 7-10 PM are when I can unwind and do things I enjoy. Sometimes I also call friends or family to catch up because staying connected is important to me. These activities make me feel relaxed and content.",
+    "word_count": 73,
+    "file_size_kb": 152.72
+  },
+  {
+    "id": 9,
+    "topic": "Do you prefer eating at home or at restaurants?",
+    "filename": "09-Do-you-prefer-eating-at-home-or-at-restaurants.mp3",
+    "text": "I prefer eating at home most of the time, especially during weekdays when I cook alone or with my partner in my kitchen. I usually cook simple meals like pasta or stir-fries because it's healthier and more economical. However, I do enjoy going to restaurants on weekends with friends or family as it's a nice way to socialize and try new dishes. Home cooking makes me feel healthy and accomplished, while dining out makes me feel social and adventurous.",
+    "word_count": 79,
+    "file_size_kb": 157.92
+  },
+  {
+    "id": 10,
+    "topic": "What do you usually do after work/school?",
+    "filename": "10-What-do-you-usually-do-after-workschool.mp3",
+    "text": "After work, I usually go for a quick walk or jog by myself to clear my mind and get some exercise. This typically takes about 30 minutes around 6:30 PM, and I do it in a nearby park because the fresh air helps me decompress from work stress. After that, I head home to prepare dinner and spend the rest of the evening relaxing. This routine makes me feel refreshed and balanced.",
+    "word_count": 72,
+    "file_size_kb": 144.7
+  },
+  {
+    "id": 11,
+    "topic": "Do you like playing sports?",
+    "filename": "11-Do-you-like-playing-sports.mp3",
+    "text": "Yes, I really enjoy playing badminton, which I usually do twice a week at a community sports center with friends from university. We typically play on Tuesday and Thursday evenings because those times work for everyone's schedule. Sports help me stay fit and are a great way to socialize, which is why I find them so enjoyable and energizing.",
+    "word_count": 59,
+    "file_size_kb": 121.64
+  },
+  {
+    "id": 12,
+    "topic": "Do you enjoy outdoor activities?",
+    "filename": "12-Do-you-enjoy-outdoor-activities.mp3",
+    "text": "Absolutely! I love hiking in the mountains with a group of friends, especially during spring and autumn when the weather is perfect. We usually go on weekends because that's when everyone is free and we can take longer trails. Being outdoors helps me disconnect from technology and appreciate nature because the fresh air and scenery clear my mind. It makes me feel refreshed and peaceful.",
+    "word_count": 65,
+    "file_size_kb": 141.61
+  },
+  {
+    "id": 13,
+    "topic": "Have you ever tried swimming?",
+    "filename": "13-Have-you-ever-tried-swimming.mp3",
+    "text": "Yes, I actually picked up swimming when I was around seven — my parents enrolled me in lessons at a community pool, and I took to it pretty quickly. These days, I still try to fit in a swim whenever I can, usually at a local pool near my place. I tend to go more frequently during the summer months, particularly on those scorching afternoons when the heat becomes almost unbearable. Most of the time I go on my own, though every now and then I'll drag a family member along for company.What I really appreciate about swimming is that it's incredibly low-impact — it gives you a solid full-body workout without putting any unnecessary strain on your joints, which is something you can't really say about most other forms of exercise. There's also something almost meditative about being in the water; once I get into a rhythm, I find it really clears my head. By the time I get out, I feel both physically lighter and mentally refreshed, which is honestly the best combination.",
+    "word_count": 62,
+    "file_size_kb": 132.05
+  },
+  {
+    "id": 14,
+    "topic": "Do you like going to the gym?",
+    "filename": "14-Do-you-like-going-to-the-gym.mp3",
+    "text": "Yes, I try to go to the gym three times a week, usually in the evenings after work around 7 PM. I go to the gym near my house, typically by myself so I can focus on my routine. I mainly focus on cardio and weight training because they help me maintain my fitness and reduce stress. Regular exercise makes me feel accomplished and energized.",
+    "word_count": 65,
+    "file_size_kb": 133.88
+  },
+  {
+    "id": 15,
+    "topic": "What kind of exercise do you do?",
+    "filename": "15-What-kind-of-exercise-do-you-do.mp3",
+    "text": "I mainly do jogging and yoga to stay healthy. I jog in the park near my home early in the morning about four times a week, usually by myself, and I practice yoga at home on other days. I do this because jogging helps me build endurance while yoga improves my flexibility and mental clarity. Together they make me feel balanced and strong.",
+    "word_count": 63,
+    "file_size_kb": 126.7
+  },
+  {
+    "id": 16,
+    "topic": "Do you use social media?",
+    "filename": "16-Do-you-use-social-media.mp3",
+    "text": "Yes, I use social media daily, mainly Instagram and Facebook to stay connected with friends and family. I usually check them during breaks at work or in the evening when I'm relaxing at home. Social media helps me keep up with what's happening in my friends' lives, though I try not to spend too much time on it because excessive use can feel draining.",
+    "word_count": 64,
+    "file_size_kb": 120.94
+  },
+  {
+    "id": 17,
+    "topic": "What do you use your phone for most?",
+    "filename": "17-What-do-you-use-your-phone-for-most.mp3",
+    "text": "I mainly use my phone for messaging and checking emails, especially for work-related communications with colleagues and clients. I also use it for navigation when I'm driving and for listening to music during my daily commute to work. My phone has become essential for staying organized and connected throughout the day, which makes me feel more productive and in control.",
+    "word_count": 60,
+    "file_size_kb": 127.12
+  },
+  {
+    "id": 18,
+    "topic": "Do you like watching TV shows?",
+    "filename": "18-Do-you-like-watching-TV-shows.mp3",
+    "text": "Yes, I enjoy watching TV shows, particularly crime dramas and documentaries. I usually watch them by myself in the evenings after dinner at home as a way to unwind before bed. Streaming services like Netflix make it convenient because I can watch episodes at my own pace without waiting for weekly releases, which feels relaxing and entertaining.",
+    "word_count": 57,
+    "file_size_kb": 129.38
+  },
+  {
+    "id": 19,
+    "topic": "Do you prefer online shopping or in-store shopping?",
+    "filename": "19-Do-you-prefer-online-shopping-or-in-store-shopping.mp3",
+    "text": "I prefer online shopping for most things because it's more convenient and saves time. I usually shop online by myself during weekends when I have time to browse different websites from home and compare prices. However, for clothes and shoes, I still prefer shopping in physical stores because I like to try them on before buying, which makes me feel more confident about my purchases.",
+    "word_count": 65,
+    "file_size_kb": 133.73
+  },
+  {
+    "id": 20,
+    "topic": "How often do you use the internet?",
+    "filename": "20-How-often-do-you-use-the-internet.mp3",
+    "text": "I use the internet constantly throughout the day, both at my office and at home, usually by myself for work and personal purposes. At work, I need it for research and communication with colleagues, and at home, I use it for entertainment and staying informed about current events. I probably spend around 6-8 hours online daily, which is quite typical these days and keeps me feeling connected and informed.",
+    "word_count": 69,
+    "file_size_kb": 144.98
+  },
+  {
+    "id": 21,
+    "topic": "Do you spend a lot of time with your family?",
+    "filename": "21-Do-you-spend-a-lot-of-time-with-your-family.mp3",
+    "text": "Yes, I try to spend quality time with my family, especially on weekends when everyone is free. We usually have dinner together at home or our parents' place, and sometimes go out for activities like hiking or watching movies at local cinemas. Family time is important to me because it helps us stay connected despite our busy schedules, which makes me feel grounded and supported.",
+    "word_count": 65,
+    "file_size_kb": 133.45
+  },
+  {
+    "id": 22,
+    "topic": "Do you have many friends?",
+    "filename": "22-Do-you-have-many-friends.mp3",
+    "text": "I have a small but close group of friends whom I've known for several years. We usually meet up once or twice a month at restaurants or cafés in the city for dinner or coffee to catch up. I prefer having a few close friends rather than many acquaintances because deeper friendships are more meaningful to me and make me feel truly understood and valued.",
+    "word_count": 65,
+    "file_size_kb": 117.84
+  },
+  {
+    "id": 23,
+    "topic": "Do you like meeting new people?",
+    "filename": "23-Do-you-like-meeting-new-people.mp3",
+    "text": "Yes, I generally enjoy meeting new people, especially in professional or social settings like conferences or parties. I usually meet new people through work events at various venues or through mutual friends at gatherings. Meeting new people helps me learn different perspectives and expand my network, which I find both interesting and valuable, making me feel more connected to the world.",
+    "word_count": 61,
+    "file_size_kb": 136.12
+  },
+  {
+    "id": 24,
+    "topic": "Do you keep in touch with childhood friends?",
+    "filename": "24-Do-you-keep-in-touch-with-childhood-friends.mp3",
+    "text": "Yes, I'm still in contact with two of my closest childhood friends, though we don't see each other as often as before. We usually chat online or meet up in person a few times a year at cafés or restaurants in our hometown when everyone is available. It's nice to maintain these friendships because we share so many memories from growing up together, which makes me feel nostalgic and grateful.",
+    "word_count": 70,
+    "file_size_kb": 135.84
+  },
+  {
+    "id": 25,
+    "topic": "Do you prefer spending time alone or with others?",
+    "filename": "25-Do-you-prefer-spending-time-alone-or-with-others.mp3",
+    "text": "It really depends on my mood and energy levels. I enjoy spending time with friends and family on weekends at various places like restaurants, parks, or homes because it's fun and energizing. However, I also value alone time during weekdays at home to recharge and focus on personal activities like reading or hobbies, which makes me feel peaceful and balanced.",
+    "word_count": 60,
+    "file_size_kb": 133.59
+  },
+  {
+    "id": 26,
+    "topic": "What do you find most interesting about your studies?",
+    "filename": "26-What-do-you-find-most-interesting-about-your-studies.mp3",
+    "text": "I find the practical applications of what I learn most interesting, especially when we work on real-world projects at university with my classmates. In my business course, we analyze actual companies and their strategies in class and during group sessions, which makes the learning much more engaging. This hands-on approach helps me understand how theories work in practice and makes me feel motivated and intellectually stimulated.",
+    "word_count": 66,
+    "file_size_kb": 148.22
+  },
+  {
+    "id": 27,
+    "topic": "Do you enjoy learning new things?",
+    "filename": "27-Do-you-enjoy-learning-new-things.mp3",
+    "text": "Absolutely! I love learning new things, especially skills that I can apply in my daily life or career. Recently, I've been learning graphic design by myself through online courses at home during my free time in the evenings. Learning keeps my mind active and helps me stay curious about the world around me, which makes me feel accomplished and energized.",
+    "word_count": 60,
+    "file_size_kb": 130.78
+  },
+  {
+    "id": 28,
+    "topic": "What was your favorite subject at school?",
+    "filename": "28-What-was-your-favorite-subject-at-school.mp3",
+    "text": "My favorite subject was history because I found it fascinating to learn about how societies developed over time. I particularly enjoyed our teacher's storytelling approach in the classroom with my classmates, which made historical events come alive. History classes taught me to think critically about cause and effect, which is useful even now and made me feel intellectually curious and engaged.",
+    "word_count": 61,
+    "file_size_kb": 135.98
+  },
+  {
+    "id": 29,
+    "topic": "Do you think your job is interesting?",
+    "filename": "29-Do-you-think-your-job-is-interesting.mp3",
+    "text": "Yes, I find my job as a marketing coordinator quite interesting because every project is different and challenging. I work with various clients and colleagues across different industries at our office and sometimes at client sites, which means I'm constantly learning about new products and markets. The creative aspect of developing campaigns keeps the work engaging and never boring, making me feel excited and professionally fulfilled.",
+    "word_count": 66,
+    "file_size_kb": 150.75
+  },
+  {
+    "id": 30,
+    "topic": "Would you like to change your job in the future?",
+    "filename": "30-Would-you-like-to-change-your-job-in-the-future.mp3",
+    "text": "Eventually, yes. I'm happy with my current position at my company, but I'd like to move into a management role in the next few years where I can lead projects and mentor others in an office setting. I believe gaining more experience now will prepare me for those responsibilities, so I'm focused on developing my skills, which makes me feel ambitious and purposeful.",
+    "word_count": 63,
+    "file_size_kb": 128.11
+  },
+  {
+    "id": 31,
+    "topic": "Do you like traveling to new places?",
+    "filename": "31-Do-you-like-traveling-to-new-places.mp3",
+    "text": "Yes, I absolutely love traveling to new places whenever I get the chance. I usually take one or two trips a year with friends or family, either to explore different cities in my country or to visit neighboring countries. Traveling broadens my perspective and allows me to experience different cultures and cuisines, which makes me feel adventurous and enriched.",
+    "word_count": 59,
+    "file_size_kb": 126.84
+  },
+  {
+    "id": 32,
+    "topic": "What is your hometown like?",
+    "filename": "32-What-is-your-hometown-like.mp3",
+    "text": "My hometown is a medium-sized coastal city with a relaxed atmosphere and beautiful beaches along the coast. It has a good mix of modern amenities and historical sites throughout the city, which makes it attractive to both residents and tourists. I really appreciate growing up there with my family because it gave me access to both nature and urban facilities, which made me feel balanced and fortunate.",
+    "word_count": 67,
+    "file_size_kb": 138.66
+  },
+  {
+    "id": 33,
+    "topic": "Do you prefer the city or the countryside?",
+    "filename": "33-Do-you-prefer-the-city-or-the-countryside.mp3",
+    "text": "I prefer living in the city by myself because I enjoy having easy access to restaurants, entertainment, and career opportunities at my workplace. However, I do appreciate visiting the countryside on weekends with friends or family for a change of pace and to enjoy the peace and natural scenery. Ideally, I'd like to live near a city but not right in the center, which would make me feel balanced and content.",
+    "word_count": 71,
+    "file_size_kb": 143.58
+  },
+  {
+    "id": 34,
+    "topic": "Have you ever been abroad?",
+    "filename": "34-Have-you-ever-been-abroad.mp3",
+    "text": "Yes, I've been abroad several times with friends or travel companions, mainly to Southeast Asian countries like Thailand and Singapore. I usually travel during my annual vacation because it's the best time to take extended trips. Traveling abroad has taught me a lot about different cultures and helped me become more open-minded and adaptable, which makes me feel enlightened and culturally aware.",
+    "word_count": 62,
+    "file_size_kb": 137.11
+  },
+  {
+    "id": 35,
+    "topic": "Where would you like to visit in the future?",
+    "filename": "35-Where-would-you-like-to-visit-in-the-future.mp3",
+    "text": "I'd really love to visit Japan, particularly during cherry blossom season in spring. I'm fascinated by Japanese culture, especially their blend of traditional values and modern technology. I've been researching the best places to visit in Tokyo and Kyoto by myself at home, and I hope to make this trip happen within the next two years, which makes me feel excited and inspired.",
+    "word_count": 63,
+    "file_size_kb": 136.41
+  },
+  {
+    "id": 36,
+    "topic": "Do you like cooking?",
+    "filename": "36-Do-you-like-cooking.mp3",
+    "text": "Yes, I enjoy cooking by myself, especially on weekends when I have more time to experiment with new recipes at home in my kitchen. I usually cook Italian and Asian dishes because they're flavorful and not too complicated. Cooking is relaxing for me, and I find it satisfying to create something delicious from scratch, which makes me feel creative and accomplished.",
+    "word_count": 61,
+    "file_size_kb": 131.62
+  },
+  {
+    "id": 37,
+    "topic": "What is your favorite food?",
+    "filename": "37-What-is-your-favorite-food.mp3",
+    "text": "My favorite food is definitely sushi because I love the fresh flavors and the variety of options available. I usually have sushi at restaurants with friends or by myself rather than making it at home since it requires specific skills and ingredients. What I particularly enjoy is how sushi can be both simple and sophisticated at the same time, which makes me feel satisfied and appreciative of the culinary art.",
+    "word_count": 70,
+    "file_size_kb": 144.84
+  },
+  {
+    "id": 38,
+    "topic": "Do you often eat out?",
+    "filename": "38-Do-you-often-eat-out.mp3",
+    "text": "I eat out about two or three times a week with friends or colleagues, usually during weekends or when I'm too busy to cook after work. I typically go to casual restaurants or cafés near my office or home. Eating out is convenient and also gives me a chance to try different cuisines that I might not cook at home, which makes me feel social and adventurous.",
+    "word_count": 67,
+    "file_size_kb": 122.91
+  },
+  {
+    "id": 39,
+    "topic": "Do you like trying new foods?",
+    "filename": "39-Do-you-like-trying-new-foods.mp3",
+    "text": "Yes, I'm quite adventurous when it comes to food and I enjoy trying dishes from different cultures. Whenever I travel to new places or visit a new restaurant with friends or by myself, I usually order something I've never had before. Trying new foods has broadened my palate and made me appreciate how diverse and interesting cuisine can be, which makes me feel curious and open-minded.",
+    "word_count": 66,
+    "file_size_kb": 132.61
+  },
+  {
+    "id": 40,
+    "topic": "Can you cook traditional food from your country?",
+    "filename": "40-Can-you-cook-traditional-food-from-your-country.mp3",
+    "text": "Yes, I can cook several traditional dishes from my country, which I learned from my mother when I was younger at home in the kitchen. I usually prepare these dishes by myself during special occasions or when I miss home-cooked meals, sometimes sharing them with friends at my place. Cooking traditional food helps me maintain a connection to my cultural roots and it's something I enjoy sharing with friends, which makes me feel nostalgic and proud.",
+    "word_count": 76,
+    "file_size_kb": 148.78
+  },
+  {
+    "id": 41,
+    "topic": "What is the weather like in your hometown?",
+    "filename": "41-What-is-the-weather-like-in-your-hometown.mp3",
+    "text": "My hometown has a tropical climate with hot and humid weather throughout most of the year. We have two main seasons there: a rainy season from June to October and a dry season from November to May. The temperature usually stays around 30 degrees Celsius, which can be quite intense during the dry months and makes me feel exhausted sometimes, though I've grown accustomed to it living there with my family.",
+    "word_count": 71,
+    "file_size_kb": 138.94
+  },
+  {
+    "id": 42,
+    "topic": "Do you prefer hot or cold weather?",
+    "filename": "42-Do-you-prefer-hot-or-cold-weather.mp3",
+    "text": "I prefer mild, cooler weather because I find it more comfortable for outdoor activities. Hot weather can be exhausting and makes me feel lethargic when I'm outside or at work, while cold weather energizes me. I especially enjoy autumn temperatures around 20-25 degrees Celsius in parks or outdoor spaces, which I think is perfect for both work and leisure and makes me feel refreshed and active.",
+    "word_count": 66,
+    "file_size_kb": 143.16
+  },
+  {
+    "id": 43,
+    "topic": "What is your favorite season?",
+    "filename": "43-What-is-your-favorite-season.mp3",
+    "text": "My favorite season is autumn because the weather is pleasant and the changing colors of the leaves are beautiful. I usually spend more time outdoors during this season by myself or with friends, going for walks in parks or hiking in nearby natural areas. Autumn also brings a sense of coziness that I really enjoy after the heat of summer, which makes me feel peaceful and content.",
+    "word_count": 67,
+    "file_size_kb": 129.66
+  },
+  {
+    "id": 44,
+    "topic": "Does the weather affect your mood?",
+    "filename": "44-Does-the-weather-affect-your-mood.mp3",
+    "text": "Yes, definitely. Sunny weather usually makes me feel more energetic and positive when I'm at home or going out, while rainy or gloomy days tend to make me feel a bit more subdued. I've noticed that I'm more productive and motivated to go out to places like parks or cafés when the weather is nice, which is why I appreciate living in a place with generally good weather.",
+    "word_count": 68,
+    "file_size_kb": 127.83
+  },
+  {
+    "id": 45,
+    "topic": "Do you check the weather forecast regularly?",
+    "filename": "45-Do-you-check-the-weather-forecast-regularly.mp3",
+    "text": "Yes, I check the weather forecast almost every morning by myself on my phone at home before getting ready for work. This helps me decide what to wear and whether I need to bring an umbrella. I find it particularly useful when planning weekend activities with friends, as I like to know if the weather will be suitable for outdoor plans, which makes me feel prepared and organized.",
+    "word_count": 68,
+    "file_size_kb": 129.38
+  },
+  {
+    "id": 46,
+    "topic": "Do you enjoy shopping for clothes?",
+    "filename": "46-Do-you-enjoy-shopping-for-clothes.mp3",
+    "text": "I have mixed feelings about clothes shopping. I enjoy it when I find something I really like, but I often find the process time-consuming. I usually shop for clothes by myself two or three times a year at shopping malls or retail stores when the seasons change, and I prefer shopping at stores where I know the style and fit suit me well, which makes me feel satisfied when I find good items though sometimes frustrated by the time it takes.",
+    "word_count": 81,
+    "file_size_kb": 150.89
+  },
+  {
+    "id": 47,
+    "topic": "What kind of clothes do you usually wear?",
+    "filename": "47-What-kind-of-clothes-do-you-usually-wear.mp3",
+    "text": "I usually wear casual, comfortable clothes like jeans and t-shirts on weekends at home or when going out, and business casual attire for work at the office. I prefer simple, classic styles in neutral colors because they're versatile and easy to match. Comfort is my priority, so I tend to avoid anything too formal or restrictive unless absolutely necessary, which makes me feel comfortable and confident.",
+    "word_count": 66,
+    "file_size_kb": 146.95
+  },
+  {
+    "id": 48,
+    "topic": "Do you follow fashion trends?",
+    "filename": "48-Do-you-follow-fashion-trends.mp3",
+    "text": "Not really. I'm aware of current trends through social media and magazines, which I check by myself at home, but I don't feel the need to follow them closely. I prefer to develop my own personal style that feels authentic to me rather than constantly changing my wardrobe based on what's trendy. I think it's more sustainable and cost-effective this way, which makes me feel independent and true to myself.",
+    "word_count": 70,
+    "file_size_kb": 143.3
+  },
+  {
+    "id": 49,
+    "topic": "Where do you usually buy things?",
+    "filename": "49-Where-do-you-usually-buy-things.mp3",
+    "text": "I usually buy most things by myself online from home through e-commerce platforms like Amazon or local shopping websites because it's convenient and offers better variety. For groceries, I prefer visiting supermarkets near my home once or twice a week. Online shopping saves me time, though I still enjoy browsing physical stores occasionally, especially for electronics or furniture, which makes me feel efficient and in control of my purchases.",
+    "word_count": 69,
+    "file_size_kb": 155.11
+  },
+  {
+    "id": 50,
+    "topic": "Do you prefer shopping alone or with friends?",
+    "filename": "50-Do-you-prefer-shopping-alone-or-with-friends.mp3",
+    "text": "I prefer shopping alone by myself at various stores for most things because I can take my time and make decisions without feeling rushed. However, I do enjoy shopping with friends occasionally at malls or shopping districts, especially for special purchases like gifts or when trying new stores. Shopping with others can be more fun and you get helpful second opinions, which makes me feel more confident about purchases when shopping with friends, though more independent when alone.",
+    "word_count": 78,
+    "file_size_kb": 163.69
+  },
+  {
+    "id": 51,
+    "topic": "Do you live in a house or an apartment?",
+    "filename": "51-Do-you-live-in-a-house-or-an-apartment.mp3",
+    "text": "I currently live by myself in an apartment in the city center, which is convenient for my work commute. It's a two-bedroom unit on the fifth floor with a nice view of the surrounding neighborhood. I prefer apartment living in the city because everything I need is within walking distance and the maintenance is handled by the building management, which makes me feel comfortable and hassle-free.",
+    "word_count": 66,
+    "file_size_kb": 128.81
+  },
+  {
+    "id": 52,
+    "topic": "What is your favorite room in your home?",
+    "filename": "52-What-is-your-favorite-room-in-your-home.mp3",
+    "text": "My favorite room is definitely my bedroom because it's where I can relax and have privacy by myself. I've decorated it in a minimalist style with calming colors at home, which helps me unwind after a long day at work. It's also where I do most of my reading and personal activities, so it feels like my personal sanctuary and makes me feel peaceful and content.",
+    "word_count": 66,
+    "file_size_kb": 127.83
+  },
+  {
+    "id": 53,
+    "topic": "Do you like decorating your room?",
+    "filename": "53-Do-you-like-decorating-your-room.mp3",
+    "text": "Yes, I enjoy decorating my room by myself occasionally to keep it fresh and reflect my current tastes. I usually add small touches like plants, artwork, or new cushions at home rather than making major changes. Decorating is a creative outlet for me, and having a space that feels personal and comfortable really improves my overall well-being, which makes me feel creative and satisfied.",
+    "word_count": 64,
+    "file_size_kb": 141.47
+  },
+  {
+    "id": 54,
+    "topic": "Would you like to move to a different place?",
+    "filename": "54-Would-you-like-to-move-to-a-different-place.mp3",
+    "text": "Eventually, yes. While I'm happy with my current apartment in the city, I'd like to move by myself to a slightly larger place with more natural light, maybe in a quieter neighborhood. I'm planning to stay here for another year or two to save more money, then look for somewhere that better suits my long-term needs, which makes me feel hopeful and forward-thinking.",
+    "word_count": 63,
+    "file_size_kb": 127.55
+  },
+  {
+    "id": 55,
+    "topic": "Do you prefer living with family or alone?",
+    "filename": "55-Do-you-prefer-living-with-family-or-alone.mp3",
+    "text": "Right now, I prefer living alone in my apartment because I value my independence and privacy. Living alone allows me to maintain my own schedule and lifestyle without compromising. However, I do miss the companionship of living with family sometimes at their place, which is why I make sure to visit them regularly on weekends, and this balance makes me feel independent yet connected.",
+    "word_count": 64,
+    "file_size_kb": 134.72
+  },
+  {
+    "id": 56,
+    "topic": "Do you enjoy going to museums?",
+    "filename": "56-Do-you-enjoy-going-to-museums.mp3",
+    "text": "Yes, I enjoy visiting museums with friends or by myself, especially art and history museums when I travel to new cities. I usually go on weekends or during vacations at various museums because it's a relaxing way to learn about different cultures and time periods. Museums help me appreciate creativity and understand historical context, which I find both educational and inspiring, making me feel enriched and curious.",
+    "word_count": 67,
+    "file_size_kb": 156.23
+  },
+  {
+    "id": 57,
+    "topic": "Have you ever been to a concert?",
+    "filename": "57-Have-you-ever-been-to-a-concert.mp3",
+    "text": "Yes, I've been to several concerts over the years at various venues, mostly rock and pop performances. I usually attend them with friends when our favorite artists visit our city. The live atmosphere and energy of concerts are incredible, and it's always exciting to experience music performed live rather than just listening to recordings, which makes me feel exhilarated and connected to the music.",
+    "word_count": 64,
+    "file_size_kb": 140.91
+  },
+  {
+    "id": 58,
+    "topic": "Do you like taking photographs?",
+    "filename": "58-Do-you-like-taking-photographs.mp3",
+    "text": "Yes, I really enjoy photography by myself, particularly landscape and street photography. I usually take photos when I travel to new places or during weekend walks around the city. Photography helps me notice details I might otherwise miss, and it's a wonderful way to preserve memories and share experiences with others, which makes me feel creative and observant.",
+    "word_count": 58,
+    "file_size_kb": 133.45
+  },
+  {
+    "id": 59,
+    "topic": "Do you enjoy drawing or painting?",
+    "filename": "59-Do-you-enjoy-drawing-or-painting.mp3",
+    "text": "I'm not particularly skilled at drawing or painting, but I do enjoy it as a relaxing hobby occasionally by myself at home. I usually do simple watercolor paintings or sketches when I have free time on weekends. It's a nice way to express creativity without any pressure, and I find the process quite therapeutic and meditative, which makes me feel calm and centered.",
+    "word_count": 63,
+    "file_size_kb": 129.38
+  },
+  {
+    "id": 60,
+    "topic": "What kind of art do you appreciate?",
+    "filename": "60-What-kind-of-art-do-you-appreciate.mp3",
+    "text": "I particularly appreciate contemporary art and impressionist paintings because of their use of color and emotional expression. I usually visit art galleries by myself or with friends a few times a year to see new exhibitions. What I love about art is how it can convey complex emotions and ideas without words, and how each person can interpret pieces differently, which makes me feel thoughtful and emotionally engaged.",
+    "word_count": 68,
+    "file_size_kb": 148.22
+  },
+  {
+    "id": 61,
+    "topic": "Do you like spending time in nature?",
+    "filename": "61-Do-you-like-spending-time-in-nature.mp3",
+    "text": "Absolutely! I love spending time in nature by myself or with friends, especially hiking in forests or walking along beaches. I try to get outdoors at least once a week, usually on weekends when I have more time. Being in nature helps me clear my mind and reduces stress, which is why I consider it essential for my mental health and makes me feel refreshed and peaceful.",
+    "word_count": 67,
+    "file_size_kb": 137.95
+  },
+  {
+    "id": 62,
+    "topic": "Do you have any plants at home?",
+    "filename": "62-Do-you-have-any-plants-at-home.mp3",
+    "text": "Yes, I have several indoor plants in my apartment by myself, mainly succulents and a few small trees. I keep them on my balcony and near windows at home where they get enough sunlight. Taking care of plants is relaxing for me, and they also help purify the air and add a natural touch to my living space, which makes me feel calm and connected to nature.",
+    "word_count": 67,
+    "file_size_kb": 129.23
+  },
+  {
+    "id": 63,
+    "topic": "Are you concerned about the environment?",
+    "filename": "63-Are-you-concerned-about-the-environment.mp3",
+    "text": "Yes, I'm very concerned about environmental issues like climate change and pollution. I try to do my part by myself by reducing waste, recycling regularly at home and work, and using public transportation when possible. I believe everyone should take responsibility for protecting the environment because the consequences of inaction affect us all, and taking action makes me feel responsible and hopeful.",
+    "word_count": 62,
+    "file_size_kb": 143.3
+  },
+  {
+    "id": 64,
+    "topic": "Do you prefer mountains or beaches?",
+    "filename": "64-Do-you-prefer-mountains-or-beaches.mp3",
+    "text": "I prefer mountains because I enjoy hiking by myself or with friends and the cooler climate they offer. Mountain scenery is breathtaking, and I find the quiet, peaceful atmosphere very rejuvenating. While I do appreciate beaches for relaxation, mountains provide more opportunities for adventure and exploration, which I find more appealing and makes me feel energized and adventurous.",
+    "word_count": 58,
+    "file_size_kb": 133.45
+  },
+  {
+    "id": 65,
+    "topic": "How do you usually travel to work or school?",
+    "filename": "65-How-do-you-usually-travel-to-work-or-school.mp3",
+    "text": "I usually take the subway by myself to work because it's the most efficient and reliable option in my city. The commute takes about 30 minutes from home to my office, which gives me time to read or catch up on news. I prefer public transport over driving because it's less stressful and more environmentally friendly, which makes me feel productive and environmentally conscious.",
+    "word_count": 64,
+    "file_size_kb": 131.34
+  },
+  {
+    "id": 66,
+    "topic": "Do you prefer public transportation or driving?",
+    "filename": "66-Do-you-prefer-public-transportation-or-driving.mp3",
+    "text": "I prefer public transportation by myself for daily commuting in the city because it's convenient and I don't have to worry about parking or traffic. However, I do enjoy driving when traveling to places not well-served by public transport or when I need flexibility for trips outside the city. Each option has its advantages depending on the situation, which makes me feel adaptable and practical.",
+    "word_count": 65,
+    "file_size_kb": 136.69
+  },
+  {
+    "id": 67,
+    "topic": "Have you ever traveled by train?",
+    "filename": "67-Have-you-ever-traveled-by-train.mp3",
+    "text": "Yes, I've traveled by train many times by myself or with companions, both for short commutes and longer journeys between cities. I particularly enjoy train travel because the views are often scenic and it's more comfortable than buses. Trains also allow me to work or relax during the journey, which makes the time feel more productive and makes me feel relaxed and efficient.",
+    "word_count": 63,
+    "file_size_kb": 134.16
+  },
+  {
+    "id": 68,
+    "topic": "Do you enjoy long journeys?",
+    "filename": "68-Do-you-enjoy-long-journeys.mp3",
+    "text": "It depends on the mode of transport and the destination. I enjoy long train or plane journeys by myself or with travel companions when I'm traveling somewhere exciting because the anticipation makes it worthwhile. However, long car journeys can be tiring. I usually bring books or download movies to make long trips more enjoyable at various locations, which makes me feel entertained and less restless.",
+    "word_count": 65,
+    "file_size_kb": 145.12
+  },
+  {
+    "id": 69,
+    "topic": "Would you like to learn to drive?",
+    "filename": "69-Would-you-like-to-learn-to-drive.mp3",
+    "text": "Yes, I would like to learn to drive by myself in the near future as it would give me more independence and flexibility. I'm planning to take driving lessons at a driving school next year when my schedule is less busy. Having a driver's license would be particularly useful for weekend trips outside the city and visiting places that aren't easily accessible, which makes me feel excited and forward-looking.",
+    "word_count": 69,
+    "file_size_kb": 136.12
+  },
+  {
+    "id": 70,
+    "topic": "Do you think you have a healthy lifestyle?",
+    "filename": "70-Do-you-think-you-have-a-healthy-lifestyle.mp3",
+    "text": "I try to maintain a healthy lifestyle by myself, though there's room for improvement. I exercise regularly at the gym or at home and eat a balanced diet most of the time, but I could probably sleep more consistently. I think achieving a healthy lifestyle is an ongoing process that requires constant attention and adjustment based on your circumstances, which makes me feel mindful and committed to self-improvement.",
+    "word_count": 68,
+    "file_size_kb": 143.3
+  },
+  {
+    "id": 71,
+    "topic": "How much sleep do you usually get?",
+    "filename": "71-How-much-sleep-do-you-usually-get.mp3",
+    "text": "I typically get around 6-7 hours of sleep by myself at home on weeknights, which is slightly less than ideal. On weekends, I try to catch up by sleeping 8-9 hours when I don't have early commitments. I've noticed that getting enough sleep significantly affects my mood and productivity, so I'm trying to improve my sleep schedule, which makes me feel more aware of my health needs.",
+    "word_count": 67,
+    "file_size_kb": 135.98
+  },
+  {
+    "id": 72,
+    "topic": "Do you take any vitamins or supplements?",
+    "filename": "72-Do-you-take-any-vitamins-or-supplements.mp3",
+    "text": "Yes, I take a daily multivitamin and vitamin D supplements by myself at home, especially during winter when there's less sunlight. I started taking them a few years ago after consulting with my doctor at a clinic, who recommended them for overall health maintenance. I believe supplements can help fill nutritional gaps in my diet, which makes me feel proactive about my health.",
+    "word_count": 63,
+    "file_size_kb": 132.89
+  },
+  {
+    "id": 73,
+    "topic": "Do you prefer to relax at home or go out?",
+    "filename": "73-Do-you-prefer-to-relax-at-home-or-go-out.mp3",
+    "text": "It really depends on my mood and energy levels. After a long work week, I prefer relaxing by myself at home with a book or movie. However, on weekends when I feel more energetic, I enjoy going out to cafés, parks, or meeting friends at various places. Having a balance between both options helps me recharge in different ways, which makes me feel balanced and flexible.",
+    "word_count": 66,
+    "file_size_kb": 143.16
+  },
+  {
+    "id": 74,
+    "topic": "What do you do when you feel stressed?",
+    "filename": "74-What-do-you-do-when-you-feel-stressed.mp3",
+    "text": "When I feel stressed, I usually go for a run by myself at the park or do some yoga at home to help clear my mind. Physical activity really helps me manage stress levels and regain perspective. I also find that talking to close friends at cafés or listening to calming music can be therapeutic, depending on what caused the stress, which makes me feel relieved and centered.",
+    "word_count": 68,
+    "file_size_kb": 132.89
+  },
+  {
+    "id": 75,
+    "topic": "What is your favorite festival or celebration?",
+    "filename": "75-What-is-your-favorite-festival-or-celebration.mp3",
+    "text": "My favorite celebration is the Lunar New Year because it's a time when the whole family gathers together at my parents' home or relatives' houses. We usually celebrate with a big dinner, exchange red envelopes, and visit relatives throughout the city. The festive atmosphere, traditional food, and quality time with loved ones make it special, and I look forward to it every year, which makes me feel joyful and connected to my cultural roots.",
+    "word_count": 74,
+    "file_size_kb": 153.98
+  },
+  {
+    "id": 76,
+    "topic": "How do you usually celebrate your birthday?",
+    "filename": "76-How-do-you-usually-celebrate-your-birthday.mp3",
+    "text": "I usually celebrate my birthday with a small dinner gathering with close friends and family. We typically go to a nice restaurant in the city or I host a dinner at home with home-cooked food. I prefer intimate celebrations rather than large parties because it allows for meaningful conversations and connection with the people who matter most to me, which makes me feel loved and appreciated.",
+    "word_count": 66,
+    "file_size_kb": 127.83
+  },
+  {
+    "id": 77,
+    "topic": "Do you enjoy public holidays?",
+    "filename": "77-Do-you-enjoy-public-holidays.mp3",
+    "text": "Yes, I really enjoy public holidays because they give me a break from work and a chance to recharge. I usually use these days by myself or with family to travel to different places, spend time at home or relatives' places, or catch up on personal projects. Public holidays are important for maintaining work-life balance, and I always try to make the most of them, which makes me feel refreshed and grateful.",
+    "word_count": 72,
+    "file_size_kb": 145.97
+  },
+  {
+    "id": 78,
+    "topic": "Do you give gifts to friends and family?",
+    "filename": "78-Do-you-give-gifts-to-friends-and-family.mp3",
+    "text": "Yes, I give gifts by myself to friends and family during special occasions like birthdays, holidays, and important milestones. I usually spend time choosing thoughtful presents at stores or online that reflect the person's interests rather than buying expensive items. I believe gift-giving is a meaningful way to show appreciation and strengthen relationships with people I care about, which makes me feel thoughtful and generous.",
+    "word_count": 65,
+    "file_size_kb": 150.19
+  },
+  {
+    "id": 79,
+    "topic": "What traditional celebrations does your country have?",
+    "filename": "79-What-traditional-celebrations-does-your-country-have.mp3",
+    "text": "My country celebrates many traditional festivals, but the most significant is our Independence Day, which involves parades, fireworks, and cultural performances in cities across the country. We also celebrate harvest festivals and religious holidays that have been observed for generations. These celebrations help preserve our cultural heritage and bring communities together, which makes me feel proud and culturally connected.",
+    "word_count": 59,
+    "file_size_kb": 150.33
+  },
+  {
+    "id": 80,
+    "topic": "Do you have any pets?",
+    "filename": "80-Do-you-have-any-pets.mp3",
+    "text": "No, I don't have any pets currently by myself because my apartment doesn't allow them and my work schedule is quite demanding. However, I grew up with a dog at my family home, so I understand the joy and companionship that pets bring. I hope to get a pet in the future when my living situation and lifestyle are more suitable, which would make me feel fulfilled and less lonely.",
+    "word_count": 70,
+    "file_size_kb": 130.36
+  },
+  {
+    "id": 81,
+    "topic": "Do you like animals?",
+    "filename": "81-Do-you-like-animals.mp3",
+    "text": "Yes, I love animals, especially dogs and cats. I find them fascinating to observe and they bring so much joy to people's lives. Whenever I visit friends at their homes who have pets, I always enjoy spending time playing with them by myself or with the owners. I think animals teach us about loyalty, compassion, and living in the moment, which makes me feel happy and peaceful.",
+    "word_count": 67,
+    "file_size_kb": 142.31
+  },
+  {
+    "id": 82,
+    "topic": "What is your favorite animal?",
+    "filename": "82-What-is-your-favorite-animal.mp3",
+    "text": "My favorite animal is the elephant because of their intelligence, strong family bonds, and gentle nature despite their size. I've always been fascinated by how they communicate and care for each other in the wild or at wildlife sanctuaries. Elephants also represent wisdom and strength in many cultures, which I find inspiring and meaningful, and thinking about them makes me feel inspired and connected to nature.",
+    "word_count": 66,
+    "file_size_kb": 144.14
+  },
+  {
+    "id": 83,
+    "topic": "Did you have pets when you were a child?",
+    "filename": "83-Did-you-have-pets-when-you-were-a-child.mp3",
+    "text": "Yes, I had a golden retriever named Max when I was growing up at my family home. He was part of our family for about 12 years, and taking care of him taught me responsibility and empathy. We used to play together with my siblings in the backyard every day after school, and those memories are still very special to me, which makes me feel nostalgic and warm.",
+    "word_count": 68,
+    "file_size_kb": 127.55
+  },
+  {
+    "id": 84,
+    "topic": "Would you like to have a pet in the future?",
+    "filename": "84-Would-you-like-to-have-a-pet-in-the-future.mp3",
+    "text": "Yes, I'd definitely like to have a dog by myself in the future when I have more space and time to properly care for one. I think having a pet would encourage me to be more active at parks and outdoors and provide companionship at home. I'm particularly interested in adopting a rescue dog from a shelter because I believe in giving animals a second chance, which makes me feel compassionate and purposeful.",
+    "word_count": 73,
+    "file_size_kb": 137.39
+  },
+  {
+    "id": 85,
+    "topic": "What languages can you speak?",
+    "filename": "85-What-languages-can-you-speak.mp3",
+    "text": "I can speak English fluently and my native language, Vietnamese. I'm also learning basic Spanish by myself through an app at home in my free time because I find it useful for travel. Being multilingual opens up opportunities for communication and helps me understand different cultures better, which makes me feel accomplished and globally connected.",
+    "word_count": 55,
+    "file_size_kb": 122.77
+  },
+  {
+    "id": 86,
+    "topic": "Do you think learning languages is important?",
+    "filename": "86-Do-you-think-learning-languages-is-important.mp3",
+    "text": "Absolutely. Learning languages is important both for practical reasons like career opportunities and travel, and for cognitive benefits. It helps you understand different perspectives and cultures more deeply when communicating with people from around the world. In our globalized world, being able to communicate in multiple languages is increasingly valuable and enriching, which makes me feel empowered and culturally aware.",
+    "word_count": 60,
+    "file_size_kb": 152.16
+  },
+  {
+    "id": 87,
+    "topic": "How are you learning English?",
+    "filename": "87-How-are-you-learning-English.mp3",
+    "text": "I'm learning English by myself through a combination of methods: taking classes twice a week at a language school, watching English movies and series with subtitles at home, and practicing conversation with native speakers online. I also try to read English articles and books regularly because exposure to the language in different contexts really helps improve my skills, which makes me feel motivated and progressively more confident.",
+    "word_count": 67,
+    "file_size_kb": 147.52
+  },
+  {
+    "id": 88,
+    "topic": "Do you enjoy writing?",
+    "filename": "88-Do-you-enjoy-writing.mp3",
+    "text": "Yes, I enjoy writing by myself, particularly journaling and creative writing in my free time. I usually write at home in the evenings when I have quiet time to reflect on my day or explore ideas. Writing helps me organize my thoughts and express myself more clearly, which I find both therapeutic and intellectually satisfying, making me feel centered and creative.",
+    "word_count": 61,
+    "file_size_kb": 134.16
+  },
+  {
+    "id": 89,
+    "topic": "Do you prefer texting or calling?",
+    "filename": "89-Do-you-prefer-texting-or-calling.mp3",
+    "text": "I generally prefer texting by myself for quick, non-urgent communication because it's convenient and allows me to respond when I have time at home or on the go. However, for important conversations or when I want to have a deeper discussion with friends or family, I prefer calling because it's more personal and reduces misunderstandings. Each method has its place depending on the situation, which makes me feel flexible and communicative.",
+    "word_count": 71,
+    "file_size_kb": 153.42
+  },
+  {
+    "id": 90,
+    "topic": "What is your earliest childhood memory?",
+    "filename": "90-What-is-your-earliest-childhood-memory.mp3",
+    "text": "My earliest memory is from when I was about four years old, playing in my grandparents' garden during summer vacation. I remember chasing butterflies and picking flowers with my grandmother there. It's a vivid and happy memory that reminds me of simpler times and the special bond I had with her, which makes me feel nostalgic and grateful.",
+    "word_count": 58,
+    "file_size_kb": 117.84
+  },
+  {
+    "id": 91,
+    "topic": "Do you have a good memory?",
+    "filename": "91-Do-you-have-a-good-memory.mp3",
+    "text": "I have a reasonably good memory for faces and experiences, but I sometimes struggle with remembering specific details like names or dates. I usually use reminder apps on my phone and write things down by myself at home or work to help me stay organized. I think my memory works better when I'm genuinely interested in something or when I make emotional connections, which makes me feel both capable and aware of my limitations.",
+    "word_count": 74,
+    "file_size_kb": 147.94
+  },
+  {
+    "id": 92,
+    "topic": "What did you enjoy doing as a child?",
+    "filename": "92-What-did-you-enjoy-doing-as-a-child.mp3",
+    "text": "As a child, I loved playing outdoor games like hide-and-seek and riding my bicycle around the neighborhood with friends. We would spend hours outside until it got dark. Those activities taught me teamwork and creativity, and I have fond memories of the freedom and carefree nature of childhood, which makes me feel nostalgic and happy.",
+    "word_count": 55,
+    "file_size_kb": 116.86
+  },
+  {
+    "id": 93,
+    "topic": "Are you still in contact with childhood friends?",
+    "filename": "93-Are-you-still-in-contact-with-childhood-friends.mp3",
+    "text": "Yes, I'm still in touch with two of my closest friends from primary school. We don't see each other as often as we used to because we live in different cities now, but we chat regularly online and meet up at cafés or restaurants whenever possible. These friendships are valuable because we share a long history and understand each other well, which makes me feel connected and valued.",
+    "word_count": 68,
+    "file_size_kb": 130.5
+  },
+  {
+    "id": 94,
+    "topic": "What games did you play when you were young?",
+    "filename": "94-What-games-did-you-play-when-you-were-young.mp3",
+    "text": "When I was young, I played a lot of traditional games like hopscotch, tag, and jump rope with kids in my neighborhood outdoors. We also played board games like Monopoly at home or friends' houses on rainy days. These games were simple but taught us important social skills like cooperation, fair play, and how to handle both winning and losing gracefully, which makes me feel nostalgic and appreciative of those experiences.",
+    "word_count": 71,
+    "file_size_kb": 148.64
+  },
+  {
+    "id": 95,
+    "topic": "What is your favorite color?",
+    "filename": "95-What-is-your-favorite-color.mp3",
+    "text": "My favorite color is blue, particularly navy and sky blue shades. I find blue calming and versatile when I see it in clothing and interior design at home or in stores. I think I'm drawn to blue because it reminds me of the ocean and clear skies, which are associated with tranquility and freedom, and makes me feel peaceful and serene.",
+    "word_count": 61,
+    "file_size_kb": 120.66
+  },
+  {
+    "id": 96,
+    "topic": "Do different colors affect your mood?",
+    "filename": "96-Do-different-colors-affect-your-mood.mp3",
+    "text": "Yes, I believe colors do affect my mood when I see them at home or while going out. Bright colors like yellow and orange make me feel more energetic and positive, while softer colors like blue and green help me feel calm and relaxed. That's why I'm quite intentional about the colors I choose by myself for my clothes and home decor based on how I want to feel, which makes me feel in control of my environment.",
+    "word_count": 78,
+    "file_size_kb": 141.05
+  },
+  {
+    "id": 97,
+    "topic": "What color would you paint your room?",
+    "filename": "97-What-color-would-you-paint-your-room.mp3",
+    "text": "I would paint my room by myself a soft sage green or light grey because these colors are soothing and create a peaceful atmosphere at home perfect for relaxation and sleep. I prefer neutral, calming tones over bold colors in personal spaces because they're easier to live with long-term and provide a good backdrop for various decorating styles, which makes me feel calm and comfortable.",
+    "word_count": 65,
+    "file_size_kb": 130.36
+  },
+  {
+    "id": 98,
+    "topic": "Do you wear bright or dark colors?",
+    "filename": "98-Do-you-wear-bright-or-dark-colors.mp3",
+    "text": "I usually wear dark or neutral colors like black, navy, and grey by myself because they're practical, versatile, and easy to mix and match for both work and casual settings. Occasionally, I add pops of color with accessories or during summer months. Dark colors suit my personal style and are appropriate for both professional and casual settings, which makes me feel confident and put-together.",
+    "word_count": 64,
+    "file_size_kb": 141.47
+  },
+  {
+    "id": 99,
+    "topic": "Has your favorite color changed over time?",
+    "filename": "99-Has-your-favorite-color-changed-over-time.mp3",
+    "text": "Yes, my favorite color has changed as I've gotten older. As a child, I loved bright red because it was bold and exciting when I saw it in toys and clothes. Now I prefer blue and green because I appreciate their calming qualities more in my home and wardrobe. I think our color preferences evolve as our personalities mature and our understanding of what we need emotionally changes, which makes me feel mature and self-aware.",
+    "word_count": 75,
+    "file_size_kb": 146.81
+  },
+  {
+    "id": 100,
+    "topic": "Are you good at managing your time?",
+    "filename": "100-Are-you-good-at-managing-your-time.mp3",
+    "text": "I think I'm reasonably good at time management by myself, though there's always room for improvement. I usually use a digital calendar and to-do lists at home and work to stay organized and prioritize tasks effectively. Planning ahead helps me balance work responsibilities with personal activities, though unexpected events sometimes disrupt my schedule, which makes me feel organized yet adaptable.",
+    "word_count": 60,
+    "file_size_kb": 138.52
+  },
+  {
+    "id": 101,
+    "topic": "Do you make daily or weekly plans?",
+    "filename": "101-Do-you-make-daily-or-weekly-plans.mp3",
+    "text": "I make both daily and weekly plans by myself to stay organized. At the start of each week at home, I outline my major tasks and commitments, then each morning I create a detailed daily plan with priorities. This two-level approach helps me see the bigger picture while staying focused on immediate tasks. I find it reduces stress and increases productivity, which makes me feel in control and efficient.",
+    "word_count": 69,
+    "file_size_kb": 147.23
+  },
+  {
+    "id": 102,
+    "topic": "Are you usually punctual?",
+    "filename": "102-Are-you-usually-punctual.mp3",
+    "text": "Yes, I'm generally quite punctual because I believe being on time shows respect for other people's schedules. I usually arrive by myself a few minutes early to appointments or meetings at various locations to avoid any last-minute stress. Being punctual also helps me feel more in control and prepared, which reduces anxiety about being late and makes me feel responsible and respectful.",
+    "word_count": 62,
+    "file_size_kb": 137.11
+  },
+  {
+    "id": 103,
+    "topic": "Do you prefer mornings or evenings?",
+    "filename": "103-Do-you-prefer-mornings-or-evenings.mp3",
+    "text": "I'm definitely more of a morning person. I feel most alert and productive in the early hours at home or at work, which is when I do my most important work. I usually wake up early by myself to take advantage of this natural energy peak. By evening, I prefer to wind down at home with lighter activities like reading or watching shows, which makes me feel energized in mornings and relaxed in evenings.",
+    "word_count": 74,
+    "file_size_kb": 143.86
+  },
+  {
+    "id": 104,
+    "topic": "How do you organize your schedule?",
+    "filename": "104-How-do-you-organize-your-schedule.mp3",
+    "text": "I organize my schedule by myself using a combination of digital tools and traditional methods. I use Google Calendar on my phone and computer for appointments and deadlines, and I keep a physical planner at home for daily tasks and notes. I also set reminders on my phone for important events. This system helps me stay on track and ensures I don't forget anything important, which makes me feel systematic and well-prepared.",
+    "word_count": 72,
+    "file_size_kb": 150.89
+  },
+  {
+    "id": 105,
+    "topic": "Do you think children should learn to play musical instruments?",
+    "filename": "105-Do-you-think-children-should-learn-to-play-musical-instrumen.mp3",
+    "text": "Yes, I definitely think children should learn musical instruments. The reason is that music education helps develop cognitive skills, creativity, and discipline from an early age. For example, I learned piano as a child, and it taught me patience and the value of regular practice, skills that have helped me in many areas of life. So yes, I believe musical training is valuable for children's overall development.",
+    "word_count": 67,
+    "file_size_kb": 156.23
+  },
+  {
+    "id": 106,
+    "topic": "Is it better to live in the city or countryside?",
+    "filename": "106-Is-it-better-to-live-in-the-city-or-countryside.mp3",
+    "text": "I think it depends on personal priorities, but for me, city living is better. The reason is that cities offer more career opportunities, entertainment options, and convenient access to services. For instance, in my city, I can reach my office in 20 minutes, and there are countless restaurants, theaters, and cultural events nearby. So overall, while the countryside has its charm, the city provides the lifestyle and opportunities I value most.",
+    "word_count": 71,
+    "file_size_kb": 170.72
+  },
+  {
+    "id": 107,
+    "topic": "Do you prefer to shop online or in physical stores?",
+    "filename": "107-Do-you-prefer-to-shop-online-or-in-physical-stores.mp3",
+    "text": "I prefer shopping online for most purchases. The reason is that it saves time, offers better price comparisons, and delivers directly to my door. For example, last month I needed a laptop, and I spent an hour comparing prices and reviews online before finding the best deal, which would have been impossible visiting multiple stores. So yes, online shopping is definitely my preferred method for convenience and efficiency.",
+    "word_count": 68,
+    "file_size_kb": 159.19
+  },
+  {
+    "id": 108,
+    "topic": "Should students wear uniforms at school?",
+    "filename": "108-Should-students-wear-uniforms-at-school.mp3",
+    "text": "Yes, I believe school uniforms are beneficial. The reason is that they promote equality among students and eliminate distractions related to fashion competition. For instance, when I wore a uniform at school, I never worried about what to wear or felt judged based on clothing brands, which helped me focus more on studying. So overall, I think uniforms create a better learning environment.",
+    "word_count": 63,
+    "file_size_kb": 144.14
+  },
+  {
+    "id": 109,
+    "topic": "Is it important to learn about history?",
+    "filename": "109-Is-it-important-to-learn-about-history.mp3",
+    "text": "Absolutely, learning history is very important. The reason is that it helps us understand how societies developed and avoid repeating past mistakes. For example, studying historical events like wars and revolutions has taught me about the consequences of political decisions and the importance of diplomacy. So yes, history education is essential for developing informed, thoughtful citizens.",
+    "word_count": 56,
+    "file_size_kb": 146.67
+  },
+  {
+    "id": 110,
+    "topic": "Do you think people watch too much TV nowadays?",
+    "filename": "110-Do-you-think-people-watch-too-much-TV-nowadays.mp3",
+    "text": "I think many people do watch excessive TV, yes. The reason is that streaming services make it too easy to binge-watch entire series, which can be quite addictive and time-consuming. For instance, I know several friends who spend 4-5 hours every evening watching shows, which leaves little time for exercise, socializing, or other productive activities. So I do believe TV consumption has become excessive for many people.",
+    "word_count": 67,
+    "file_size_kb": 164.39
+  },
+  {
+    "id": 111,
+    "topic": "Should people save money or spend it on experiences?",
+    "filename": "111-Should-people-save-money-or-spend-it-on-experiences.mp3",
+    "text": "I think a balance is ideal, but I lean toward spending on experiences. The reason is that experiences create lasting memories and personal growth, while material possessions often lose their appeal quickly. For example, I once spent money on a trip to Japan, and those memories and cultural insights have enriched my life far more than any gadget I've bought. So while saving is important, investing in meaningful experiences is equally valuable.",
+    "word_count": 72,
+    "file_size_kb": 163.97
+  },
+  {
+    "id": 112,
+    "topic": "Is it better to have a few close friends or many acquaintances?",
+    "filename": "112-Is-it-better-to-have-a-few-close-friends-or-many-acquaintanc.mp3",
+    "text": "I believe having a few close friends is better. The reason is that deep friendships provide genuine support, trust, and meaningful connection that superficial relationships cannot match. For instance, when I faced a difficult time last year, it was my two closest friends who truly helped me through it, while my many acquaintances offered only surface-level sympathy. So quality definitely matters more than quantity in friendships.",
+    "word_count": 66,
+    "file_size_kb": 155.25
+  },
+  {
+    "id": 113,
+    "topic": "Do you think learning a foreign language is important?",
+    "filename": "113-Do-you-think-learning-a-foreign-language-is-important.mp3",
+    "text": "Yes, I think language learning is extremely important. The reason is that it opens up career opportunities, enables cultural understanding, and enhances cognitive abilities. For example, learning English has allowed me to access international job markets, communicate with people worldwide, and even improved my problem-solving skills according to research. So yes, foreign language proficiency is a valuable asset in today's globalized world.",
+    "word_count": 62,
+    "file_size_kb": 167.06
+  },
+  {
+    "id": 114,
+    "topic": "Should companies allow employees to work from home?",
+    "filename": "114-Should-companies-allow-employees-to-work-from-home.mp3",
+    "text": "Yes, I believe companies should offer work-from-home options. The reason is that remote work increases flexibility, reduces commute stress, and often improves productivity for many roles. For instance, during the pandemic, my company switched to remote work, and we actually saw a 15% increase in output while employees reported better work-life balance. So yes, remote work options are beneficial for both companies and employees.",
+    "word_count": 64,
+    "file_size_kb": 164.81
+  },
+  {
+    "id": 115,
+    "topic": "Is it better to plan vacations in advance or be spontaneous?",
+    "filename": "115-Is-it-better-to-plan-vacations-in-advance-or-be-spontaneous.mp3",
+    "text": "I think planning in advance is generally better. The reason is that advance planning allows you to secure better prices, ensure availability, and create a more organized itinerary. For example, when I planned a European trip three months ahead, I saved about 40% on flights and hotels compared to last-minute bookings, and I could reserve popular attractions. So while spontaneity has its appeal, planning usually leads to better and more economical trips.",
+    "word_count": 72,
+    "file_size_kb": 169.88
+  },
+  {
+    "id": 116,
+    "topic": "Do you think social media has more positive or negative effects?",
+    "filename": "116-Do-you-think-social-media-has-more-positive-or-negative-effe.mp3",
+    "text": "I think social media has mixed effects, but the negatives are concerning. The reason is that while it connects people globally, it also spreads misinformation, creates addiction, and negatively impacts mental health, especially among young users. For instance, studies show increased anxiety and depression rates correlate with heavy social media use among teenagers. So while social media has benefits, I believe we need to be more cautious about its negative psychological impacts.",
+    "word_count": 72,
+    "file_size_kb": 177.61
+  },
+  {
+    "id": 117,
+    "topic": "Should children have smartphones?",
+    "filename": "117-Should-children-have-smartphones.mp3",
+    "text": "I think children should have smartphones but with restrictions. The reason is that phones can be educational tools and safety devices, but unrestricted access can lead to addiction and exposure to inappropriate content. For example, giving a child a phone with parental controls and time limits allows them to learn digital skills and stay in contact with parents, while protecting them from harm. So yes, smartphones for children are acceptable with proper supervision.",
+    "word_count": 73,
+    "file_size_kb": 170.72
+  },
+  {
+    "id": 118,
+    "topic": "Is it important to eat breakfast every day?",
+    "filename": "118-Is-it-important-to-eat-breakfast-every-day.mp3",
+    "text": "Yes, I believe eating breakfast is important. The reason is that it provides energy for the morning, improves concentration, and helps maintain a healthy metabolism. For instance, on days when I skip breakfast, I notice I feel sluggish by mid-morning and tend to overeat at lunch, whereas a good breakfast keeps me energized and focused. So yes, breakfast is definitely an important meal that shouldn't be skipped regularly.",
+    "word_count": 68,
+    "file_size_kb": 153.84
+  },
+  {
+    "id": 119,
+    "topic": "Do you prefer reading books or watching movies?",
+    "filename": "119-Do-you-prefer-reading-books-or-watching-movies.mp3",
+    "text": "I prefer reading books to watching movies. The reason is that books engage imagination more deeply, provide richer detail, and allow you to set your own pace. For example, when I read \"The Lord of the Rings,\" I could visualize the world in my own way and take time to appreciate the language, whereas movies condense everything and control the experience. So while I enjoy both, reading offers a more immersive and personal experience.",
+    "word_count": 74,
+    "file_size_kb": 157.92
+  },
+  {
+    "id": 120,
+    "topic": "What kind of music do you listen to?",
+    "filename": "120-What-kind-of-music-do-you-listen-to.mp3",
+    "text": "My music taste has really evolved over the years. When I was younger, I was really into pop and dance music - I used to listen to it constantly, especially during high school. But nowadays, I prefer jazz and classical music because I find them more relaxing and sophisticated. I think the change happened as I matured and started appreciating more complex melodies and instrumental arrangements.",
+    "word_count": 66,
+    "file_size_kb": 141.75
+  },
+  {
+    "id": 121,
+    "topic": "Do you enjoy sports?",
+    "filename": "121-Do-you-enjoy-sports.mp3",
+    "text": "Actually, my attitude toward sports has changed quite dramatically. In the past, I was never interested in sports - I used to think they were boring and I avoided physical activities. However, these days I really enjoy playing badminton and going for runs. The change came when my doctor recommended exercise for health reasons, and I discovered that sports can actually be fun when you find the right ones.",
+    "word_count": 69,
+    "file_size_kb": 148.5
+  },
+  {
+    "id": 122,
+    "topic": "How much time do you spend with your family?",
+    "filename": "122-How-much-time-do-you-spend-with-your-family.mp3",
+    "text": "My family time has decreased over the years, though I try to compensate. When I was a child and teenager, I spent every day with my family since we all lived together. Now that I've moved out for work, I only see them on weekends or special occasions. While I miss the daily interaction, the quality of our time together has actually improved because we make more effort to do meaningful activities when we meet.",
+    "word_count": 75,
+    "file_size_kb": 146.81
+  },
+  {
+    "id": 123,
+    "topic": "What do you do in your free time?",
+    "filename": "123-What-do-you-do-in-your-free-time.mp3",
+    "text": "My free time activities have shifted quite a bit. In the past, I used to spend most of my free time playing video games - sometimes 4-5 hours a day on weekends. These days, I prefer reading books, going to cafés, or exploring new parts of the city. I think I started seeking more enriching activities as I got older and realized video games, while fun, weren't adding much value to my life.",
+    "word_count": 73,
+    "file_size_kb": 151.03
+  },
+  {
+    "id": 124,
+    "topic": "Do you like traveling?",
+    "filename": "124-Do-you-like-traveling.mp3",
+    "text": "Yes, though my enthusiasm for travel has grown significantly. When I was younger, I found traveling stressful - the planning, packing, and unfamiliar environments made me anxious. But now I absolutely love it. I think the change happened when I started traveling solo and realized I could go at my own pace. Nowadays, I travel at least twice a year and find it incredibly enriching.",
+    "word_count": 65,
+    "file_size_kb": 150.05
+  },
+  {
+    "id": 125,
+    "topic": "What types of TV shows do you watch?",
+    "filename": "125-What-types-of-TV-shows-do-you-watch.mp3",
+    "text": "My TV preferences have become more serious over time. I used to watch mainly sitcoms and reality shows for light entertainment - things like Friends or cooking competitions. These days, I'm more drawn to documentaries and political dramas because I want content that's both entertaining and educational. I suppose my tastes matured as I wanted to use my leisure time more productively.",
+    "word_count": 62,
+    "file_size_kb": 137.11
+  },
+  {
+    "id": 126,
+    "topic": "How do you stay in touch with friends?",
+    "filename": "126-How-do-you-stay-in-touch-with-friends.mp3",
+    "text": "The way I connect with friends has changed dramatically with technology. In the past, we used to meet in person regularly or make phone calls - that was the only way to stay connected. Nowadays, we primarily use messaging apps and social media, with occasional video calls. While I sometimes miss the face-to-face interaction, the convenience of instant messaging means we actually communicate more frequently, even if it's briefer.",
+    "word_count": 69,
+    "file_size_kb": 157.36
+  },
+  {
+    "id": 127,
+    "topic": "What do you usually eat for breakfast?",
+    "filename": "127-What-do-you-usually-eat-for-breakfast.mp3",
+    "text": "My breakfast habits have become healthier over the years. I used to skip breakfast entirely or just grab sugary cereals when I was a student because I was always rushing. But these days, I make time for a proper breakfast with eggs, fruit, and whole grain toast. The change happened when I learned about nutrition and noticed how much better I feel throughout the day when I eat a balanced morning meal.",
+    "word_count": 72,
+    "file_size_kb": 140.48
+  },
+  {
+    "id": 128,
+    "topic": "How often do you use social media?",
+    "filename": "128-How-often-do-you-use-social-media.mp3",
+    "text": "My social media usage has actually decreased significantly. A few years ago, I was constantly on social media - checking Instagram and Facebook every few minutes throughout the day. These days, I limit myself to about 30 minutes in the evening. I made this change after realizing how much time I was wasting and how it was affecting my productivity and mental health. Now I feel much more focused and less anxious.",
+    "word_count": 72,
+    "file_size_kb": 155.81
+  },
+  {
+    "id": 129,
+    "topic": "Do you prefer studying in the morning or evening?",
+    "filename": "129-Do-you-prefer-studying-in-the-morning-or-evening.mp3",
+    "text": "Interestingly, my optimal study time has shifted. When I was in high school and university, I was definitely a night owl - I used to study best between 10 PM and 2 AM when everything was quiet. However, now I find I'm much more productive in the early morning, usually between 6 and 9 AM. I think my body clock has adjusted as I've gotten older and adopted more regular working hours.",
+    "word_count": 72,
+    "file_size_kb": 148.92
+  },
+  {
+    "id": 130,
+    "topic": "What kind of movies do you enjoy?",
+    "filename": "130-What-kind-of-movies-do-you-enjoy.mp3",
+    "text": "My movie preferences have matured quite a bit. In my teenage years, I used to love action movies and superhero films - the more explosions and special effects, the better. Nowadays, I prefer independent films and foreign cinema that offer deeper storytelling and character development. I think my tastes changed as I started appreciating substance over spectacle, and I wanted films that made me think rather than just entertained me.",
+    "word_count": 70,
+    "file_size_kb": 157.5
+  },
+  {
+    "id": 131,
+    "topic": "How do you usually spend your weekends?",
+    "filename": "131-How-do-you-usually-spend-your-weekends.mp3",
+    "text": "My weekend routine has become much more active. I used to spend weekends mostly at home, sleeping in late and watching TV or browsing the internet. But these days, I try to go out and be productive - visiting museums, hiking, or meeting friends for brunch. The change came when I realized I was wasting my precious free time. Now I feel much more fulfilled by Monday morning.",
+    "word_count": 68,
+    "file_size_kb": 146.53
+  },
+  {
+    "id": 132,
+    "topic": "Do you play any video games?",
+    "filename": "132-Do-you-play-any-video-games.mp3",
+    "text": "My gaming habits have changed completely. When I was younger, I was an avid gamer - I would play competitive online games for hours every day, sometimes even neglecting homework. These days, I rarely play, maybe just casual mobile games during my commute. The change happened when I started working full-time and realized I had other priorities. While I still appreciate games, they're no longer central to my life.",
+    "word_count": 69,
+    "file_size_kb": 156.38
+  },
+  {
+    "id": 133,
+    "topic": "What do you like to do after work/school?",
+    "filename": "133-What-do-you-like-to-do-after-workschool.mp3",
+    "text": "My after-work routine has evolved significantly. Right after graduating, I used to go straight home and collapse on the couch, too exhausted to do anything. But now I've made exercise a priority - I go to the gym or for a run right after work. This change came from understanding that physical activity actually gives me energy rather than depleting it. I feel much better now than when I was sedentary.",
+    "word_count": 71,
+    "file_size_kb": 148.92
+  },
+  {
+    "id": 134,
+    "topic": "How often do you go shopping?",
+    "filename": "134-How-often-do-you-go-shopping.mp3",
+    "text": "My shopping frequency has changed quite dramatically. In the past, especially during my university years, I used to go shopping almost every weekend - it was my main hobby and social activity. Nowadays, I shop much less frequently, maybe once a month or only when I really need something. This shift happened as I became more financially conscious and realized I was buying things impulsively. Now I'm much more intentional with my purchases.",
+    "word_count": 73,
+    "file_size_kb": 164.25
+  },
+  {
+    "id": 135,
+    "topic": "Do people in your country like to travel?",
+    "filename": "135-Do-people-in-your-country-like-to-travel.mp3",
+    "text": "Speaking from my own experience, I absolutely love traveling and try to take at least two trips a year to explore new places. As for the broader picture, I'd say travel is quite popular in my country. You can see this from how packed airports and tourist destinations get during holiday seasons, and travel agencies are everywhere. People seem to value experiencing different cultures and taking breaks from routine.",
+    "word_count": 69,
+    "file_size_kb": 152.3
+  },
+  {
+    "id": 136,
+    "topic": "Is technology important in your country?",
+    "filename": "136-Is-technology-important-in-your-country.mp3",
+    "text": "From my personal perspective, technology is absolutely essential - I use my smartphone, laptop, and various apps throughout the day for work and personal life. When I look at society more broadly, I see that my country has embraced technology rapidly. Almost everyone has a smartphone, digital payments are common even in small shops, and tech startups are flourishing. So yes, technology plays a central role in our daily lives.",
+    "word_count": 70,
+    "file_size_kb": 163.27
+  },
+  {
+    "id": 137,
+    "topic": "Do young people eat healthy food?",
+    "filename": "137-Do-young-people-eat-healthy-food.mp3",
+    "text": "Personally, I try to maintain a healthy diet with fruits, vegetables, and whole grains, though I do indulge in junk food occasionally. However, when I observe my peers and younger generation generally, I notice a concerning trend. Many young people rely heavily on fast food and processed snacks due to busy lifestyles and convenience. Though there's growing health awareness, I'd say unhealthy eating is still quite common among youth.",
+    "word_count": 69,
+    "file_size_kb": 155.67
+  },
+  {
+    "id": 138,
+    "topic": "Are people in your country interested in learning English?",
+    "filename": "138-Are-people-in-your-country-interested-in-learning-English.mp3",
+    "text": "For me personally, learning English has been a priority since childhood because I knew it would open up opportunities. Looking at the bigger picture, there's definitely strong interest in English across my country. You see English learning centers in every neighborhood, parents enroll children in English classes from a young age, and English proficiency is often required for good jobs. It's viewed as a gateway to better careers and global connections.",
+    "word_count": 71,
+    "file_size_kb": 154.69
+  },
+  {
+    "id": 139,
+    "topic": "Do people prefer traditional or modern entertainment?",
+    "filename": "139-Do-people-prefer-traditional-or-modern-entertainment.mp3",
+    "text": "Personally, I find myself drawn to both - I enjoy streaming modern shows but also appreciate traditional theater performances occasionally. From what I observe in society, there's been a clear shift toward modern entertainment. Most people, especially younger generations, prefer Netflix, YouTube, and online gaming over traditional forms. However, traditional entertainment still has its devoted audience, particularly among older people and during cultural festivals.",
+    "word_count": 64,
+    "file_size_kb": 174.09
+  },
+  {
+    "id": 140,
+    "topic": "Is family important in your culture?",
+    "filename": "140-Is-family-important-in-your-culture.mp3",
+    "text": "From my personal experience, family is extremely important - I stay in close contact with my parents and extended family, and we gather regularly for meals and celebrations. This seems to reflect broader cultural values in my country. Family bonds remain very strong here, with multiple generations often living together or nearby, and major decisions are typically discussed with family members. Family remains the cornerstone of our society.",
+    "word_count": 68,
+    "file_size_kb": 166.22
+  },
+  {
+    "id": 141,
+    "topic": "Do people in your city use public transportation?",
+    "filename": "141-Do-people-in-your-city-use-public-transportation.mp3",
+    "text": "I personally use public transportation daily - taking the subway to work because it's faster and cheaper than driving. From what I can see, public transport is quite popular in my city. During rush hours, trains and buses are packed with commuters, and the government continues investing in expanding the network. While some people still prefer cars for convenience, I'd say the majority rely on public transit.",
+    "word_count": 67,
+    "file_size_kb": 149.91
+  },
+  {
+    "id": 142,
+    "topic": "Are people environmentally conscious?",
+    "filename": "142-Are-people-environmentally-conscious.mp3",
+    "text": "Personally, I try to be environmentally conscious - I recycle, use reusable bags, and minimize plastic usage where possible. When I look at society generally, I see growing but still limited environmental awareness. More people are talking about environmental issues and some are making changes, but many still prioritize convenience over sustainability. Younger people tend to be more eco-conscious than older generations, so I think awareness is gradually improving.",
+    "word_count": 69,
+    "file_size_kb": 173.11
+  },
+  {
+    "id": 143,
+    "topic": "Do young people save money or spend it?",
+    "filename": "143-Do-young-people-save-money-or-spend-it.mp3",
+    "text": "From my own habits, I try to save at least 20% of my income each month while still enjoying life occasionally. Looking at my peers and younger generation broadly, I see a mixed picture. Some young people are quite financially responsible and invest early, but many tend to spend freely on experiences, gadgets, and lifestyle, often living paycheck to paycheck. Economic pressures and consumer culture seem to encourage spending over saving.",
+    "word_count": 71,
+    "file_size_kb": 166.36
+  },
+  {
+    "id": 144,
+    "topic": "Is eating out popular in your country?",
+    "filename": "144-Is-eating-out-popular-in-your-country.mp3",
+    "text": "I personally eat out quite frequently, probably 3-4 times a week, because I enjoy trying different cuisines and socializing over meals. This seems to be a common pattern across my country. Restaurants are always busy, food delivery services are booming, and dining out has become a major social activity. With more dual-income households and busy lifestyles, eating out has become more of a norm than an occasional treat.",
+    "word_count": 68,
+    "file_size_kb": 156.23
+  },
+  {
+    "id": 145,
+    "topic": "Do people like to read newspapers?",
+    "filename": "145-Do-people-like-to-read-newspapers.mp3",
+    "text": "Personally, I rarely read physical newspapers anymore - I get all my news from online sources and apps on my phone. This reflects a broader trend I observe in society. Physical newspaper readership has declined significantly, especially among younger people who prefer digital news, social media, and instant updates. Older generations still buy newspapers, but overall, traditional print media is definitely declining.",
+    "word_count": 62,
+    "file_size_kb": 160.45
+  },
+  {
+    "id": 146,
+    "topic": "Are people interested in fashion?",
+    "filename": "146-Are-people-interested-in-fashion.mp3",
+    "text": "For me, I have moderate interest in fashion - I like to dress well but don't follow every trend obsessively. When I look around, fashion seems quite important in my society, particularly in urban areas. Social media has amplified this interest, with fashion influencers having huge followings. Shopping malls are always crowded, and people pay attention to brands and style. I'd say fashion consciousness is definitely high, especially among young people.",
+    "word_count": 71,
+    "file_size_kb": 172.83
+  },
+  {
+    "id": 147,
+    "topic": "Do people in your country work long hours?",
+    "filename": "147-Do-people-in-your-country-work-long-hours.mp3",
+    "text": "From my experience, I typically work 9-10 hours a day including commute, which I find quite exhausting. Unfortunately, this seems to be the norm rather than exception in my country. Long working hours are common, with many people working late into the evening or even weekends. Work-life balance is often sacrificed for career advancement. While there's growing discussion about reducing hours, the culture of overwork remains deeply ingrained.",
+    "word_count": 68,
+    "file_size_kb": 166.78
+  },
+  {
+    "id": 148,
+    "topic": "Is exercise popular among young people?",
+    "filename": "148-Is-exercise-popular-among-young-people.mp3",
+    "text": "I personally make exercise a priority, going to the gym three times a week and running on weekends. When I observe young people generally, I see increasing interest in fitness. Gyms are proliferating, fitness apps are popular, and social media is full of workout content. However, I'd say it's more of a trend among some groups rather than universal - many young people still lead sedentary lifestyles due to work and study pressures.",
+    "word_count": 73,
+    "file_size_kb": 155.95
+  },
+  {
+    "id": 149,
+    "topic": "Do people prefer shopping online or in stores?",
+    "filename": "149-Do-people-prefer-shopping-online-or-in-stores.mp3",
+    "text": "I personally do about 80% of my shopping online because it saves time and offers better variety and prices. From what I observe in society, online shopping has grown dramatically, especially after the pandemic. E-commerce platforms are thriving, and delivery services are everywhere. However, physical stores still have their place, particularly for items people want to see or try first, like clothes and furniture. I'd say the trend is definitely shifting toward online.",
+    "word_count": 73,
+    "file_size_kb": 177.61
+  },
+  {
+    "id": 150,
+    "topic": "What do you like to do on weekends?",
+    "filename": "150-What-do-you-like-to-do-on-weekends.mp3",
+    "text": "It really depends on how I'm feeling. On some weekends, when I need to recharge, I prefer staying home and doing quiet activities like reading or watching movies. But on other weekends, when I'm feeling more energetic, I like to go out and explore - visiting new restaurants, hiking, or meeting friends. So my weekend activities vary quite a bit depending on my energy levels.",
+    "word_count": 65,
+    "file_size_kb": 142.17
+  },
+  {
+    "id": 151,
+    "topic": "How do you prefer to communicate with friends?",
+    "filename": "151-How-do-you-prefer-to-communicate-with-friends.mp3",
+    "text": "Unlike many people my age who rely heavily on texting, I actually prefer voice or video calls for meaningful conversations. While quick messages are fine for simple updates, I find that hearing someone's voice creates a much deeper connection. However, I do understand that texts are more convenient, so I use both depending on the situation.",
+    "word_count": 56,
+    "file_size_kb": 127.41
+  },
+  {
+    "id": 152,
+    "topic": "Do you like shopping?",
+    "filename": "152-Do-you-like-shopping.mp3",
+    "text": "My feelings about shopping depend entirely on what I'm buying. For everyday items like groceries, I find shopping quite tedious and I just want to get it done quickly. But when I'm shopping for something special like gifts or tech gadgets, I actually enjoy the research and selection process. So I can't say I universally like or dislike shopping - it varies.",
+    "word_count": 62,
+    "file_size_kb": 131.77
+  },
+  {
+    "id": 153,
+    "topic": "What kind of movies do you enjoy?",
+    "filename": "153-What-kind-of-movies-do-you-enjoy.mp3",
+    "text": "My movie preferences are quite mood-dependent. When I want to unwind after a stressful week, I go for lighthearted comedies that don't require much thinking. However, when I'm in a more contemplative mood, I prefer thought-provoking dramas or documentaries that challenge my perspective. So I don't stick to just one genre.",
+    "word_count": 51,
+    "file_size_kb": 118.55
+  },
+  {
+    "id": 154,
+    "topic": "How do you usually travel around the city?",
+    "filename": "154-How-do-you-usually-travel-around-the-city.mp3",
+    "text": "During the work week, I always take the subway because it's faster and more predictable than driving in rush hour traffic. But on weekends, I prefer to drive my car since parking is easier and I have more flexibility with my schedule. So my transportation choice really depends on whether it's a weekday or weekend.",
+    "word_count": 55,
+    "file_size_kb": 111.23
+  },
+  {
+    "id": 155,
+    "topic": "Do you prefer hot or cold weather?",
+    "filename": "155-Do-you-prefer-hot-or-cold-weather.mp3",
+    "text": "Whereas many people love hot summer weather for swimming and outdoor activities, I actually prefer cooler temperatures. Hot weather makes me feel lethargic and uncomfortable, while cool weather energizes me and makes me feel more productive. I suppose everyone has their ideal temperature range, and mine is definitely on the cooler side.",
+    "word_count": 52,
+    "file_size_kb": 118.83
+  },
+  {
+    "id": 156,
+    "topic": "What time of day do you prefer to study?",
+    "filename": "156-What-time-of-day-do-you-prefer-to-study.mp3",
+    "text": "For routine studying and review, I work best in the morning when my mind is fresh and there are fewer distractions. However, for creative tasks or essay writing, I find the evening more productive because I feel more relaxed and ideas flow more naturally. So my ideal study time really depends on the type of work I'm doing.",
+    "word_count": 58,
+    "file_size_kb": 117.7
+  },
+  {
+    "id": 157,
+    "topic": "Do you like eating at home or at restaurants?",
+    "filename": "157-Do-you-like-eating-at-home-or-at-restaurants.mp3",
+    "text": "During busy weekdays, I prefer eating at home because it's healthier, cheaper, and I can control what goes into my food. But on weekends or special occasions, I really enjoy going to restaurants because it's a social experience and a chance to try dishes I wouldn't cook myself. So both have their place in my life.",
+    "word_count": 56,
+    "file_size_kb": 114.19
+  },
+  {
+    "id": 158,
+    "topic": "How do you stay informed about news?",
+    "filename": "158-How-do-you-stay-informed-about-news.mp3",
+    "text": "For breaking news and quick updates, I rely on news apps and social media because they deliver information instantly. However, for in-depth analysis and understanding complex issues, I prefer reading long-form articles or watching documentaries. So I use different sources depending on whether I need quick facts or deep understanding.",
+    "word_count": 50,
+    "file_size_kb": 122.34
+  },
+  {
+    "id": 159,
+    "topic": "Do you prefer indoor or outdoor activities?",
+    "filename": "159-Do-you-prefer-indoor-or-outdoor-activities.mp3",
+    "text": "In good weather, I definitely prefer being outdoors - hiking, cycling, or even just reading in a park. But when it's rainy or extremely hot, I'm quite happy to stay indoors with activities like cooking, gaming, or watching movies. So my preference really changes with the weather conditions.",
+    "word_count": 48,
+    "file_size_kb": 110.39
+  },
+  {
+    "id": 160,
+    "topic": "What type of music do you listen to?",
+    "filename": "160-What-type-of-music-do-you-listen-to.mp3",
+    "text": "While I'm working or studying, I listen to instrumental music or lo-fi beats because lyrics distract me from concentrating. But in my free time, I enjoy vocal music across various genres - pop, rock, jazz - because I can fully appreciate the lyrics and melodies. So my music choice is very context-dependent.",
+    "word_count": 52,
+    "file_size_kb": 117.0
+  },
+  {
+    "id": 161,
+    "topic": "Do you like visiting museums?",
+    "filename": "161-Do-you-like-visiting-museums.mp3",
+    "text": "My interest varies by museum type. Art museums can sometimes feel tedious to me because I don't always connect with visual art emotionally. In contrast, I find science and history museums fascinating because they tell stories and explain how things work. So yes, I like museums, but it depends on the subject matter.",
+    "word_count": 53,
+    "file_size_kb": 123.33
+  },
+  {
+    "id": 162,
+    "topic": "How do you celebrate special occasions?",
+    "filename": "162-How-do-you-celebrate-special-occasions.mp3",
+    "text": "For family-oriented occasions like birthdays or anniversaries, I prefer intimate gatherings at home or restaurants with close relatives. However, for achievements like graduations or promotions, I like to celebrate with larger groups of friends in more lively settings. So the way I celebrate really depends on the nature of the occasion.",
+    "word_count": 51,
+    "file_size_kb": 121.22
+  },
+  {
+    "id": 163,
+    "topic": "Do you prefer watching sports or playing them?",
+    "filename": "163-Do-you-prefer-watching-sports-or-playing-them.mp3",
+    "text": "Unlike my brother who loves watching sports on TV for hours, I much prefer actually playing sports myself. Watching feels passive to me, whereas playing gives me exercise, social interaction, and a real sense of achievement. That said, I do occasionally watch major events like the Olympics, but active participation is definitely my preference.",
+    "word_count": 54,
+    "file_size_kb": 131.62
+  },
+  {
+    "id": 164,
+    "topic": "What do you do to relax?",
+    "filename": "164-What-do-you-do-to-relax.mp3",
+    "text": "After mentally exhausting days at work, I relax through physical activities like going for a run or doing yoga because they help me disconnect from mental stress. But after physically tiring days, I prefer passive relaxation like watching series or listening to music. So my relaxation method depends on what type of fatigue I'm experiencing.",
+    "word_count": 55,
+    "file_size_kb": 125.16
+  },
+  {
+    "id": 165,
+    "topic": "How do you feel about learning English?",
+    "filename": "165-How-do-you-feel-about-learning-English.mp3",
+    "text": "Learning English makes me feel both excited and challenged at the same time. I feel excited because I know it opens up so many opportunities for my career and allows me to connect with people worldwide. However, it can also feel overwhelming sometimes because there's always so much more to learn - new vocabulary, expressions, and cultural nuances. Overall though, the sense of progress I feel when I understand something new is incredibly rewarding.",
+    "word_count": 74,
+    "file_size_kb": 159.33
+  },
+  {
+    "id": 166,
+    "topic": "What makes you feel relaxed?",
+    "filename": "166-What-makes-you-feel-relaxed.mp3",
+    "text": "Reading before bed always makes me feel calm and peaceful. I think it's because when I'm absorbed in a good story, I completely forget about my daily worries and stress from work. The quiet ritual of sitting with a book in my comfortable chair creates this soothing atmosphere that helps my mind unwind. By the time I'm ready to sleep, I feel completely relaxed and my racing thoughts have settled.",
+    "word_count": 70,
+    "file_size_kb": 136.27
+  },
+  {
+    "id": 167,
+    "topic": "How does music affect your mood?",
+    "filename": "167-How-does-music-affect-your-mood.mp3",
+    "text": "Music has a powerful effect on how I feel throughout the day. Upbeat pop music in the morning makes me feel energized and motivated to start my day productively. When I'm stressed, classical or jazz music helps me feel more centered and calm because the smooth melodies seem to slow down my racing thoughts. Even when I'm feeling sad, the right music can make me feel understood and less alone, which is strangely comforting.",
+    "word_count": 74,
+    "file_size_kb": 147.8
+  },
+  {
+    "id": 168,
+    "topic": "What activity makes you feel most energized?",
+    "filename": "168-What-activity-makes-you-feel-most-energized.mp3",
+    "text": "Going for a run early in the morning makes me feel incredibly energized and alive. I think it's because the physical movement gets my blood pumping and releases endorphins, which naturally boost my mood. There's also something refreshing about being outside in the cool morning air while the city is just waking up. After my run, I feel ready to tackle anything the day throws at me, and that confidence is really empowering.",
+    "word_count": 73,
+    "file_size_kb": 146.67
+  },
+  {
+    "id": 169,
+    "topic": "How do you feel about your daily routine?",
+    "filename": "169-How-do-you-feel-about-your-daily-routine.mp3",
+    "text": "I have mixed feelings about my daily routine. On one hand, it makes me feel secure and organized because I know what to expect each day and can plan accordingly. However, sometimes it makes me feel a bit trapped or monotonous, especially when every day feels exactly the same. I think what I need is some variety to break the pattern, which would help me feel more spontaneous and excited about life.",
+    "word_count": 72,
+    "file_size_kb": 143.58
+  },
+  {
+    "id": 170,
+    "topic": "What type of weather makes you feel good?",
+    "filename": "170-What-type-of-weather-makes-you-feel-good.mp3",
+    "text": "Cool, sunny weather with a light breeze always makes me feel happy and optimistic. I think it's because this kind of weather is perfect for being active outdoors - not too hot to be uncomfortable, but bright enough to lift my spirits. The sunshine specifically makes me feel more cheerful and energetic, probably because of the vitamin D and natural light. Rainy or grey days, in contrast, tend to make me feel sluggish and unmotivated.",
+    "word_count": 75,
+    "file_size_kb": 158.34
+  },
+  {
+    "id": 171,
+    "topic": "How does spending time in nature affect you?",
+    "filename": "171-How-does-spending-time-in-nature-affect-you.mp3",
+    "text": "Being in nature makes me feel incredibly peaceful and grounded. I think it's because natural environments provide a break from the constant noise and stimulation of city life, allowing my mind to truly rest. When I'm hiking in the forest or sitting by a lake, I feel connected to something bigger than my daily concerns, which puts things in perspective. It's almost meditative and always leaves me feeling refreshed and mentally clearer.",
+    "word_count": 72,
+    "file_size_kb": 153.7
+  },
+  {
+    "id": 172,
+    "topic": "What makes you feel stressed?",
+    "filename": "172-What-makes-you-feel-stressed.mp3",
+    "text": "Tight deadlines at work always make me feel anxious and overwhelmed. I think it's because I'm naturally a perfectionist, so when I don't have enough time to do something properly, I feel frustrated and pressured. The constant worry about not meeting expectations or disappointing people creates this heavy tension in my chest. Even though I usually manage to complete tasks on time, the stress during the process makes me feel emotionally drained.",
+    "word_count": 72,
+    "file_size_kb": 154.69
+  },
+  {
+    "id": 173,
+    "topic": "How do you feel about meeting new people?",
+    "filename": "173-How-do-you-feel-about-meeting-new-people.mp3",
+    "text": "Meeting new people makes me feel both excited and nervous at the same time. I feel excited because I enjoy learning about different perspectives and potentially forming new friendships, which makes life more interesting. However, I also feel a bit nervous initially because I'm not sure how the interaction will go or if we'll connect well. Once the conversation starts flowing though, I usually feel more comfortable and the nervousness fades into genuine interest.",
+    "word_count": 74,
+    "file_size_kb": 157.92
+  },
+  {
+    "id": 174,
+    "topic": "What hobby makes you feel most satisfied?",
+    "filename": "174-What-hobby-makes-you-feel-most-satisfied.mp3",
+    "text": "Photography makes me feel incredibly satisfied and accomplished. I think it's because when I capture a beautiful moment or composition, there's this sense of having created something meaningful that will last. The process of improving my skills over time makes me feel proud of my progress, and when others appreciate my photos, it validates my effort. It's one of the few activities that leaves me feeling both creatively fulfilled and technically challenged.",
+    "word_count": 72,
+    "file_size_kb": 157.5
+  },
+  {
+    "id": 175,
+    "topic": "How does exercise make you feel?",
+    "filename": "175-How-does-exercise-make-you-feel.mp3",
+    "text": "Exercise always makes me feel better, both physically and mentally. During the workout, I initially feel challenged and sometimes uncomfortable, but there's also a sense of determination and strength building. Afterward, I feel accomplished and proud for pushing through, and the endorphin release creates this natural high that makes me feel happy and energized. Even on days I don't want to exercise, I never regret it because I always feel more positive and confident afterward.",
+    "word_count": 75,
+    "file_size_kb": 167.2
+  },
+  {
+    "id": 176,
+    "topic": "What type of food makes you feel happy?",
+    "filename": "176-What-type-of-food-makes-you-feel-happy.mp3",
+    "text": "Comfort foods like pasta or homemade soup make me feel warm and happy inside. I think it's because these foods are associated with positive memories from childhood when my family would gather for meals. The familiar tastes and aromas create a sense of nostalgia that feels comforting and secure. Even when I'm feeling down, a bowl of my favorite pasta makes me feel cared for and content, almost like a warm hug.",
+    "word_count": 72,
+    "file_size_kb": 145.55
+  },
+  {
+    "id": 177,
+    "topic": "How do you feel about working in teams?",
+    "filename": "177-How-do-you-feel-about-working-in-teams.mp3",
+    "text": "Working in teams makes me feel energized but sometimes frustrated. I feel energized because bouncing ideas off others sparks creativity and we can achieve more together than individually. The collaborative energy and shared goals create a sense of camaraderie that I find motivating. However, I can feel frustrated when team members don't pull their weight or when decision-making takes too long due to conflicting opinions. Overall though, when teams work well, I feel inspired and more productive.",
+    "word_count": 77,
+    "file_size_kb": 177.89
+  },
+  {
+    "id": 178,
+    "topic": "What makes you feel proud of yourself?",
+    "filename": "178-What-makes-you-feel-proud-of-yourself.mp3",
+    "text": "Overcoming challenges makes me feel most proud of myself. I think it's because when I push through difficult situations - whether it's a tough project at work or a personal goal - I prove to myself that I'm capable and resilient. The sense of achievement when I succeed after struggling makes me feel strong and confident in my abilities. It also gives me courage to tackle future challenges because I know I have the determination to overcome obstacles.",
+    "word_count": 78,
+    "file_size_kb": 153.98
+  },
+  {
+    "id": 179,
+    "topic": "How does your home environment affect your mood?",
+    "filename": "179-How-does-your-home-environment-affect-your-mood.mp3",
+    "text": "My home environment has a huge impact on how I feel. When my space is clean and organized, I feel calm, focused, and in control of my life. The orderliness creates a sense of peace that helps me think clearly and feel less stressed. However, when things are messy or cluttered, I feel anxious and overwhelmed because the physical chaos seems to mirror mental chaos. That's why I always try to maintain a tidy space - it directly affects my emotional well-being.",
+    "word_count": 82,
+    "file_size_kb": 171.98
+  },
+  {
+    "id": 180,
+    "topic": "How often do you use your phone?",
+    "filename": "180-How-often-do-you-use-your-phone.mp3",
+    "text": "I use my phone constantly throughout the day - probably checking it every 10-15 minutes on average. During work hours, I mainly use it for professional communication like emails and messaging colleagues. In the evenings, my usage shifts to social media and entertainment. On weekends, I try to reduce my phone time and only check it occasionally, maybe once every hour or two, because I want to be more present with family and friends.",
+    "word_count": 74,
+    "file_size_kb": 158.06
+  },
+  {
+    "id": 181,
+    "topic": "Do you watch TV regularly?",
+    "filename": "181-Do-you-watch-TV-regularly.mp3",
+    "text": "Yes, I watch TV quite regularly - about 1-2 hours each evening after dinner. On weekdays, I usually stick to one or two episodes of a series because I have limited time before bed. However, on weekends, I sometimes binge-watch shows for 3-4 hours, especially if it's a new season of something I've been waiting for. Occasionally, during busy work weeks, I might skip TV entirely for a few days.",
+    "word_count": 70,
+    "file_size_kb": 156.23
+  },
+  {
+    "id": 182,
+    "topic": "How often do you go shopping?",
+    "filename": "182-How-often-do-you-go-shopping.mp3",
+    "text": "I go grocery shopping once a week, typically on Saturday mornings when stores are less crowded. For clothes and other items, I shop much less frequently - maybe once every 2-3 months or only when I need something specific. Online shopping is more frequent though, probably 2-3 times a month for various items. During sale seasons, I admit I shop more often, sometimes weekly, to catch good deals.",
+    "word_count": 68,
+    "file_size_kb": 153.14
+  },
+  {
+    "id": 183,
+    "topic": "Do you read books often?",
+    "filename": "183-Do-you-read-books-often.mp3",
+    "text": "I read daily, usually for about 30-45 minutes before bed. During the week, I stick to lighter fiction that's easy to follow when I'm tired. On weekends, I sometimes read for longer stretches, up to 2 hours at a time, especially if the book is really engaging. During holidays, my reading increases significantly - I can finish a book every 2-3 days when I have free time.",
+    "word_count": 67,
+    "file_size_kb": 147.09
+  },
+  {
+    "id": 184,
+    "topic": "How frequently do you see your friends?",
+    "filename": "184-How-frequently-do-you-see-your-friends.mp3",
+    "text": "I see my close friends about 2-3 times a month, usually on weekends for dinner or coffee. With work colleagues, we occasionally grab lunch together once or twice a week. During busy periods like exam seasons or project deadlines, I might not see friends for 2-3 weeks. However, we stay in touch daily through messaging even when we can't meet in person.",
+    "word_count": 62,
+    "file_size_kb": 137.95
+  },
+  {
+    "id": 185,
+    "topic": "Do you use social media much?",
+    "filename": "185-Do-you-use-social-media-much.mp3",
+    "text": "I use social media moderately - about 30-60 minutes total per day, spread throughout the day. In the morning, I spend 10-15 minutes scrolling through updates while having coffee. During lunch breaks, I check for about 15-20 minutes. In the evening, I might spend 20-30 minutes catching up on posts and stories. I deliberately avoid social media after 9 PM to maintain better sleep.",
+    "word_count": 64,
+    "file_size_kb": 155.11
+  },
+  {
+    "id": 186,
+    "topic": "How often do you travel?",
+    "filename": "186-How-often-do-you-travel.mp3",
+    "text": "I take major trips about 2-3 times a year, usually during holiday seasons and my annual leave. For weekend getaways to nearby cities, I travel more frequently, roughly once every 2 months. Business trips happen occasionally, maybe 3-4 times a year depending on work requirements. During summer, my travel frequency peaks - I might take 2-3 trips in just that season.",
+    "word_count": 61,
+    "file_size_kb": 147.52
+  },
+  {
+    "id": 187,
+    "topic": "Do you cook regularly?",
+    "filename": "187-Do-you-cook-regularly.mp3",
+    "text": "Yes, I cook almost every day - typically 5-6 days a week for dinner. On weeknights, I prepare simple meals like stir-fries or pasta that take 20-30 minutes. Weekends are when I cook more elaborate dishes and might spend 1-2 hours trying new recipes. On particularly busy or exhausting days, I order takeout instead, which happens maybe once a week.",
+    "word_count": 60,
+    "file_size_kb": 144.0
+  },
+  {
+    "id": 188,
+    "topic": "How often do you exercise?",
+    "filename": "188-How-often-do-you-exercise.mp3",
+    "text": "I exercise 4-5 times a week, usually in the morning before work. Three of those days, I do cardio like running or cycling for 30-40 minutes. The other 1-2 days, I focus on strength training or yoga for about 45 minutes. Occasionally, when I'm traveling or very busy, I might miss a week entirely, but I always get back to my routine as soon as possible.",
+    "word_count": 66,
+    "file_size_kb": 146.81
+  },
+  {
+    "id": 189,
+    "topic": "Do you go to the cinema much?",
+    "filename": "189-Do-you-go-to-the-cinema-much.mp3",
+    "text": "I go to the cinema about once a month on average, though it varies depending on movie releases. When there are several good movies out, I might go 2-3 times in a month. During quiet periods with fewer interesting releases, I might not go for 2-3 months. I typically go on weekend evenings to avoid crowds, and occasionally for weekday matinees when I have time off.",
+    "word_count": 66,
+    "file_size_kb": 137.81
+  },
+  {
+    "id": 190,
+    "topic": "How frequently do you eat fast food?",
+    "filename": "190-How-frequently-do-you-eat-fast-food.mp3",
+    "text": "I eat fast food fairly rarely - maybe 2-3 times a month at most. It's usually when I'm in a rush and need a quick meal between appointments. On road trips or when traveling, I might have it more frequently, perhaps once a day if there aren't better options. However, I actively try to avoid it during normal weeks because I prefer healthier options.",
+    "word_count": 64,
+    "file_size_kb": 130.5
+  },
+  {
+    "id": 191,
+    "topic": "Do you listen to music often?",
+    "filename": "191-Do-you-listen-to-music-often.mp3",
+    "text": "Yes, I listen to music almost constantly - probably 4-6 hours a day in total. During my morning and evening commutes, I always have music or podcasts playing for about an hour each way. While working, I play instrumental music in the background for 4-5 hours to help concentration. At the gym, I listen to upbeat music for 30-45 minutes. Only during meetings or focused tasks do I not listen to anything.",
+    "word_count": 72,
+    "file_size_kb": 164.53
+  },
+  {
+    "id": 192,
+    "topic": "How often do you clean your room?",
+    "filename": "192-How-often-do-you-clean-your-room.mp3",
+    "text": "I do light cleaning daily - making my bed every morning and tidying up clutter each evening before bed. A more thorough cleaning happens once a week, usually on Sunday mornings, including vacuuming, dusting, and organizing. Deep cleaning with tasks like washing windows or reorganizing closets happens monthly or every 6 weeks. When I'm very busy with work, I might skip the weekly deep clean and just do the daily maintenance.",
+    "word_count": 71,
+    "file_size_kb": 158.2
+  },
+  {
+    "id": 193,
+    "topic": "Do you play sports regularly?",
+    "filename": "193-Do-you-play-sports-regularly.mp3",
+    "text": "Yes, I play badminton regularly - twice a week on Tuesday and Thursday evenings at a local sports center. During summer, I increase to three times a week because the weather is nice and I have more energy. In winter, sometimes I reduce to once a week or take breaks when it's too cold or I'm not feeling well. Occasionally, I also play casual games with friends on weekends, though this is less regular.",
+    "word_count": 74,
+    "file_size_kb": 149.06
+  },
+  {
+    "id": 194,
+    "topic": "How often do you check your email?",
+    "filename": "194-How-often-do-you-check-your-email.mp3",
+    "text": "I check my work email constantly during office hours - probably every 30 minutes to stay on top of important messages. First thing in the morning, I spend 15-20 minutes going through overnight emails. Throughout the workday, I check it briefly between tasks. Personal email, I check much less frequently - usually once in the evening and maybe once on weekend mornings. During vacations, I try to check work email only once daily, just for urgent matters.",
+    "word_count": 77,
+    "file_size_kb": 173.11
+  }
+]

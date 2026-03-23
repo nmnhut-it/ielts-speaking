@@ -1,0 +1,80 @@
+[
+  {
+    "english": "efficient",
+    "type": "(adj)",
+    "vietnamese": "hiệu quả",
+    "pronunciation": "/ɪˈfɪʃnt/"
+  },
+  {
+    "english": "reliable",
+    "type": "(adj)",
+    "vietnamese": "đáng tin cậy",
+    "pronunciation": "/rɪˈlaɪəbl/"
+  },
+  {
+    "english": "environmentally friendly",
+    "type": "(adj phrase)",
+    "vietnamese": "thân thiện với môi trường",
+    "pronunciation": "/ɪnˌvaɪrənˈmentəli ˈfrendli/"
+  },
+  {
+    "english": "traffic congestion",
+    "type": "(n phrase)",
+    "vietnamese": "tắc đường",
+    "pronunciation": "/ˈtræfɪk kənˈdʒestʃən/"
+  },
+  {
+    "english": "parking",
+    "type": "(n)",
+    "vietnamese": "đỗ xe",
+    "pronunciation": "/ˈpɑːkɪŋ/"
+  },
+  {
+    "english": "flexibility",
+    "type": "(n)",
+    "vietnamese": "sự linh hoạt",
+    "pronunciation": "/ˌfleksəˈbɪləti/"
+  },
+  {
+    "english": "scenic route",
+    "type": "(n phrase)",
+    "vietnamese": "tuyến đường có cảnh đẹp",
+    "pronunciation": "/ˈsiːnɪk ruːt/"
+  },
+  {
+    "english": "comfortable journey",
+    "type": "(n phrase)",
+    "vietnamese": "chuyến đi thoải mái",
+    "pronunciation": "/ˈkʌmftəbl ˈdʒɜːni/"
+  },
+  {
+    "english": "public transport",
+    "type": "(n phrase)",
+    "vietnamese": "giao thông công cộng",
+    "pronunciation": "/ˈpʌblɪk ˈtrænspɔːt/"
+  },
+  {
+    "english": "commute",
+    "type": "(n/v)",
+    "vietnamese": "đi lại, chuyến đi làm",
+    "pronunciation": "/kəˈmjuːt/"
+  },
+  {
+    "english": "driver's license",
+    "type": "(n phrase)",
+    "vietnamese": "bằng lái xe",
+    "pronunciation": "/ˈdraɪvəz ˈlaɪsns/"
+  },
+  {
+    "english": "independence",
+    "type": "(n)",
+    "vietnamese": "sự độc lập",
+    "pronunciation": "/ˌɪndɪˈpendəns/"
+  },
+  {
+    "english": "mode of transport",
+    "type": "(n phrase)",
+    "vietnamese": "phương tiện giao thông",
+    "pronunciation": "/məʊd ɒv ˈtrænspɔːt/"
+  }
+]
