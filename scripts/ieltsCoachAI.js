@@ -46,10 +46,10 @@ class IELTSCoachAI {
         };
     }
 
-    // Make API call to Gemini
+    // Make API call to Gemini (gracefully degrades without API key)
     async callGemini(prompt, options = {}) {
         if (!this.hasApiKey()) {
-            throw new Error('API key not set. Please configure your Gemini API key.');
+            throw new Error('AI feedback requires a local ONNX model. Please use the offline scoring feature instead.');
         }
 
         const requestBody = {

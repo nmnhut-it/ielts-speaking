@@ -57,10 +57,7 @@ function initializePracticeInterface() {
     updateProgress();
     populateQuestionBrowser();
 
-    // Check API key
-    if (!window.ieltsCoachAI?.hasApiKey()) {
-        showApiKeyReminder();
-    }
+    // No API key needed - using offline scoring
 }
 
 /**
@@ -657,10 +654,7 @@ async function getAIFeedback() {
         return;
     }
 
-    if (!window.ieltsCoachAI?.hasApiKey()) {
-        showApiKeyReminder();
-        return;
-    }
+    // Using offline scoring
 
     const btn = document.getElementById('getFeedbackBtn');
     const feedbackSection = document.getElementById('feedbackSection');
@@ -691,17 +685,7 @@ async function getAIFeedback() {
     }
 }
 
-function showApiKeyReminder() {
-    const reminder = confirm(
-        'You need a free Gemini API key to get AI feedback.\n\n' +
-        'Would you like to set it up now?\n\n' +
-        '(You can still practice and view sample answers without it)'
-    );
-
-    if (reminder) {
-        window.location.href = 'ielts-speaking-lessons.html#api-key';
-    }
-}
+// API key reminder removed - using offline scoring
 
 // ========== NAVIGATION ==========
 

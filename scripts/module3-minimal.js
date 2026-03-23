@@ -1848,11 +1848,7 @@ async function getAIFeedback() {
         return;
     }
 
-    if (!window.ieltsCoachAI?.hasApiKey()) {
-        const setup = confirm('You need a free Gemini API key to get AI feedback. Set it up now?');
-        if (setup) window.location.href = 'ielts-speaking-lessons.html#api-key';
-        return;
-    }
+    // Use offline scoring - no API key needed
 
     const card = allCards[currentIndex];
     const strategy = STRATEGY_CONFIG[currentStrategy];
@@ -1861,13 +1857,32 @@ async function getAIFeedback() {
     const feedbackContent = document.getElementById('feedbackContent');
 
     feedbackSection.style.display = 'block';
-    feedbackContent.textContent = 'Getting AI feedback...';
+    feedbackContent.textContent = 'Analyzing...';
 
     try {
-        const prompt = `IELTS Speaking Part 2 Cue Card: "${card.topic}"\n\nStudent's 2-minute answer: "${answer}"\n\nStrategy used: ${strategy.name}\n\nProvide brief feedback on: 1) Structure and coherence, 2) Whether it would fill 2 minutes, 3) Vocabulary and fluency, 4) How well they addressed the prompts`;
-
-        const feedback = await window.ieltsCoachAI.feedbackOnIdeas(card.topic, answer + '\n\n' + prompt);
-        feedbackContent.innerHTML = feedback.replace(/\n/g, '<br>');
+        // Use offline heuristic feedback
+        const words = answer.trim().split(/\s+/);
+        const wordCount = words.length;
+        const sentences = answer.split(/[.!?]+/).filter(s => s.trim());
+        const estimatedSeconds = Math.round(wordCount / 2.5);
+        const lines = [];
+        lines.push('<strong>Self-Study Analysis</strong>');
+        lines.push('Word count: ' + wordCount + ' (~' + estimatedSeconds + ' seconds of speaking)');
+        if (estimatedSeconds < 90) {
+            lines.push('Your answer may be too short for a 2-minute response. Try adding more details.');
+        } else if (estimatedSeconds > 150) {
+            lines.push('Good length! This would comfortably fill the 2-minute slot.');
+        } else {
+            lines.push('Reasonable length for Part 2.');
+        }
+        if (sentences.length >= 5) {
+            lines.push('Good structure with ' + sentences.length + ' sentences.');
+        }
+        if (window.calculateBandScores) {
+            const scores = calculateBandScores(answer);
+            lines.push('Estimated band: ' + scores.overall);
+        }
+        feedbackContent.innerHTML = lines.join('<br>');
 
         const cardId = getCardId(card, currentIndex);
         completed.add(cardId);
@@ -2075,26 +2090,10 @@ async function transcribeRecording() {
     textDiv.textContent = 'Transcribing...';
 
     try {
-        const geminiKey = localStorage.getItem('geminiApiKey');
         let transcript;
-
-        if (geminiKey) {
-            try {
-                transcript = await window.sttService.transcribe(
-                    answerRecordingBlob,
-                    { mode: 'gemini', geminiApiKey: geminiKey }
-                );
-            } catch (e) {
-                console.warn('Gemini STT failed, trying browser:', e);
-                transcript = await window.sttService.transcribe(
-                    answerRecordingBlob, { mode: 'browser' }
-                );
-            }
-        } else {
-            transcript = await window.sttService.transcribe(
-                answerRecordingBlob, { mode: 'browser' }
-            );
-        }
+        transcript = await window.sttService.transcribe(
+            answerRecordingBlob, { mode: 'browser' }
+        );
 
         textDiv.textContent = transcript;
         const wordCount = transcript.split(/\s+/).filter(w => w).length;

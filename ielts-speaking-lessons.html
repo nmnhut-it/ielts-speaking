@@ -16,21 +16,7 @@
             </nav>
         </header>
 
-        <!-- API Key Setup -->
-        <div id="apiKeySection" class="setup-card hidden">
-            <h3>🔑 Setup Required</h3>
-            <p>To get personalized AI feedback during practice, you need a free Gemini API key:</p>
-            <ol class="setup-steps">
-                <li>Visit <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a></li>
-                <li>Sign in and click "Create API Key"</li>
-                <li>Copy and paste it below</li>
-            </ol>
-            <div class="input-group">
-                <input type="password" id="apiKeyInput" placeholder="AIza...">
-                <button class="btn" id="saveApiKeyBtn">Save Key</button>
-            </div>
-            <p class="note">✓ All lessons, quizzes, and self-study features work without an API key. The key enables personalized AI feedback.</p>
-        </div>
+        <!-- All features use offline scoring and browser-based AI -->
 
         <!-- Module Selection -->
         <section id="moduleSelection" class="module-grid">
@@ -313,14 +299,8 @@
             // Initialize TTS engine
             initTTS();
 
-            // Check API key
-            checkApiKey();
-
             // Update progress displays
             updateAllProgress();
-
-            // Setup API key handlers
-            document.getElementById('saveApiKeyBtn').addEventListener('click', saveApiKey);
 
             // Setup navigation
             document.getElementById('backToModulesBtn').addEventListener('click', backToModules);
@@ -409,28 +389,7 @@
             // Rate change takes effect on next play
         }
 
-        function checkApiKey() {
-            const hasKey = window.ieltsCoachAI.hasApiKey();
-            if (!hasKey) {
-                document.getElementById('apiKeySection').classList.remove('hidden');
-            }
-        }
-
-        function saveApiKey() {
-            const key = document.getElementById('apiKeyInput').value.trim();
-            if (!key) {
-                alert('Please enter a valid API key');
-                return;
-            }
-            if (!key.startsWith('AIza')) {
-                alert('API key should start with "AIza"');
-                return;
-            }
-
-            window.ieltsCoachAI.setApiKey(key);
-            document.getElementById('apiKeySection').classList.add('hidden');
-            alert('✓ API key saved! You can now use AI practice features.');
-        }
+        // API key setup removed - using offline scoring
 
         function updateAllProgress() {
             Object.keys(IELTS_LESSONS).forEach(moduleId => {
@@ -865,11 +824,9 @@
             // Now update question after elements are in DOM
             updateQuestion();
 
-            // Update button text based on API key availability
+            // Use offline scoring for feedback
             const feedbackBtn = document.getElementById('getAIFeedbackBtn');
-            if (!window.ieltsCoachAI.hasApiKey()) {
-                feedbackBtn.textContent = 'Check My Answer';
-            }
+            feedbackBtn.textContent = 'Check My Answer';
 
             // Setup AI feedback button
             feedbackBtn.addEventListener('click', async () => {
@@ -985,15 +942,13 @@
                 return;
             }
 
-            const hasApiKey = window.ieltsCoachAI.hasApiKey();
-
             const feedbackBox = document.getElementById('aiFeedbackBox');
             const feedbackContent = document.getElementById('aiFeedbackContent');
             const btn = document.getElementById('getAIFeedbackBtn');
 
             try {
                 btn.disabled = true;
-                btn.textContent = hasApiKey ? '⏳ Getting AI Feedback...' : '⏳ Analyzing...';
+                btn.textContent = '⏳ Analyzing...';
 
                 let feedback;
                 let currentQuestion;
@@ -1014,26 +969,8 @@
                     currentQuestion = section.practiceQuestion;
                 }
 
-                if (hasApiKey) {
-                    // Use Gemini AI for feedback
-                    if (section.id && section.id.includes('m2')) {
-                        feedback = await window.ieltsCoachAI.feedbackOnIdeas(currentQuestion, studentResponse);
-                    } else if (section.id && section.id.includes('m3')) {
-                        feedback = await window.ieltsCoachAI.improveSentence(studentResponse, 7.0, currentQuestion);
-                    } else if (section.id && section.id.includes('m4')) {
-                        if (section.cueCard) {
-                            feedback = await window.ieltsCoachAI.analyzePreparationNotes(
-                                section.cueCard.topic, section.cueCard.points, studentResponse);
-                        } else {
-                            feedback = await window.ieltsCoachAI.feedbackOnIdeas(currentQuestion, studentResponse);
-                        }
-                    } else {
-                        feedback = await window.ieltsCoachAI.feedbackOnIdeas(currentQuestion || section.title, studentResponse);
-                    }
-                } else {
-                    // Local self-study feedback (no API key required)
-                    feedback = generateLocalFeedback(studentResponse, currentQuestion, sampleAnswer, section);
-                }
+                // Use local offline feedback
+                feedback = generateLocalFeedback(studentResponse, currentQuestion, sampleAnswer, section);
 
                 feedbackContent.innerHTML = feedback.replace(/\n/g, '<br>');
                 feedbackBox.classList.remove('hidden');
@@ -1050,7 +987,7 @@
                 markSectionComplete();
             } finally {
                 btn.disabled = false;
-                btn.textContent = hasApiKey ? 'Get AI Feedback' : 'Check My Answer';
+                btn.textContent = 'Check My Answer';
             }
         }
 
@@ -1129,16 +1066,7 @@
             startConversation();
 
             async function startConversation() {
-                if (window.ieltsCoachAI.hasApiKey()) {
-                    try {
-                        const result = await window.ieltsCoachAI.conductPart1Practice(0);
-                        addMessage('teacher', result.content);
-                    } catch (e) {
-                        addMessage('teacher', scriptedQuestions[0]);
-                    }
-                } else {
-                    addMessage('teacher', scriptedQuestions[0]);
-                }
+                addMessage('teacher', scriptedQuestions[0]);
                 questionCount++;
             }
 
@@ -1156,22 +1084,9 @@
 
                 // Get AI response or use scripted questions
                 if (questionCount < maxQuestions) {
-                    if (window.ieltsCoachAI.hasApiKey()) {
-                        try {
-                            const result = await window.ieltsCoachAI.conductPart1Practice(
-                                questionCount, conversationHistory, response);
-                            addMessage('teacher', result.content);
-                            conversationHistory.push({ role: 'teacher', message: result.content });
-                        } catch (e) {
-                            const q = scriptedQuestions[questionCount % scriptedQuestions.length];
-                            addMessage('teacher', q);
-                            conversationHistory.push({ role: 'teacher', message: q });
-                        }
-                    } else {
-                        const q = scriptedQuestions[questionCount % scriptedQuestions.length];
-                        addMessage('teacher', q);
-                        conversationHistory.push({ role: 'teacher', message: q });
-                    }
+                    const q = scriptedQuestions[questionCount % scriptedQuestions.length];
+                    addMessage('teacher', q);
+                    conversationHistory.push({ role: 'teacher', message: q });
                     questionCount++;
                 } else {
                     // End conversation
@@ -1194,17 +1109,7 @@
                 feedbackDiv.classList.remove('hidden');
 
                 let feedbackHtml;
-                if (window.ieltsCoachAI.hasApiKey()) {
-                    try {
-                        const feedback = await window.ieltsCoachAI.providePart3Feedback(
-                            section.title, conversationHistory);
-                        feedbackHtml = feedback.replace(/\n/g, '<br>');
-                    } catch (e) {
-                        feedbackHtml = generateConversationSummary(conversationHistory);
-                    }
-                } else {
-                    feedbackHtml = generateConversationSummary(conversationHistory);
-                }
+                feedbackHtml = generateConversationSummary(conversationHistory);
 
                 feedbackDiv.innerHTML = '<div class="feedback-content">' + feedbackHtml + '</div>';
                 markSectionComplete();
@@ -1230,7 +1135,7 @@
                     lines.push('✓ Great length! You are giving well-developed answers.');
                 }
                 lines.push('');
-                lines.push('ℹ️ <em>Add a Gemini API key for personalized AI feedback on grammar, vocabulary, and fluency.</em>');
+                lines.push('ℹ️ <em>Feedback is provided using offline analysis.</em>');
                 return lines.join('<br>');
             }
 
@@ -1379,10 +1284,7 @@
                 lines.push('💡 <strong>Tip:</strong> Add connectors like "because", "for example", "actually" to improve fluency.');
             }
 
-            if (!window.ieltsCoachAI.hasApiKey()) {
-                lines.push('');
-                lines.push('ℹ️ <em>For personalized AI feedback, add a free Gemini API key in the setup section above.</em>');
-            }
+            // Offline scoring - no API key needed
 
             return lines.join('\n');
         }

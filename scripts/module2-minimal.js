@@ -954,11 +954,7 @@ async function getAIFeedback() {
         return;
     }
 
-    if (!window.ieltsCoachAI?.hasApiKey()) {
-        const setup = confirm('You need a free Gemini API key to get AI feedback. Set it up now?');
-        if (setup) window.location.href = 'ielts-speaking-lessons.html#api-key';
-        return;
-    }
+    // Use offline scoring - no API key needed
 
     const question = allQuestions[currentIndex];
     const questionText = typeof question === 'string' ? question : question.question;
@@ -967,11 +963,31 @@ async function getAIFeedback() {
     const feedbackContent = document.getElementById('feedbackContent');
 
     feedbackSection.style.display = 'block';
-    feedbackContent.textContent = 'Getting AI feedback...';
+    feedbackContent.textContent = 'Analyzing...';
 
     try {
-        const feedback = await window.ieltsCoachAI.feedbackOnIdeas(questionText, answer);
-        feedbackContent.innerHTML = feedback.replace(/\n/g, '<br>');
+        // Use offline heuristic feedback
+        const words = answer.trim().split(/\s+/);
+        const wordCount = words.length;
+        const sentences = answer.split(/[.!?]+/).filter(s => s.trim());
+        const lines = [];
+        lines.push('<strong>Self-Study Analysis</strong>');
+        lines.push('Word count: ' + wordCount);
+        if (wordCount < 20) {
+            lines.push('Try to develop your answer more (aim for 30-50 words).');
+        } else if (wordCount >= 40) {
+            lines.push('Good length! Well-developed answer.');
+        } else {
+            lines.push('Decent length. Try adding more details or examples.');
+        }
+        if (sentences.length > 1) {
+            lines.push('You used ' + sentences.length + ' sentences - good structure.');
+        }
+        if (window.calculateBandScores) {
+            const scores = calculateBandScores(answer);
+            lines.push('Estimated band: ' + scores.overall);
+        }
+        feedbackContent.innerHTML = lines.join('<br>');
 
         // Mark as completed
         const questionId = getQuestionId(question, currentIndex);
@@ -1801,26 +1817,10 @@ async function transcribeM2Recording() {
     textDiv.textContent = 'Transcribing...';
 
     try {
-        const geminiKey = localStorage.getItem('geminiApiKey');
         let transcript;
-
-        if (geminiKey) {
-            try {
-                transcript = await window.sttService.transcribe(
-                    currentRecording.blob,
-                    { mode: 'gemini', geminiApiKey: geminiKey }
-                );
-            } catch (e) {
-                console.warn('Gemini STT failed, falling back:', e);
-                transcript = await window.sttService.transcribe(
-                    currentRecording.blob, { mode: 'browser' }
-                );
-            }
-        } else {
-            transcript = await window.sttService.transcribe(
-                currentRecording.blob, { mode: 'browser' }
-            );
-        }
+        transcript = await window.sttService.transcribe(
+            currentRecording.blob, { mode: 'browser' }
+        );
 
         textDiv.textContent = transcript;
         const wc = transcript.split(/\s+/).filter(w => w).length;

@@ -25,7 +25,7 @@ class ConversationAgent {
     // Process raw topic notes into structured summary
     async processTopic(rawNotes) {
         if (!this.apiKey) {
-            throw new Error('Gemini API key not set');
+            throw new Error('AI service not available. Using offline features instead.');
         }
 
         const prompt = `You are an expert educator. A student has provided content which could be either:
@@ -146,7 +146,7 @@ Guidelines:
     // Get AI response
     async getResponse(userMessage) {
         if (!this.apiKey) {
-            throw new Error('Gemini API key not set');
+            throw new Error('AI service not available. Using offline features instead.');
         }
 
         // Add user message to history

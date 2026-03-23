@@ -197,12 +197,6 @@ Restaurant Menu:
                     return;
                 }
 
-                if (!window.conversationAgent.hasApiKey()) {
-                    const apiKey = prompt('Enter your Gemini API key:\n(Get it from https://aistudio.google.com/app/apikey)');
-                    if (!apiKey) return;
-                    window.conversationAgent.setApiKey(apiKey);
-                }
-
                 processTopicBtn.disabled = true;
                 showStatus('Processing topic with AI...', 'info');
 
@@ -232,11 +226,6 @@ Restaurant Menu:
 
             // Skip Topic
             skipTopicBtn.addEventListener('click', () => {
-                if (!window.conversationAgent.hasApiKey()) {
-                    const apiKey = prompt('Enter your Gemini API key:\n(Get it from https://aistudio.google.com/app/apikey)');
-                    if (!apiKey) return;
-                    window.conversationAgent.setApiKey(apiKey);
-                }
                 startChat();
             });
 
@@ -287,12 +276,6 @@ Restaurant Menu:
 
             // Voice Chat Controls
             connectVoiceBtn.addEventListener('click', async () => {
-                if (!window.conversationAgent.hasApiKey()) {
-                    const apiKey = prompt('Enter your Gemini API key:\n(Get it from https://aistudio.google.com/app/apikey)');
-                    if (!apiKey) return;
-                    window.conversationAgent.setApiKey(apiKey);
-                }
-
                 connectVoiceBtn.disabled = true;
                 showVoiceStatusGlobal('Connecting to voice chat...');
 

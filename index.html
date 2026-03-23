@@ -681,34 +681,21 @@
                 <div class="setup-toggle-icon" id="setupIcon">&#9881;</div>
                 <div class="setup-toggle-text">
                     <strong>Quick Setup</strong>
-                    <span id="setupSubtext">Add your API key to unlock AI features</span>
+                    <span id="setupSubtext">Add your name to personalize your sessions</span>
                 </div>
             </div>
             <span class="setup-chevron" id="setupChevron">&#9662;</span>
         </button>
         <div class="setup-panel" id="setupPanel">
             <div class="setup-panel-inner">
-                <div class="setup-row">
-                    <div class="setup-field">
-                        <label>
-                            Gemini API Key
-                            <span class="setup-saved-indicator" id="apiSaved">&#10003; Saved</span>
-                        </label>
-                        <input type="password" id="apiKeyInput" placeholder="AIza..."
-                               oninput="saveApiKey()" autocomplete="off">
-                        <div class="field-hint">
-                            Free from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">Google AI Studio</a> &mdash; enables AI examiner &amp; feedback
-                        </div>
-                    </div>
-                    <div class="setup-field">
-                        <label>
-                            Your Name <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span>
-                            <span class="setup-saved-indicator" id="nameSaved">&#10003; Saved</span>
-                        </label>
-                        <input type="text" id="nameInput" placeholder="Enter your name"
-                               oninput="saveName()" autocomplete="name">
-                        <div class="field-hint">Used to personalize your practice sessions</div>
-                    </div>
+                <div class="setup-field">
+                    <label>
+                        Your Name <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span>
+                        <span class="setup-saved-indicator" id="nameSaved">&#10003; Saved</span>
+                    </label>
+                    <input type="text" id="nameInput" placeholder="Enter your name"
+                           oninput="saveName()" autocomplete="name">
+                    <div class="field-hint">Used to personalize your practice sessions</div>
                 </div>
             </div>
         </div>
@@ -824,8 +811,8 @@
             <div class="step-item">
                 <div class="step-num">1</div>
                 <div class="step-content">
-                    <h4>Get your free API key</h4>
-                    <p>Create a free Gemini API key from Google AI Studio. Takes 30 seconds. This powers the AI examiner and instant feedback.</p>
+                    <h4>Set up your profile</h4>
+                    <p>Enter your name above to personalize your practice sessions. All AI features run locally using built-in models.</p>
                 </div>
             </div>
             <div class="step-item">
@@ -852,7 +839,7 @@
                 &copy; 2025 IELTS Speaking Practice &mdash; Built by
                 <a href="https://github.com/nmnhut-it" target="_blank" rel="noopener">Nguy&#7877;n Minh Nh&#7921;t</a>
                 <br>
-                Powered by Google Gemini AI. Not affiliated with British Council, IDP, or Cambridge.
+                Not affiliated with British Council, IDP, or Cambridge.
             </p>
         </div>
     </footer>
@@ -873,24 +860,7 @@
         }
 
         // ─── Save settings ───
-        let apiDebounce, nameDebounce;
-
-        function saveApiKey() {
-            clearTimeout(apiDebounce);
-            apiDebounce = setTimeout(() => {
-                const val = document.getElementById('apiKeyInput').value.trim();
-                if (val) {
-                    localStorage.setItem('geminiApiKey', val);
-                    document.getElementById('apiKeyInput').classList.add('saved');
-                    showSaved('apiSaved');
-                } else {
-                    localStorage.removeItem('geminiApiKey');
-                    document.getElementById('apiKeyInput').classList.remove('saved');
-                    hideSaved('apiSaved');
-                }
-                updateStatus();
-            }, 400);
-        }
+        let nameDebounce;
 
         function saveName() {
             clearTimeout(nameDebounce);
@@ -913,24 +883,22 @@
         function hideSaved(id) { document.getElementById(id).classList.remove('visible'); }
 
         function updateStatus() {
-            const hasKey = !!localStorage.getItem('geminiApiKey');
             const hasName = !!localStorage.getItem('studentName');
             const dot = document.getElementById('statusDot');
             const text = document.getElementById('statusText');
             const subtext = document.getElementById('setupSubtext');
             const icon = document.getElementById('setupIcon');
 
-            if (hasKey) {
-                dot.classList.add('active');
-                text.textContent = hasName ? localStorage.getItem('studentName') : 'Ready';
-                subtext.textContent = 'AI features enabled' + (hasName ? '' : ' \u2014 add your name to personalize');
+            dot.classList.add('active');
+            if (hasName) {
+                text.textContent = localStorage.getItem('studentName');
+                subtext.textContent = 'Ready to practice';
                 icon.innerHTML = '&#10003;';
                 icon.style.background = '#f0fdf4';
                 icon.style.color = 'var(--forest)';
             } else {
-                dot.classList.remove('active');
-                text.textContent = 'Not configured';
-                subtext.textContent = 'Add your API key to unlock AI features';
+                text.textContent = 'Ready';
+                subtext.textContent = 'Add your name to personalize your sessions';
                 icon.innerHTML = '&#9881;';
                 icon.style.background = '';
                 icon.style.color = '';
@@ -939,14 +907,8 @@
 
         // ─── Init ───
         function init() {
-            const savedKey = localStorage.getItem('geminiApiKey');
             const savedName = localStorage.getItem('studentName');
 
-            if (savedKey) {
-                document.getElementById('apiKeyInput').value = savedKey;
-                document.getElementById('apiKeyInput').classList.add('saved');
-                showSaved('apiSaved');
-            }
             if (savedName) {
                 document.getElementById('nameInput').value = savedName;
                 document.getElementById('nameInput').classList.add('saved');
