@@ -145,16 +145,37 @@ function calculateBandScores(transcript, durationSeconds, partType, audioBlob) {
     const raw = (fluencyBand + vocabBand + grammarBand + pronBand) / 4;
     const overall = Math.round(raw * 2) / 2;
 
-    return {
+    const result = {
         overall: Math.max(4.0, Math.min(9.0, overall)),
         fluency: fluencyBand,
         vocabulary: vocabBand,
         grammar: grammarBand,
         pronunciation: pronBand,
+        pronunciationChallenges: pron.pronunciationChallenges || [],
         details: buildDetails(fluency, vocab, grammar, pron),
         wordCount,
         errors: grammar.errors || []
     };
+
+    // If audio is provided, schedule async pronunciation enhancement
+    if (audioBlob) {
+        result.pronunciationPromise = assessPronunciation(
+            audioBlob, text, null
+        ).then(pronResult => {
+            if (pronResult) {
+                result.pronunciation = pronResult.band;
+                result.pronunciationDetails = pronResult;
+                // Recalculate overall with updated pronunciation
+                const updatedRaw = (result.fluency + result.vocabulary +
+                    result.grammar + result.pronunciation) / 4;
+                result.overall = Math.max(
+                    4.0, Math.min(9.0, Math.round(updatedRaw * 2) / 2)
+                );
+            }
+        });
+    }
+
+    return result;
 }
 
 // ============================================================
@@ -537,11 +558,15 @@ function scorePronunciation(text, grammarErrorCount) {
     // Cap at 7.0 for text-only
     const band = Math.min(7.0, clampBand(score));
 
+    // Detect pronunciation challenges in the text
+    const pronunciationChallenges = findPronunciationChallenges(text);
+
     return {
         band,
         multiSyllableCount: multiSyllable.length,
         contractions,
         soundVariety: beginnings.size,
+        pronunciationChallenges,
         note: 'Text-based estimate only. Record audio for accurate pronunciation assessment.',
         isTextOnly: true
     };
@@ -552,47 +577,90 @@ function scorePronunciation(text, grammarErrorCount) {
 // ============================================================
 
 /**
- * Assess pronunciation using MFCC spectral comparison against TTS reference.
- * Compares actual audio to ideal pronunciation.
+ * Assess pronunciation using word-mismatch detection and optional MFCC spectral comparison.
+ * Combines transcription accuracy with audio spectral analysis when available.
  * @param {Blob} audioBlob - Student's recorded audio
- * @param {string} referenceText - The expected text (from transcription)
- * @returns {Promise<object|null>} Pronunciation score and details, or null on failure
+ * @param {string} transcribedText - What Whisper heard the student say
+ * @param {string} expectedText - What the student intended to say (cue card / question)
+ * @returns {Promise<object>} Pronunciation score with mismatches and optional MFCC data
  */
-async function assessPronunciation(audioBlob, referenceText) {
-    if (!audioBlob || !referenceText) return null;
+async function assessPronunciation(audioBlob, transcribedText, expectedText) {
+    const result = {
+        band: 6.0,
+        mismatchedWords: [],
+        mfccScore: null,
+        note: '',
+        isAudioBased: false
+    };
 
-    try {
-        // Step 1: Decode student audio to Float32Array
-        const studentAudio = await decodeAudioBlob(audioBlob);
+    // METHOD 1: Word mismatch detection (works if both texts available)
+    if (transcribedText && expectedText) {
+        const mismatches = detectPronunciationMismatches(
+            transcribedText, expectedText
+        );
+        result.mismatchedWords = mismatches;
 
-        // Step 2: Generate reference audio via speechSynthesis
-        const referenceAudio = await generateReferenceAudio(referenceText);
-        if (!referenceAudio) return null;
+        const expectedWordCount = expectedText.split(/\s+/).length;
+        const mismatchRatio = mismatches.length / Math.max(1, expectedWordCount);
 
-        // Step 3: Extract MFCC features from both
-        const studentMFCC = extractMFCC(studentAudio.data, studentAudio.sampleRate);
-        const referenceMFCC = extractMFCC(referenceAudio.data, referenceAudio.sampleRate);
-
-        // Step 4: DTW distance
-        const distance = dtwDistance(studentMFCC, referenceMFCC);
-
-        // Step 5: Convert distance to band score
-        // Calibrated: distance 0 = perfect (9.0), distance > 500 = very poor (4.0)
-        const maxDist = 500;
-        const normalized = Math.min(1, distance / maxDist);
-        const band = Math.round((9.0 - normalized * 5.0) * 2) / 2;
-
-        return {
-            band: Math.max(4.0, Math.min(9.0, band)),
-            distance: +distance.toFixed(1),
-            normalized: +normalized.toFixed(3),
-            isAudioBased: true,
-            note: 'Based on spectral similarity to reference pronunciation'
-        };
-    } catch (error) {
-        console.warn('MFCC pronunciation assessment failed:', error);
-        return null;
+        if (mismatchRatio === 0) result.band = 7.0;
+        else if (mismatchRatio < 0.05) result.band = 6.5;
+        else if (mismatchRatio < 0.1) result.band = 6.0;
+        else if (mismatchRatio < 0.2) result.band = 5.5;
+        else result.band = 5.0;
     }
+
+    // METHOD 2: MFCC spectral comparison (if audio + TTS available)
+    if (audioBlob) {
+        try {
+            const studentAudio = await decodeAudioBlob(audioBlob);
+            const refText = transcribedText || expectedText;
+            const referenceAudio = await generateReferenceAudio(refText);
+
+            if (referenceAudio) {
+                const studentMFCC = extractMFCC(
+                    studentAudio.data, studentAudio.sampleRate
+                );
+                const referenceMFCC = extractMFCC(
+                    referenceAudio.data, referenceAudio.sampleRate
+                );
+                const distance = dtwDistance(studentMFCC, referenceMFCC);
+
+                const MAX_DISTANCE = 300;
+                const normalized = Math.min(1, distance / MAX_DISTANCE);
+                const mfccBand = Math.round(
+                    (8.0 - normalized * 4.0) * 2
+                ) / 2;
+
+                result.mfccScore = {
+                    band: Math.max(4.0, Math.min(8.0, mfccBand)),
+                    distance: +distance.toFixed(1),
+                    normalized: +normalized.toFixed(3)
+                };
+                result.isAudioBased = true;
+
+                // Blend: 60% MFCC, 40% mismatch when both available
+                const MFCC_WEIGHT = 0.6;
+                const MISMATCH_WEIGHT = 0.4;
+                if (result.mismatchedWords.length > 0) {
+                    result.band = Math.round(
+                        (result.mfccScore.band * MFCC_WEIGHT +
+                         result.band * MISMATCH_WEIGHT) * 2
+                    ) / 2;
+                } else {
+                    result.band = result.mfccScore.band;
+                }
+            }
+        } catch (e) {
+            console.warn('MFCC assessment failed:', e);
+        }
+    }
+
+    result.note = result.isAudioBased
+        ? 'Based on spectral analysis + word accuracy'
+        : 'Based on transcription accuracy (load audio models for full assessment)';
+
+    return result;
 }
 
 /** Decode audio blob to Float32Array */
@@ -606,14 +674,218 @@ async function decodeAudioBlob(blob) {
     return { data, sampleRate };
 }
 
-/** Generate reference audio using speechSynthesis (placeholder for SpeechT5 phase 2) */
-function generateReferenceAudio(text) {
-    return new Promise((resolve) => {
-        // Browser speechSynthesis doesn't give us raw audio easily.
-        // Placeholder — will be enhanced with SpeechT5 TTS in phase 2.
-        resolve(null);
-    });
+/**
+ * Generate reference audio using SpeechT5 TTS or browser fallback.
+ * @param {string} text - Text to synthesize
+ * @returns {Promise<{data: Float32Array, sampleRate: number}|null>}
+ */
+async function generateReferenceAudio(text) {
+    // Use SpeechT5 if available (loaded via ttsService)
+    const tts = window.ttsService;
+    if (tts && tts.isLoaded && tts.ttsModel) {
+        try {
+            const output = await tts.ttsModel(text, {
+                speaker_embeddings: tts.speakerEmbeddings
+            });
+            return {
+                data: output.audio,
+                sampleRate: output.sampling_rate || 16000
+            };
+        } catch (e) {
+            console.warn('SpeechT5 reference generation failed:', e);
+        }
+    }
+
+    // Fallback: browser speechSynthesis capture
+    return await captureReferenceSpeechSynthesis(text);
 }
+
+/**
+ * Fallback: attempt to capture browser speechSynthesis output.
+ * Browser speechSynthesis doesn't expose raw audio directly,
+ * so this returns null — MFCC comparison requires raw audio data.
+ * @param {string} text - Text to synthesize
+ * @returns {Promise<null>}
+ */
+async function captureReferenceSpeechSynthesis(text) {
+    // Browser speechSynthesis does not provide raw PCM data.
+    // Without raw audio, MFCC extraction is not possible.
+    // The word-mismatch approach will be used instead.
+    return null;
+}
+
+// ============================================================
+// Word-level pronunciation mismatch detection
+// ============================================================
+
+/** Common English pronunciation issues for ESL speakers */
+const PRONUNCIATION_TIPS = {
+    th: 'Practice the "th" sound: tongue between teeth, blow air (think, that, three)',
+    v_w: '"v" = top teeth on lower lip; "w" = round lips (very vs. wary)',
+    r_l: '"r" = tongue curled back, no contact; "l" = tongue tip touches ridge (right vs. light)',
+    i_ee: 'Short "i" (sit) vs. long "ee" (seat) — jaw position matters',
+    a_e: 'Short "a" (bat) vs. short "e" (bet) — mouth wider for "a"',
+    s_sh: '"s" = teeth together, tongue tip up; "sh" = lips slightly rounded (see vs. she)',
+    b_p: '"b" = voiced (feel vibration); "p" = unvoiced with puff of air',
+    final_consonants: 'Don\'t drop final consonants: pronounce the -t, -d, -s at word endings',
+    word_stress: 'English has stressed syllables: "imPORtant" not "IMportant"',
+    linking: 'Link words smoothly: "an apple" sounds like "a-napple"'
+};
+
+/**
+ * Detect word-level pronunciation mismatches between transcription and expected text.
+ * If Whisper heard "jars" but user meant "jazz", that signals a pronunciation issue.
+ * @param {string} transcribed - What the STT heard
+ * @param {string} expected - What the student intended to say
+ * @returns {Array<object>} List of mismatched words with feedback
+ */
+function detectPronunciationMismatches(transcribed, expected) {
+    const mismatches = [];
+
+    const tWords = transcribed.toLowerCase()
+        .replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w);
+    const eWords = expected.toLowerCase()
+        .replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w);
+
+    const minLen = Math.min(tWords.length, eWords.length);
+    const SIMILARITY_THRESHOLD = 0.4;
+
+    for (let i = 0; i < minLen; i++) {
+        if (tWords[i] !== eWords[i]) {
+            const similarity = wordSimilarity(tWords[i], eWords[i]);
+            if (similarity > SIMILARITY_THRESHOLD) {
+                mismatches.push({
+                    expected: eWords[i],
+                    heard: tWords[i],
+                    similarity: +similarity.toFixed(2),
+                    position: i,
+                    feedback: getPronunciationTip(eWords[i], tWords[i])
+                });
+            }
+        }
+    }
+
+    return mismatches;
+}
+
+/**
+ * Word similarity using Dice coefficient on character bigrams.
+ * @param {string} word1 - First word
+ * @param {string} word2 - Second word
+ * @returns {number} Similarity score 0-1
+ */
+function wordSimilarity(word1, word2) {
+    if (word1 === word2) return 1;
+    if (!word1 || !word2) return 0;
+
+    const bigrams1 = new Set();
+    const bigrams2 = new Set();
+    for (let i = 0; i < word1.length - 1; i++) {
+        bigrams1.add(word1.substring(i, i + 2));
+    }
+    for (let i = 0; i < word2.length - 1; i++) {
+        bigrams2.add(word2.substring(i, i + 2));
+    }
+
+    let intersection = 0;
+    bigrams1.forEach(b => { if (bigrams2.has(b)) intersection++; });
+
+    return (2.0 * intersection) / (bigrams1.size + bigrams2.size);
+}
+
+/**
+ * Get a pronunciation tip based on the expected vs. heard word pair.
+ * Detects common ESL confusion patterns (th, v/w, r/l, etc.).
+ * @param {string} expected - The intended word
+ * @param {string} heard - What was transcribed
+ * @returns {string} Actionable pronunciation tip
+ */
+function getPronunciationTip(expected, heard) {
+    const e = expected.toLowerCase();
+    const h = heard.toLowerCase();
+
+    if ((e.includes('th') && !h.includes('th')) ||
+        (h.includes('t') && e.includes('th'))) {
+        return PRONUNCIATION_TIPS.th;
+    }
+    if ((e.startsWith('v') && h.startsWith('w')) ||
+        (e.startsWith('w') && h.startsWith('v'))) {
+        return PRONUNCIATION_TIPS.v_w;
+    }
+    if ((e.includes('r') && h.includes('l')) ||
+        (e.includes('l') && h.includes('r'))) {
+        return PRONUNCIATION_TIPS.r_l;
+    }
+    if ((e.includes('sh') && h.includes('s') && !h.includes('sh')) ||
+        (e.includes('s') && !e.includes('sh') && h.includes('sh'))) {
+        return PRONUNCIATION_TIPS.s_sh;
+    }
+    if ((e.startsWith('b') && h.startsWith('p')) ||
+        (e.startsWith('p') && h.startsWith('b'))) {
+        return PRONUNCIATION_TIPS.b_p;
+    }
+
+    return 'Practice saying "' + expected + '" clearly — you said "' + heard + '"';
+}
+
+// ============================================================
+// Pronunciation challenge detection (text-based)
+// ============================================================
+
+/** Words with tricky pronunciation patterns for ESL speakers */
+const CHALLENGING_PATTERNS = {
+    th_words: /\b(the|this|that|these|those|think|thought|through|though|them|they|their|there|than|then|three|thing|throw|thousand|theater|therapy|theory|therefore|throughout|thoroughly)\b/gi,
+    consonant_clusters: /\b(strengths|months|sixths|twelfths|lengths|depths|breadths|widths|worlds|asks|desks|masks|risks|tasks|texts|contexts|scripts)\b/gi,
+    silent_letters: /\b(psychology|knife|know|knight|write|wrong|listen|castle|whistle|island|debt|doubt|subtle|receipt|pneumonia|Wednesday|February|colonel)\b/gi,
+    stress_variable: /\b(record|present|object|project|produce|conduct|contract|conflict|contest|convert|decrease|desert|digest|discount|export|import|increase|insult|permit|progress|protest|rebel|refund|reject|subject|suspect|survey|transfer|transport)\b/gi
+};
+
+/**
+ * Find pronunciation challenges in the text — tricky words for ESL speakers.
+ * @param {string} text - The transcript text
+ * @returns {Array<object>} List of challenging words with categories
+ */
+function findPronunciationChallenges(text) {
+    const challenges = [];
+    const seen = new Set();
+
+    const categories = {
+        th_words: { label: '"th" sound', tip: PRONUNCIATION_TIPS.th },
+        consonant_clusters: {
+            label: 'Consonant cluster',
+            tip: 'Pronounce every consonant — don\'t simplify clusters'
+        },
+        silent_letters: {
+            label: 'Silent letter',
+            tip: 'This word has silent letters — learn the correct pronunciation'
+        },
+        stress_variable: {
+            label: 'Stress pattern',
+            tip: PRONUNCIATION_TIPS.word_stress
+        }
+    };
+
+    for (const [key, regex] of Object.entries(CHALLENGING_PATTERNS)) {
+        const matches = text.match(regex) || [];
+        matches.forEach(word => {
+            const lower = word.toLowerCase();
+            if (!seen.has(lower)) {
+                seen.add(lower);
+                challenges.push({
+                    word: lower,
+                    category: categories[key].label,
+                    tip: categories[key].tip
+                });
+            }
+        });
+    }
+
+    return challenges;
+}
+
+// ============================================================
+// MFCC-based spectral features
+// ============================================================
 
 /**
  * Extract MFCC features from audio signal.
@@ -829,6 +1101,11 @@ function buildDetails(fluency, vocab, grammar, pron) {
             weaknesses.push('No contractions — may sound overly formal');
             tips.push('Use contractions (I\'m, don\'t, it\'s) for more natural speech');
         }
+        if (pron.pronunciationChallenges && pron.pronunciationChallenges.length > 0) {
+            const challengeCount = pron.pronunciationChallenges.length;
+            const categories = [...new Set(pron.pronunciationChallenges.map(c => c.category))];
+            tips.push('Practice ' + challengeCount + ' tricky word(s): ' + categories.join(', '));
+        }
     }
 
     // Ensure at least one of each
@@ -903,7 +1180,7 @@ function renderScoreHTML(scores, previousScores) {
         { label: 'Fluency & Coherence', key: 'fluency', prevKey: 'fluency' },
         { label: 'Lexical Resource', key: 'vocabulary', prevKey: 'vocab' },
         { label: 'Grammatical Range', key: 'grammar', prevKey: 'grammar' },
-        { label: 'Pronunciation (est.)', key: 'pronunciation', prevKey: 'pronunciation' }
+        { label: (scores.pronunciationDetails && scores.pronunciationDetails.isAudioBased) ? 'Pronunciation' : 'Pronunciation (est.)', key: 'pronunciation', prevKey: 'pronunciation' }
     ];
 
     let html = '<div class="ielts-score-display">';
@@ -966,6 +1243,54 @@ function renderScoreHTML(scores, previousScores) {
         }
     }
 
+    // Pronunciation details (mismatched words from audio assessment)
+    if (scores.pronunciationDetails &&
+        scores.pronunciationDetails.mismatchedWords &&
+        scores.pronunciationDetails.mismatchedWords.length > 0) {
+        html += '<div style="margin-top:12px;border:1px solid #f0ad4e;border-radius:6px;padding:10px;background:#fff8e1;">';
+        html += '<strong style="color:#e65100;font-size:0.85em;">Pronunciation Notes:</strong>';
+        html += '<ul style="margin:6px 0 0;padding-left:18px;font-size:0.82em;color:#555;">';
+        scores.pronunciationDetails.mismatchedWords.forEach(m => {
+            html += '<li>You said "<strong>' + m.heard +
+                '</strong>" — did you mean "<strong>' + m.expected +
+                '</strong>"?';
+            if (m.feedback) {
+                html += ' <em style="color:#888;">' + m.feedback + '</em>';
+            }
+            html += '</li>';
+        });
+        html += '</ul></div>';
+    }
+
+    // Pronunciation challenges (tricky words detected in text)
+    if (scores.pronunciationChallenges &&
+        scores.pronunciationChallenges.length > 0) {
+        html += '<div style="margin-top:8px;border:1px solid #90caf9;border-radius:6px;padding:10px;background:#e3f2fd;">';
+        html += '<strong style="color:#1565c0;font-size:0.85em;">Pronunciation Challenges Found:</strong>';
+        html += '<ul style="margin:6px 0 0;padding-left:18px;font-size:0.82em;color:#555;">';
+        const MAX_CHALLENGES_SHOWN = 5;
+        scores.pronunciationChallenges.slice(0, MAX_CHALLENGES_SHOWN).forEach(c => {
+            html += '<li><strong>' + c.word + '</strong> (' +
+                c.category + ') — ' + c.tip + '</li>';
+        });
+        if (scores.pronunciationChallenges.length > MAX_CHALLENGES_SHOWN) {
+            html += '<li style="color:#999;">...and ' +
+                (scores.pronunciationChallenges.length - MAX_CHALLENGES_SHOWN) +
+                ' more</li>';
+        }
+        html += '</ul></div>';
+    }
+
+    // MFCC score info if available
+    if (scores.pronunciationDetails &&
+        scores.pronunciationDetails.mfccScore) {
+        const mfcc = scores.pronunciationDetails.mfccScore;
+        html += '<div style="margin-top:6px;font-size:0.75em;color:#777;">';
+        html += 'Spectral analysis: distance=' + mfcc.distance +
+            ' (normalized: ' + mfcc.normalized + ')';
+        html += '</div>';
+    }
+
     html += '<div style="margin-top:10px;font-size:0.75em;color:#aaa;">' + scores.wordCount + ' words analyzed</div>';
     html += '</div>';
 
@@ -981,6 +1306,8 @@ window.renderScoreHTML = renderScoreHTML;
 window.getBandDescriptor = getBandDescriptor;
 window.BAND_DESCRIPTORS = BAND_DESCRIPTORS;
 window.assessPronunciation = assessPronunciation;
+window.detectPronunciationMismatches = detectPronunciationMismatches;
+window.findPronunciationChallenges = findPronunciationChallenges;
 window.testScoringAccuracy = testScoringAccuracy;
 
 // ============================================================
