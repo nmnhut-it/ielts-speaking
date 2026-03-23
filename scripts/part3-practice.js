@@ -788,6 +788,14 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         initModule();
     }
+
+    if (typeof botToken === 'undefined' || !botToken || typeof groupId === 'undefined' || !groupId) {
+        setTimeout(() => {
+            document.querySelectorAll('[onclick*="Telegram"]').forEach(el => el.style.display = 'none');
+            const sendBtns = document.querySelectorAll('.btn-telegram, #sendTelegramBtn');
+            sendBtns.forEach(el => el.style.display = 'none');
+        }, 100);
+    }
 });
 
 function initModule() {

@@ -199,6 +199,7 @@
             <label>Your name:</label>
             <input type="text" id="nameInput" placeholder="Enter your name" oninput="saveName()" autocomplete="name">
             <span class="setup-saved" id="nameSaved">&#10003; Saved</span>
+            <div class="tg-status" id="tgStatus"></div>
         </div>
     </div>
 
@@ -246,7 +247,34 @@
             updateNav();
         }
 
+        // Read Telegram params from URL
+        (function() {
+            const params = new URLSearchParams(window.location.search);
+            const tg = params.get('tg');
+            const cid = params.get('cid');
+            if (tg) {
+                try { localStorage.setItem('tg_bot_token', atob(tg)); } catch(e) {}
+            }
+            if (cid) {
+                try { localStorage.setItem('tg_chat_id', atob(cid)); } catch(e) {}
+            }
+            if (tg || cid) {
+                history.replaceState({}, '', location.pathname);
+            }
+        })();
+
+        function updateTelegramStatus() {
+            if (localStorage.getItem('tg_bot_token')) {
+                document.getElementById('tgStatus').textContent = '\u2713 Telegram connected';
+                document.getElementById('tgStatus').style.color = '#16803c';
+            } else {
+                document.getElementById('tgStatus').textContent = 'Telegram not configured';
+                document.getElementById('tgStatus').style.color = '#6b7280';
+            }
+        }
+
         init();
+        updateTelegramStatus();
     </script>
 </body>
 </html>

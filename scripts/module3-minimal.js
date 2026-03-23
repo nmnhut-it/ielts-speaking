@@ -1120,8 +1120,15 @@ document.addEventListener('DOMContentLoaded', init);
 
 function init() {
     studentSession = new StudentSession();
-    if (typeof botToken !== 'undefined' && typeof groupId !== 'undefined') {
+    if (typeof botToken !== 'undefined' && typeof groupId !== 'undefined' && botToken && groupId) {
         telegramSender = new TelegramSender(botToken, groupId);
+    }
+    if (!botToken || !groupId) {
+        setTimeout(() => {
+            document.querySelectorAll('[onclick*="Telegram"]').forEach(el => el.style.display = 'none');
+            const sendBtns = document.querySelectorAll('.btn-telegram, #sendTelegramBtn');
+            sendBtns.forEach(el => el.style.display = 'none');
+        }, 100);
     }
     var hasSession = studentSession.hasActiveSession();
     var hasPending = studentSession.hasPendingSession();
@@ -2012,9 +2019,15 @@ function updateConnectorDisplay() {
 // Score My Answer - run band scoring on preview text and show comparison
 function scoreMyAnswer() {
     const previewBox = document.getElementById('previewBox');
-    const answer = previewBox.textContent;
+    let answer = previewBox.textContent;
 
     if (!answer || answer.length < 50 || answer === 'Start filling in the fields to see your answer...') {
+        answer = localStorage.getItem('m3_last_transcript_' + currentIndex) || '';
+    }
+    if (!answer || answer.length < 50) {
+        answer = document.getElementById('manualAnswerInput')?.value || '';
+    }
+    if (!answer || answer.length < 50) {
         alert('Please fill in at least 2-3 fields before scoring');
         return;
     }

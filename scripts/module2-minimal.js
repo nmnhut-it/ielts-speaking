@@ -192,10 +192,17 @@ function cleanupStaleModals() {
 }
 
 function initializeAudioRecording() {
-    if (typeof botToken !== 'undefined' && typeof groupId !== 'undefined') {
+    if (typeof botToken !== 'undefined' && typeof groupId !== 'undefined' && botToken && groupId) {
         telegramSender = new TelegramSender(botToken, groupId);
     } else {
         console.warn('Telegram credentials not found');
+    }
+    if (!botToken || !groupId) {
+        setTimeout(() => {
+            document.querySelectorAll('[onclick*="Telegram"]').forEach(el => el.style.display = 'none');
+            const sendBtns = document.querySelectorAll('.btn-telegram, #sendTelegramBtn');
+            sendBtns.forEach(el => el.style.display = 'none');
+        }, 100);
     }
 }
 
@@ -1045,9 +1052,15 @@ function updateTemplateDisplay() {
 // Score My Answer - run band scoring on the preview text and show comparison
 function scoreMyAnswer() {
     const previewBox = document.getElementById('previewBox');
-    const answer = previewBox.textContent;
+    let answer = previewBox.textContent;
 
     if (!answer || answer.length < 10 || answer === 'Start typing to see your answer...') {
+        answer = localStorage.getItem('m2_last_transcript_' + currentIndex) || '';
+    }
+    if (!answer || answer.length < 10) {
+        answer = document.getElementById('manualAnswerInput')?.value || '';
+    }
+    if (!answer || answer.length < 10) {
         alert('Please fill in at least 2-3 fields before scoring');
         return;
     }
