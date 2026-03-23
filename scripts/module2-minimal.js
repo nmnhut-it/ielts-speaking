@@ -2203,7 +2203,8 @@ function deleteRecording() {
 }
 
 async function sendAudioToTelegram() {
-    if (!currentRecording) {
+    const recording = currentRecording || mainRecording;
+    if (!recording) {
         alert('No recording available');
         return;
     }
@@ -2225,30 +2226,43 @@ async function sendAudioToTelegram() {
         const category = typeof question === 'object' && question.category
             ? question.category
             : getCategoryFromIndex(currentIndex);
+        const hasFollowUp = typeof question === 'object' && question.followUp;
 
         const session = studentSession.getSession();
         const studentName = session ? session.name : 'Unknown Student';
 
-        const transcript = localStorage.getItem('m2_last_transcript_' + currentIndex) || '';
-        const wordCount = transcript ? transcript.trim().split(/\s+/).length : 0;
-        const duration = currentRecording.duration || 0;
+        // Use stored transcripts from linear flow
+        const mainText = mainTranscript || localStorage.getItem('m2_last_transcript_' + currentIndex) || '';
+        const followUpText = followUpTranscript || localStorage.getItem('m2_followup_transcript_' + currentIndex) || '';
+        const combinedTranscript = followUpText ? mainText + ' ' + followUpText : mainText;
+        const mainWords = mainText ? mainText.trim().split(/\s+/).length : 0;
+        const fuWords = followUpText ? followUpText.trim().split(/\s+/).length : 0;
+        const totalWords = mainWords + fuWords;
 
         let scoreText = 'Not scored';
-        if (transcript && window.calculateBandScores) {
-            const scores = calculateBandScores(transcript, duration);
+        if (combinedTranscript && window.calculateBandScores) {
+            const scores = calculateBandScores(combinedTranscript, interviewSeconds);
             scoreText = scores.overall + ' (F:' + scores.fluency +
                 ' V:' + scores.vocabulary + ' G:' + scores.grammar +
                 ' P:' + scores.pronunciation + ')';
         }
 
-        const caption = '<b>\ud83d\udcda IELTS Part 1 Recording</b>\n\n' +
+        let caption = '<b>📚 IELTS Part 1 Recording</b>\n\n' +
             '<b>Student:</b> ' + studentName + '\n' +
             '<b>Question #' + (currentIndex + 1) + ':</b> ' + questionText + '\n' +
             '<b>Category:</b> ' + category + '\n\n' +
-            '<b>\ud83d\udcdd Transcription:</b>\n' +
-            (transcript || 'No transcription available') + '\n\n' +
-            '<b>\ud83d\udcca Band Score:</b> ' + scoreText + '\n' +
-            '<b>Words:</b> ' + wordCount + ' | <b>Duration:</b> ' + Math.round(duration) + 's';
+            '<b>📝 Answer:</b>\n' +
+            (mainText || 'No transcription available') +
+            ' (' + mainWords + ' words)\n';
+
+        if (hasFollowUp && followUpText) {
+            caption += '\n<b>🔄 Follow-up:</b> ' + question.followUp + '\n' +
+                '<b>📝 Answer:</b>\n' + followUpText +
+                ' (' + fuWords + ' words)\n';
+        }
+
+        caption += '\n<b>📊 Band Score:</b> ' + scoreText + '\n' +
+            '<b>Total Words:</b> ' + totalWords;
 
         if (session?.photoDataUrl) {
             const photoBlob = dataURLtoBlob(session.photoDataUrl);
@@ -2260,13 +2274,21 @@ async function sendAudioToTelegram() {
         }
 
         await telegramSender.sendAudio(
-            currentRecording.blob,
+            recording.blob,
             caption,
             `${studentName}_q${currentIndex + 1}.ogg`
         );
 
-        alert('✅ Sent to nmnhut-it successfully!');
-        deleteRecording();
+        // Send follow-up recording separately if available
+        if (followUpText && currentRecording && mainRecording && currentRecording !== mainRecording) {
+            await telegramSender.sendAudio(
+                currentRecording.blob,
+                '<b>🔄 Follow-up recording for Q' + (currentIndex + 1) + '</b>',
+                `${studentName}_q${currentIndex + 1}_followup.ogg`
+            );
+        }
+
+        alert('Sent to nmnhut-it successfully!');
     } catch (error) {
         alert(`Failed to send: ${error.message}`);
     } finally {
