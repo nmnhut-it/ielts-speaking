@@ -440,9 +440,6 @@
                 <a href="ielts-speaking-lessons.html" class="header-btn" style="padding: 8px 16px; background: #667eea; color: white; text-decoration: none; border-radius: 4px; font-size: 14px;">
                     🎓 Learn Strategies First
                 </a>
-                <a href="ielts-speaking-library.html" class="header-btn" style="padding: 8px 16px; background: white; color: #2c2c2c; border: 1px solid #2c2c2c; text-decoration: none; border-radius: 4px; font-size: 14px;">
-                    📚 Library
-                </a>
             </div>
         </header>
 
@@ -732,7 +729,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="scripts/ieltsLibrary.js"></script>
     <script src="scripts/ieltsScoring.js"></script>
     <script src="scripts/progressTracker.js"></script>
     <script src="shared/scripts/geminiLiveService.js"></script>
@@ -1023,7 +1019,7 @@ ${selectedTopic.vocabulary.slice(0, 5).join(', ')}`;
             });
 
             document.getElementById('viewLibraryBtn').addEventListener('click', () => {
-                window.location.href = 'ielts-speaking-library.html';
+                window.location.href = 'ielts-speaking-lessons.html';
             });
 
             document.getElementById('retakeTestBtn').addEventListener('click', () => {
