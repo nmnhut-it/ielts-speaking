@@ -1140,22 +1140,27 @@ async function stopSpeaking() {
     const transcriptEl = document.getElementById('liveTranscriptText');
     const transcript = liveTranscript || transcriptEl.textContent.trim();
 
+    const isFollowUp = followUpAnswered; // true if this was the follow-up answer
+
     if (transcript && transcript.length > 0) {
-        // Update word count
         const words = transcript.trim().split(/\s+/).filter(Boolean);
-        document.getElementById('wordCount').textContent =
-            `${words.length} words`;
+        document.getElementById('wordCount').textContent = `${words.length} words`;
 
-        // Store transcript for scoring
-        localStorage.setItem(
-            'm2_last_transcript_' + currentIndex, transcript
-        );
+        // Store transcript
+        const storageKey = isFollowUp
+            ? 'm2_followup_transcript_' + currentIndex
+            : 'm2_last_transcript_' + currentIndex;
+        localStorage.setItem(storageKey, transcript);
 
-        // Auto-score (inline badge only — no duplicate full display)
-        autoScoreTranscript(transcript);
+        // Score it
+        await autoScoreTranscript(transcript);
+
+        // Scroll to feedback
+        const feedbackEl = document.getElementById('autoFeedback');
+        if (feedbackEl) feedbackEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // Show follow-up if available
+    // Show follow-up if available and not yet answered
     const question = allQuestions[currentIndex];
     const hasFollowUp = typeof question === 'object' && question.followUp;
 
@@ -1163,20 +1168,17 @@ async function stopSpeaking() {
         document.getElementById('followupZone').style.display = 'block';
         document.getElementById('followupText').textContent = question.followUp;
 
-        // Read follow-up aloud after a pause
         if (document.getElementById('autoVoice')?.checked) {
             setTimeout(() => {
                 PracticeCommon.speakAsExaminer(question.followUp);
             }, 1500);
         }
 
-        // Button becomes "Answer Follow-up"
         const actionBtn = document.getElementById('actionBtn');
         actionBtn.className = 'btn-action btn-speak';
         actionBtn.textContent = '🎤 Answer Follow-up';
         interviewState = 'followup';
     } else {
-        // No follow-up or already answered — button becomes "Next Question"
         const actionBtn = document.getElementById('actionBtn');
         actionBtn.className = 'btn-action btn-next-q';
         actionBtn.textContent = 'Next Question →';
@@ -1494,8 +1496,8 @@ function updateTemplateDisplay() {
     templateText.innerHTML = template;
 }
 
-// Score My Answer - run band scoring on the preview text and show comparison
-function scoreMyAnswer() {
+// Score My Answer - uses the same rich feedback as autoScoreTranscript
+async function scoreMyAnswer() {
     // Try transcript first, then preview box, then manual input
     let answer = localStorage.getItem('m2_last_transcript_' + currentIndex) || '';
     if (!answer || answer.length < 10) {
@@ -1514,48 +1516,19 @@ function scoreMyAnswer() {
         return;
     }
 
+    // Use the full feedback system
+    await autoScoreTranscript(answer);
+
+    // Mark as completed
     const question = allQuestions[currentIndex];
-    const feedbackSection = document.getElementById('feedbackSection');
-    const feedbackContent = document.getElementById('feedbackContent');
+    const questionId = getQuestionId(question, currentIndex);
+    completed.add(questionId);
+    saveProgress();
 
-    feedbackSection.style.display = 'block';
-    feedbackContent.textContent = 'Scoring...';
-
-    try {
-        const words = answer.trim().split(/\s+/);
-        const wordCount = words.length;
-        const lines = [];
-
-        if (window.calculateBandScores) {
-            const scores = calculateBandScores(answer);
-            lines.push('<strong>Band Score: ' + scores.overall + '</strong>');
-            lines.push('Fluency: ' + scores.fluency +
-                ' | Vocabulary: ' + scores.vocabulary +
-                ' | Grammar: ' + scores.grammar +
-                ' | Pronunciation: ' + scores.pronunciation);
-        }
-
-        lines.push('<strong>Word count:</strong> ' + wordCount);
-        if (wordCount < 20) {
-            lines.push('Aim for 30-50 words for a Part 1 answer.');
-        } else if (wordCount >= 40) {
-            lines.push('Good length for Part 1.');
-        }
-
-        // Show sample answer comparison
-        const sampleAnswer = getSampleAnswer(question);
-        if (sampleAnswer) {
-            lines.push('<br><strong>Sample Answer:</strong>');
-            lines.push('<em>' + sampleAnswer + '</em>');
-        }
-
-        feedbackContent.innerHTML = lines.join('<br>');
-
-        const questionId = getQuestionId(question, currentIndex);
-        completed.add(questionId);
-        saveProgress();
-    } catch (error) {
-        feedbackContent.textContent = 'Error: ' + error.message;
+    // Scroll to feedback
+    const feedbackEl = document.getElementById('autoFeedback');
+    if (feedbackEl) {
+        feedbackEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
 
