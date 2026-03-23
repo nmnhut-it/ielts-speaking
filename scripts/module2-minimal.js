@@ -1203,7 +1203,7 @@ function forceStopSpeaking() {
 }
 
 /** Auto-score transcript and show inline badge */
-function autoScoreTranscript(transcript) {
+async function autoScoreTranscript(transcript) {
     if (!transcript || !window.calculateBandScores) return;
 
     const words = transcript.trim().split(/\s+/).filter(Boolean);
@@ -1212,18 +1212,62 @@ function autoScoreTranscript(transcript) {
     const scores = calculateBandScores(transcript, duration, 'part1');
     const overall = parseFloat(scores.overall);
 
-    // Inline badge
-    const badgeEl = document.getElementById('scoreBadge');
-    let badgeClass = 'band-low';
-    if (overall >= 6.5) badgeClass = 'band-high';
-    else if (overall >= 5.5) badgeClass = 'band-mid';
-
-    let badgeHtml = `<span class="score-badge ${badgeClass}">Band ${scores.overall}</span>`;
-    if (wordCount < 15) {
-        badgeHtml += `<span style="display:block;font-size:0.75rem;color:#dc2626;margin-top:4px;">⚠ Too short — aim for 30-60 words (20-30 seconds)</span>`;
-    } else if (wordCount < 30) {
-        badgeHtml += `<span style="display:block;font-size:0.75rem;color:#d97706;margin-top:4px;">Develop more — aim for 40-60 words</span>`;
+    // Run pronunciation mismatch detection against sample answer
+    const question = allQuestions[currentIndex];
+    const sampleText = typeof question === 'object' ? question.sampleAnswer : null;
+    let pronMismatches = [];
+    if (sampleText && window.detectPronunciationMismatches) {
+        pronMismatches = detectPronunciationMismatches(transcript, sampleText);
     }
+    // Also try async audio-based assessment if we have a recording
+    let audioPronResult = null;
+    const audioBlob = currentRecording?.blob || window.answerRecordingBlob || null;
+    if (audioBlob && window.assessPronunciation) {
+        audioPronResult = await assessPronunciation(audioBlob, transcript, sampleText).catch(() => null);
+        if (audioPronResult && audioPronResult.band) {
+            scores.pronunciation = audioPronResult.band;
+            // Recalculate overall
+            const raw = (scores.fluency + scores.vocabulary + scores.grammar + scores.pronunciation) / 4;
+            scores.overall = Math.max(4.0, Math.min(9.0, Math.round(raw * 2) / 2));
+        }
+    }
+
+    // Inline score summary with criteria bars
+    const badgeEl = document.getElementById('scoreBadge');
+    const bandColor = overall >= 7 ? '#16a34a' : overall >= 6 ? '#d97706' : '#dc2626';
+
+    let badgeHtml = `<div style="margin-top:8px;">`;
+    badgeHtml += `<div style="font-size:1.4rem;font-weight:700;color:${bandColor};">Band ${scores.overall}</div>`;
+
+    // Mini criteria bars
+    const miniCriteria = [
+        { label: 'F', val: scores.fluency, full: 'Fluency & Coherence' },
+        { label: 'V', val: scores.vocabulary, full: 'Lexical Resource' },
+        { label: 'G', val: scores.grammar, full: 'Grammar Range' },
+        { label: 'P', val: scores.pronunciation, full: 'Pronunciation' }
+    ];
+    badgeHtml += '<div style="display:flex;gap:6px;margin-top:6px;">';
+    miniCriteria.forEach(c => {
+        const pct = Math.max(5, ((c.val - 4) / 5) * 100);
+        const clr = c.val >= 7 ? '#16a34a' : c.val >= 6 ? '#d97706' : '#dc2626';
+        badgeHtml += `<div style="flex:1;text-align:center;" title="${c.full}: ${c.val}">`;
+        badgeHtml += `<div style="font-size:0.65rem;color:#6b7280;">${c.label}</div>`;
+        badgeHtml += `<div style="height:4px;background:#e5e7eb;border-radius:2px;margin:2px 0;">`;
+        badgeHtml += `<div style="height:100%;width:${pct}%;background:${clr};border-radius:2px;"></div>`;
+        badgeHtml += `</div>`;
+        badgeHtml += `<div style="font-size:0.7rem;font-weight:600;color:${clr};">${c.val}</div>`;
+        badgeHtml += `</div>`;
+    });
+    badgeHtml += '</div>';
+
+    if (wordCount < 15) {
+        badgeHtml += `<div style="font-size:0.75rem;color:#dc2626;margin-top:6px;">⚠ Too short — aim for 30-60 words</div>`;
+    } else if (wordCount < 30) {
+        badgeHtml += `<div style="font-size:0.75rem;color:#d97706;margin-top:6px;">Develop more — aim for 40-60 words</div>`;
+    } else {
+        badgeHtml += `<div style="font-size:0.72rem;color:#6b7280;margin-top:4px;">${wordCount} words</div>`;
+    }
+    badgeHtml += '</div>';
     badgeEl.innerHTML = badgeHtml;
 
     // Full feedback panel (below transcript)
@@ -1277,7 +1321,25 @@ function autoScoreTranscript(transcript) {
         }
     }
 
-    // Pronunciation challenges
+    // Pronunciation errors detected (mismatches between what you said vs expected)
+    if (pronMismatches.length > 0) {
+        html += '<div style="margin-top:10px;padding:12px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:0.82rem;">';
+        html += '<strong style="color:#dc2626;">🔊 Pronunciation Errors Detected:</strong>';
+        html += '<ul style="margin:6px 0;padding-left:20px;">';
+        pronMismatches.forEach(m => {
+            html += `<li>You said "<strong>${m.heard}</strong>" — should be "<strong>${m.expected}</strong>"`;
+            if (m.feedback) html += `<br><span style="color:#6b7280;font-size:0.78rem;">${m.feedback}</span>`;
+            html += '</li>';
+        });
+        html += '</ul></div>';
+    }
+
+    // Audio-based pronunciation score
+    if (audioPronResult && audioPronResult.isAudioBased) {
+        html += `<div style="margin-top:8px;font-size:0.8rem;color:#6b7280;">🎤 Audio pronunciation score: Band ${audioPronResult.band} (spectral analysis)</div>`;
+    }
+
+    // Pronunciation challenges (tricky words in your text)
     if (scores.pronunciationChallenges && scores.pronunciationChallenges.length > 0) {
         html += '<div style="margin-top:8px;padding:10px;background:#eff6ff;border-radius:8px;font-size:0.82rem;">';
         html += '<strong>Pronunciation Practice:</strong><ul style="margin:4px 0;padding-left:20px;">';
@@ -1291,9 +1353,8 @@ function autoScoreTranscript(transcript) {
         html += '</ul></div>';
     }
 
-    // Sample answer
-    const question = allQuestions[currentIndex];
-    const sampleAnswer = typeof question === 'object' ? question.sampleAnswer : null;
+    // Sample answer (question already declared above)
+    const sampleAnswer = sampleText;
     if (sampleAnswer) {
         html += '<div style="margin-top:12px;padding:12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;">';
         html += '<strong style="font-size:0.8rem;color:#166534;">Sample Answer:</strong>';
