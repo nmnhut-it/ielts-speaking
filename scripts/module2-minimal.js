@@ -64,9 +64,12 @@ let completed = new Set();
 let sampleExpanded = false;
 let templateExpanded = false;
 
-// Interview state machine: ready, speaking, scored, followup
+// Interview state machine: ready, speaking, answered, review
 let interviewState = 'ready';
 let followUpAnswered = false;
+let mainTranscript = '';
+let followUpTranscript = '';
+let mainRecording = null;
 let interviewTimer = null;
 let interviewSeconds = 0;
 const INTERVIEW_MAX_SECONDS = 30;
@@ -387,8 +390,10 @@ function resetInterviewUI() {
     interviewState = 'ready';
     followUpAnswered = false;
 
-    // Hide dynamic zones
-    document.getElementById('speakingZone').style.display = 'none';
+    // Reset all dynamic zones
+    mainTranscript = '';
+    followUpTranscript = '';
+    mainRecording = null;
     const autoFeedback = document.getElementById('autoFeedback');
     if (autoFeedback) autoFeedback.style.display = 'none';
     const followupFeedback = document.getElementById('followupFeedback');
@@ -396,6 +401,11 @@ function resetInterviewUI() {
     document.getElementById('transcriptZone').style.display = 'none';
     document.getElementById('followupZone').style.display = 'none';
     document.getElementById('audioPreview').style.display = 'none';
+    document.getElementById('mainAnswerSummary').style.display = 'none';
+    document.getElementById('reviewPanel').style.display = 'none';
+    document.getElementById('reviewAnswers').innerHTML = '';
+    document.getElementById('reviewScore').innerHTML = '';
+    document.getElementById('reviewFeedback').innerHTML = '';
 
     // Reset action button
     const actionBtn = document.getElementById('actionBtn');
@@ -1022,11 +1032,12 @@ function handleActionButton() {
         case 'speaking':
             stopSpeaking();
             break;
-        case 'scored':
-            nextQuestion();
-            break;
-        case 'followup':
+        case 'answered':
+            // Start follow-up answer
             startSpeaking();
+            break;
+        case 'review':
+            nextQuestion();
             break;
     }
 }
@@ -1034,12 +1045,11 @@ function handleActionButton() {
 /** Start speaking: show timer ring, begin recording + STT */
 async function startSpeaking() {
     // If answering follow-up, mark it
-    if (interviewState === 'followup') {
+    if (interviewState === 'answered') {
         followUpAnswered = true;
     }
 
-    // Show speaking zone with timer
-    document.getElementById('speakingZone').style.display = 'flex';
+    // Timer zone is always visible; just ensure transcript shows
     document.getElementById('transcriptZone').style.display = 'block';
     document.getElementById('liveTranscriptText').textContent = '';
 
@@ -1107,7 +1117,7 @@ function updateTimerRing(secondsRemaining) {
     }
 }
 
-/** Stop speaking: stop recording, get transcript, score */
+/** Stop speaking: stop recording, get transcript, transition to next phase */
 async function stopSpeaking() {
     // Clear timer
     if (interviewTimer) {
@@ -1132,7 +1142,6 @@ async function stopSpeaking() {
         const recording = await audioRecorder.stopRecording();
         if (recording) {
             currentRecording = recording;
-            displayAudioPreview(recording.blob);
         }
         audioRecorder.cleanup();
         audioRecorder = null;
@@ -1142,7 +1151,7 @@ async function stopSpeaking() {
     const transcriptEl = document.getElementById('liveTranscriptText');
     const transcript = liveTranscript || transcriptEl.textContent.trim();
 
-    const isFollowUp = followUpAnswered; // true if this was the follow-up answer
+    const isFollowUp = followUpAnswered;
 
     if (transcript && transcript.length > 0) {
         const words = transcript.trim().split(/\s+/).filter(Boolean);
@@ -1153,43 +1162,263 @@ async function stopSpeaking() {
             ? 'm2_followup_transcript_' + currentIndex
             : 'm2_last_transcript_' + currentIndex;
         localStorage.setItem(storageKey, transcript);
-
-        if (isFollowUp) {
-            // Score follow-up in a SEPARATE section (don't replace main score)
-            await autoScoreFollowUp(transcript);
-        } else {
-            await autoScoreTranscript(transcript);
-        }
-
-        // Scroll to feedback
-        const feedbackEl = document.getElementById(isFollowUp ? 'followupFeedback' : 'autoFeedback');
-        if (feedbackEl) feedbackEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // Show follow-up if available and not yet answered
     const question = allQuestions[currentIndex];
     const hasFollowUp = typeof question === 'object' && question.followUp;
 
-    if (hasFollowUp && !followUpAnswered) {
-        document.getElementById('followupZone').style.display = 'block';
-        document.getElementById('followupText').textContent = question.followUp;
+    if (!isFollowUp) {
+        // --- Main answer done ---
+        mainTranscript = transcript || '';
+        mainRecording = currentRecording;
+        currentRecording = null;
 
-        if (document.getElementById('autoVoice')?.checked) {
-            setTimeout(() => {
-                PracticeCommon.speakAsExaminer(question.followUp);
-            }, 1500);
+        if (hasFollowUp) {
+            // Show main answer as compact summary
+            const summaryEl = document.getElementById('mainAnswerSummary');
+            document.getElementById('mainAnswerText').textContent = mainTranscript;
+            const mainWords = mainTranscript.trim().split(/\s+/).filter(Boolean).length;
+            document.getElementById('mainAnswerMeta').textContent = `${mainWords} words`;
+            summaryEl.style.display = 'block';
+
+            // Hide live transcript zone (will reuse for follow-up)
+            document.getElementById('transcriptZone').style.display = 'none';
+            document.getElementById('liveTranscriptText').textContent = '';
+            document.getElementById('wordCount').textContent = '0 words';
+            document.getElementById('scoreBadge').textContent = '';
+
+            // Show follow-up question
+            document.getElementById('followupZone').style.display = 'block';
+            document.getElementById('followupText').textContent = question.followUp;
+
+            // Reset timer for follow-up
+            interviewSeconds = 0;
+            const progress = document.getElementById('timerProgress');
+            if (progress) {
+                progress.style.strokeDashoffset = '0';
+                progress.style.stroke = '#2563eb';
+            }
+            document.getElementById('timerValue').textContent = '0:30';
+            document.getElementById('timerLabel').textContent = 'Ready';
+
+            // Auto-read follow-up question
+            if (document.getElementById('autoVoice')?.checked) {
+                setTimeout(() => {
+                    PracticeCommon.speakAsExaminer(question.followUp);
+                }, 1000);
+            }
+
+            const actionBtn = document.getElementById('actionBtn');
+            actionBtn.className = 'btn-action btn-speak';
+            actionBtn.textContent = '🎤 Answer Follow-up';
+            interviewState = 'answered';
+        } else {
+            // No follow-up — go straight to review
+            enterReview();
         }
-
-        const actionBtn = document.getElementById('actionBtn');
-        actionBtn.className = 'btn-action btn-speak';
-        actionBtn.textContent = '🎤 Answer Follow-up';
-        interviewState = 'followup';
     } else {
-        const actionBtn = document.getElementById('actionBtn');
-        actionBtn.className = 'btn-action btn-next-q';
-        actionBtn.textContent = 'Next Question →';
-        interviewState = 'scored';
+        // --- Follow-up answer done ---
+        followUpTranscript = transcript || '';
+        enterReview();
     }
+}
+
+/** Enter review state: score all answers together, show combined feedback */
+async function enterReview() {
+    const question = allQuestions[currentIndex];
+    const hasFollowUp = followUpTranscript.length > 0;
+
+    // Hide speaking UI elements
+    document.getElementById('transcriptZone').style.display = 'none';
+    document.getElementById('followupZone').style.display = 'none';
+    document.getElementById('mainAnswerSummary').style.display = 'none';
+
+    // Show review panel
+    const reviewPanel = document.getElementById('reviewPanel');
+    reviewPanel.style.display = 'flex';
+
+    // --- Build review answers ---
+    const answersEl = document.getElementById('reviewAnswers');
+    let answersHtml = '';
+    const mainWords = mainTranscript.trim().split(/\s+/).filter(Boolean).length;
+    answersHtml += `<div class="review-answer-block main">
+        <div class="review-answer-label">Your answer</div>
+        <div class="review-answer-text">${escapeHtml(mainTranscript)}</div>
+        <div class="review-answer-meta">${mainWords} words</div>
+    </div>`;
+
+    if (hasFollowUp) {
+        const fuWords = followUpTranscript.trim().split(/\s+/).filter(Boolean).length;
+        answersHtml += `<div class="review-answer-block followup">
+            <div class="review-answer-label">Follow-up answer</div>
+            <div class="review-answer-text">${escapeHtml(followUpTranscript)}</div>
+            <div class="review-answer-meta">${fuWords} words</div>
+        </div>`;
+    }
+    answersEl.innerHTML = answersHtml;
+
+    // --- Score ---
+    const mainDuration = interviewSeconds;
+    const combinedTranscript = hasFollowUp
+        ? mainTranscript + ' ' + followUpTranscript
+        : mainTranscript;
+    const combinedWords = combinedTranscript.trim().split(/\s+/).filter(Boolean).length;
+
+    let scores = null;
+    if (combinedTranscript.length > 0 && window.calculateBandScores) {
+        scores = calculateBandScores(combinedTranscript, mainDuration, 'part1');
+
+        // Try audio pronunciation assessment
+        const audioBlob = currentRecording?.blob || mainRecording?.blob || null;
+        const sampleText = typeof question === 'object' ? question.sampleAnswer : null;
+        if (audioBlob && window.assessPronunciation) {
+            const audioPronResult = await assessPronunciation(audioBlob, combinedTranscript, sampleText).catch(() => null);
+            if (audioPronResult && audioPronResult.band) {
+                scores.pronunciation = audioPronResult.band;
+                const raw = (scores.fluency + scores.vocabulary + scores.grammar + scores.pronunciation) / 4;
+                scores.overall = Math.max(4.0, Math.min(9.0, Math.round(raw * 2) / 2));
+            }
+        }
+    }
+
+    // --- Render score ---
+    const scoreEl = document.getElementById('reviewScore');
+    if (scores) {
+        const overall = parseFloat(scores.overall);
+        const bandColor = overall >= 7 ? '#16a34a' : overall >= 6 ? '#d97706' : '#dc2626';
+
+        let scoreHtml = `<div style="font-size:2rem;font-weight:800;color:${bandColor};margin-bottom:4px;">Band ${scores.overall}</div>`;
+        scoreHtml += `<div style="font-size:0.75rem;color:var(--color-text-muted);margin-bottom:12px;">${combinedWords} words total</div>`;
+
+        // Criteria bars
+        const criteria = [
+            { label: 'Fluency', short: 'F', val: scores.fluency },
+            { label: 'Vocabulary', short: 'V', val: scores.vocabulary },
+            { label: 'Grammar', short: 'G', val: scores.grammar },
+            { label: 'Pronunciation', short: 'P', val: scores.pronunciation }
+        ];
+        scoreHtml += '<div style="display:flex;gap:8px;justify-content:center;">';
+        criteria.forEach(c => {
+            const pct = Math.max(5, ((c.val - 4) / 5) * 100);
+            const clr = c.val >= 7 ? '#16a34a' : c.val >= 6 ? '#d97706' : '#dc2626';
+            scoreHtml += `<div style="flex:1;max-width:80px;text-align:center;" title="${c.label}: ${c.val}">
+                <div style="font-size:0.65rem;color:var(--color-text-muted);font-weight:600;">${c.label}</div>
+                <div style="height:4px;background:#e5e7eb;border-radius:2px;margin:3px 0;">
+                    <div style="height:100%;width:${pct}%;background:${clr};border-radius:2px;"></div>
+                </div>
+                <div style="font-size:0.8rem;font-weight:700;color:${clr};">${c.val}</div>
+            </div>`;
+        });
+        scoreHtml += '</div>';
+        scoreEl.innerHTML = scoreHtml;
+    } else {
+        scoreEl.innerHTML = '<div style="color:var(--color-text-muted);font-size:0.875rem;">No score available</div>';
+    }
+
+    // --- Render feedback ---
+    const feedbackEl = document.getElementById('reviewFeedback');
+    let fbHtml = '';
+
+    if (scores && scores.details) {
+        if (scores.details.strengths.length) {
+            fbHtml += '<div style="margin-bottom:8px;"><strong style="color:#16a34a;font-size:0.8rem;">Strengths:</strong>';
+            fbHtml += '<ul style="margin:4px 0;padding-left:18px;font-size:0.82rem;">';
+            scores.details.strengths.forEach(s => fbHtml += `<li>${s}</li>`);
+            fbHtml += '</ul></div>';
+        }
+        if (scores.details.weaknesses.length) {
+            fbHtml += '<div style="margin-bottom:8px;"><strong style="color:#dc2626;font-size:0.8rem;">Areas to Improve:</strong>';
+            fbHtml += '<ul style="margin:4px 0;padding-left:18px;font-size:0.82rem;">';
+            scores.details.weaknesses.forEach(w => fbHtml += `<li>${w}</li>`);
+            fbHtml += '</ul></div>';
+        }
+        if (scores.details.tips.length) {
+            fbHtml += '<div style="margin-bottom:8px;"><strong style="color:#2563eb;font-size:0.8rem;">Tips:</strong>';
+            fbHtml += '<ul style="margin:4px 0;padding-left:18px;font-size:0.82rem;">';
+            scores.details.tips.forEach(t => fbHtml += `<li>${t}</li>`);
+            fbHtml += '</ul></div>';
+        }
+    }
+
+    // Pronunciation mismatches
+    const sampleText = typeof question === 'object' ? question.sampleAnswer : null;
+    if (sampleText && window.detectPronunciationMismatches) {
+        const pronMismatches = detectPronunciationMismatches(combinedTranscript, sampleText);
+        if (pronMismatches.length > 0) {
+            fbHtml += '<div style="margin-top:8px;padding:10px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:0.82rem;">';
+            fbHtml += '<strong style="color:#dc2626;">Pronunciation Errors:</strong>';
+            fbHtml += '<ul style="margin:4px 0;padding-left:18px;">';
+            pronMismatches.forEach(m => {
+                fbHtml += `<li>You said "<strong>${m.heard}</strong>" — should be "<strong>${m.expected}</strong>"`;
+                if (m.feedback) fbHtml += `<br><span style="color:var(--color-text-muted);font-size:0.78rem;">${m.feedback}</span>`;
+                fbHtml += '</li>';
+            });
+            fbHtml += '</ul></div>';
+        }
+    }
+
+    // Pronunciation challenges
+    if (scores && scores.pronunciationChallenges && scores.pronunciationChallenges.length > 0) {
+        fbHtml += '<div style="margin-top:8px;padding:10px;background:#eff6ff;border-radius:8px;font-size:0.82rem;">';
+        fbHtml += '<strong>Pronunciation Practice:</strong><ul style="margin:4px 0;padding-left:18px;">';
+        const shown = new Set();
+        scores.pronunciationChallenges.forEach(c => {
+            if (!shown.has(c.category)) {
+                shown.add(c.category);
+                fbHtml += `<li><strong>${c.word}</strong> — ${c.tip}</li>`;
+            }
+        });
+        fbHtml += '</ul></div>';
+    }
+
+    // Sample answer
+    if (sampleText) {
+        fbHtml += '<div style="margin-top:10px;padding:10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;">';
+        fbHtml += '<strong style="font-size:0.8rem;color:#166534;">Sample Answer:</strong>';
+        fbHtml += `<div style="font-size:0.85rem;margin-top:4px;color:var(--color-text-secondary);line-height:1.6;font-style:italic;">${sampleText}</div>`;
+        fbHtml += '</div>';
+    }
+
+    feedbackEl.innerHTML = fbHtml;
+
+    // Show audio preview if we have a recording
+    if (mainRecording || currentRecording) {
+        const blob = currentRecording?.blob || mainRecording?.blob;
+        if (blob) displayAudioPreview(blob);
+    }
+
+    // Save to score history
+    if (scores && window.scoreHistory) {
+        scoreHistory.addScore({
+            date: new Date().toISOString(),
+            module: 'module2',
+            questionId: currentIndex,
+            scores: scores,
+            wordCount: combinedWords,
+            duration: interviewSeconds
+        });
+    }
+
+    // Mark completed
+    const questionId = getQuestionId(question, currentIndex);
+    completed.add(questionId);
+    saveProgress();
+
+    // Update action button
+    const actionBtn = document.getElementById('actionBtn');
+    actionBtn.className = 'btn-action btn-next-q';
+    actionBtn.textContent = 'Next Question →';
+    interviewState = 'review';
+
+    // Scroll review into view
+    reviewPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/** Escape HTML for safe rendering */
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 /** Force stop speaking without scoring (used on question change) */

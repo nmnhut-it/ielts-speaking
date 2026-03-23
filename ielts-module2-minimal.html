@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Part 1: Interview Practice</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="shared/styles/module2-minimal.css">
 </head>
 <body>
@@ -22,16 +25,14 @@
     <div class="identification-overlay" id="identificationOverlay"></div>
     <div class="identification-modal" id="identificationModal">
         <div class="modal-header">
-            <h3>👤 Student Identification</h3>
+            <h3>Student Identification</h3>
         </div>
         <div class="modal-body">
             <p class="identification-intro">Please enter your name and take a photo to start your practice session.</p>
-
             <div class="form-field">
                 <label for="studentName">Your Name</label>
                 <input type="text" id="studentName" placeholder="Enter your full name" autocomplete="name" required>
             </div>
-
             <div class="camera-section">
                 <div class="camera-preview" id="cameraPreview">
                     <video id="cameraVideo" autoplay playsinline></video>
@@ -40,52 +41,26 @@
                         <p>Camera will appear here</p>
                     </div>
                 </div>
-
                 <div class="photo-preview" id="photoPreview" style="display: none;">
                     <img id="capturedPhoto" alt="Your photo">
                 </div>
-
                 <div class="camera-controls">
-                    <button class="btn-camera" id="startCameraBtn" onclick="startIdentificationCamera()">
-                        📷 Start Camera
-                    </button>
-                    <button class="btn-camera" id="capturePhotoBtn" onclick="captureIdentificationPhoto()" style="display: none;">
-                        📸 Capture Photo
-                    </button>
-                    <button class="btn-camera-secondary" id="retakePhotoBtn" onclick="retakeIdentificationPhoto()" style="display: none;">
-                        🔄 Retake
-                    </button>
+                    <button class="btn-camera" id="startCameraBtn" onclick="startIdentificationCamera()">Start Camera</button>
+                    <button class="btn-camera" id="capturePhotoBtn" onclick="captureIdentificationPhoto()" style="display: none;">Capture Photo</button>
+                    <button class="btn-camera-secondary" id="retakePhotoBtn" onclick="retakeIdentificationPhoto()" style="display: none;">Retake</button>
                 </div>
             </div>
-
             <button class="btn-primary btn-submit-identification" id="submitIdentificationBtn" onclick="submitIdentification()" disabled>
                 Start Practice Session
             </button>
-
-            <p class="identification-note">⚠️ Your photo will be sent to your instructor via Telegram.</p>
+            <p class="identification-note">Your photo will be sent to your instructor via Telegram.</p>
         </div>
     </div>
-
-    <!-- Top Bar -->
-    <header class="top-bar">
-        <a href="index.html" class="back-link">← Home</a>
-        <h1 class="title">Part 1: Interview</h1>
-        <div class="progress-mini">
-            <span class="student-name" id="studentNameDisplay" style="display: none; margin-right: 1rem; font-weight: 500;"></span>
-            <div class="quick-jump">
-                <input type="number" id="quickJumpInput" class="quick-jump-input" placeholder="#" min="1" max="100" title="Jump to question">
-                <button class="quick-jump-btn" onclick="quickJumpToQuestion()" aria-label="Go">→</button>
-            </div>
-            <span id="progressCount" style="cursor: default;">0/100</span>
-            <button class="settings-btn" onclick="toggleSettings()" aria-label="Settings">⚙</button>
-        </div>
-    </header>
 
     <!-- Settings Overlay -->
     <div class="settings-overlay" id="settingsOverlay" onclick="toggleSettings()"></div>
     <aside class="settings-panel" id="settingsPanel">
         <h2>Settings</h2>
-
         <div class="setting-group">
             <label>Mode:</label>
             <div class="btn-group">
@@ -94,7 +69,6 @@
                 <button class="btn-mode" data-mode="favorites">Favorites</button>
             </div>
         </div>
-
         <div class="setting-group">
             <label>Technique:</label>
             <select id="techniqueSelect" class="select">
@@ -107,156 +81,242 @@
                 <option value="frequency">Frequency + Details (15 questions)</option>
             </select>
         </div>
-
         <div class="setting-group" style="border-top: 1px solid var(--color-border); padding-top: 1rem; margin-top: 1rem;">
-            <button class="btn-end-session" onclick="endStudentSession()">🚪 End Session</button>
+            <button class="btn-end-session" onclick="endStudentSession()">End Session</button>
         </div>
-
         <button class="btn-close" onclick="toggleSettings()">Done</button>
     </aside>
 
-    <!-- Main Content -->
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- MAIN INTERVIEW SCREEN — Single-screen card -->
+    <!-- ═══════════════════════════════════════════ -->
     <main class="container hidden" id="mainContainer">
-        <!-- Question Card (centered, large) -->
-        <div class="interview-card" id="interviewCard">
-            <div class="interview-meta">
-                <span class="q-number" id="questionNum">Question 1</span>
-                <span class="q-category" id="questionCategory">Hobbies</span>
-                <span id="attemptBadge" class="attempt-badge" style="display:none"></span>
-                <button class="btn-fav" id="favBtn" onclick="toggleFavorite()">☆</button>
-            </div>
-            <h2 class="interview-question" id="questionText">Loading question...</h2>
 
-            <!-- Examiner voice controls -->
-            <div class="examiner-controls">
-                <button class="btn-listen" id="listenBtn" onclick="examinerAskQuestion()">
-                    🔊 Listen to Question
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <a href="index.html" class="back-link">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                Home
+            </a>
+            <div class="top-bar-center">
+                <span class="top-bar-title">Part 1</span>
+                <span class="student-name" id="studentNameDisplay" style="display: none;"></span>
+            </div>
+            <div class="progress-mini">
+                <div class="quick-jump">
+                    <input type="number" id="quickJumpInput" class="quick-jump-input" placeholder="#" min="1" max="100" title="Jump to question">
+                    <button class="quick-jump-btn" onclick="quickJumpToQuestion()" aria-label="Go">→</button>
+                </div>
+                <span id="progressCount" class="progress-count">0/100</span>
+                <button class="settings-btn" onclick="toggleSettings()" aria-label="Settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
                 </button>
-                <label class="voice-toggle">
-                    <input type="checkbox" id="autoVoice" checked> Auto-read questions
-                </label>
             </div>
-        </div>
+        </header>
 
-        <!-- Timer Ring + Recording (appears when speaking) -->
-        <div class="speaking-zone" id="speakingZone" style="display:none">
-            <div class="timer-ring-container">
-                <svg class="timer-ring" viewBox="0 0 120 120">
-                    <circle cx="60" cy="60" r="54" fill="none" stroke="#e5e7eb" stroke-width="6"/>
-                    <circle cx="60" cy="60" r="54" fill="none" stroke="#2563eb" stroke-width="6"
-                        stroke-dasharray="339.3" stroke-dashoffset="0" stroke-linecap="round"
-                        id="timerProgress" class="timer-progress"/>
-                </svg>
-                <div class="timer-center">
-                    <div class="timer-value" id="timerValue">0:30</div>
-                    <div class="timer-label" id="timerLabel">Ready</div>
+        <!-- Interview Card Zone — above fold -->
+        <div class="interview-stage">
+
+            <!-- Question Card -->
+            <div class="interview-card" id="interviewCard">
+                <div class="interview-meta">
+                    <span class="q-number" id="questionNum">Question 1</span>
+                    <span class="q-category" id="questionCategory">Hobbies</span>
+                    <span id="attemptBadge" class="attempt-badge" style="display:none"></span>
+                    <button class="btn-fav" id="favBtn" onclick="toggleFavorite()" title="Favorite">☆</button>
+                </div>
+                <h2 class="interview-question" id="questionText">Loading question...</h2>
+                <div class="examiner-controls">
+                    <button class="btn-listen" id="listenBtn" onclick="examinerAskQuestion()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                        Listen
+                    </button>
+                    <label class="voice-toggle">
+                        <input type="checkbox" id="autoVoice" checked>
+                        <span class="voice-toggle-label">Auto-read</span>
+                    </label>
                 </div>
             </div>
-        </div>
 
-        <!-- Live Transcript (appears during/after speaking) -->
-        <div class="transcript-zone" id="transcriptZone" style="display:none">
-            <div class="transcript-live" id="liveTranscriptText">
-                Your words will appear here as you speak...
-            </div>
-            <div class="transcript-meta">
-                <span id="wordCount">0 words</span>
-                <span id="scoreBadge"></span>
-            </div>
-        </div>
-
-        <!-- Action Button (changes based on state) -->
-        <div class="action-zone">
-            <button class="btn-action btn-speak" id="actionBtn" onclick="handleActionButton()">
-                🎤 Speak Now
-            </button>
-        </div>
-
-        <!-- Follow-up (hidden until after answer) -->
-        <div class="followup-zone" id="followupZone" style="display:none">
-            <div class="followup-label">Examiner follow-up:</div>
-            <div class="followup-text" id="followupText"></div>
-        </div>
-
-        <!-- Audio preview (for download/send after recording) -->
-        <div class="audio-preview" id="audioPreview" style="display: none;">
-            <audio controls id="audioPlayer"></audio>
-            <div class="audio-actions">
-                <button class="btn-download-audio" id="downloadAudioBtn" onclick="downloadRecording()">
-                    &#x1F4BE; Download
-                </button>
-                <button class="btn-send-telegram" id="sendTelegramBtn" onclick="sendAudioToTelegram()">
-                    &#x1F4E4; Send to nmnhut-it
-                </button>
-                <button class="btn-delete-audio" onclick="deleteRecording()">&#x1F5D1;&#xFE0F; Delete</button>
-            </div>
-        </div>
-
-        <!-- Score display area -->
-        <div class="hidden" id="m2ScoreDisplay" style="margin-top:12px;padding:16px;background:#f8f9fa;border-radius:8px;border:1px solid #dee2e6;"></div>
-        <div class="m2-transcription hidden" id="m2Transcription">
-            <h4>Transcription</h4>
-            <div id="m2TranscriptionText"></div>
-            <div id="m2TranscriptionWords" style="margin-top: 6px; font-size: 0.85em; color: #666;"></div>
-        </div>
-
-        <!-- Manual answer fallback -->
-        <div class="manual-answer-area hidden" id="manualAnswerArea" style="margin-top:12px;">
-            <label for="manualAnswerInput" style="display:block;margin-bottom:4px;font-weight:600;color:#333;">Type Your Answer</label>
-            <textarea id="manualAnswerInput" rows="4" style="width:100%;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:1em;resize:vertical;" placeholder="Speech recognition is not available. Type your answer here..."></textarea>
-            <button class="btn-transcribe-audio" onclick="submitM2ManualAnswer()" style="margin-top:8px;">Submit Answer</button>
-        </div>
-
-        <!-- Collapsible sections -->
-        <details class="detail-section" id="planSection">
-            <summary>📝 Plan Your Answer (optional)</summary>
-            <div class="plan-fields" id="planFields">
-                <!-- Dynamic technique fields inserted here -->
-            </div>
-        </details>
-
-        <details class="detail-section" id="sampleSection">
-            <summary>📖 Sample Answer</summary>
-            <div id="sampleContent">
-                <div id="sampleCardsContainer"></div>
-            </div>
-        </details>
-
-        <details class="detail-section" id="tipSection">
-            <summary>💡 Quick Tip</summary>
-            <div id="tipContent"></div>
-        </details>
-
-        <details class="detail-section" id="vocabDetailSection" style="display:none">
-            <summary>💡 Useful Vocabulary for This Topic</summary>
-            <div id="vocabContent">
-                <div class="vocab-loading" id="vocabLoading" style="display: none;">
-                    <p>Loading vocabulary...</p>
+            <!-- Timer Ring — always visible -->
+            <div class="timer-zone">
+                <div class="speaking-zone" id="speakingZone">
+                    <div class="timer-ring-container">
+                        <svg class="timer-ring" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="var(--ring-track)" stroke-width="5"/>
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="var(--ring-fill)" stroke-width="5"
+                                stroke-dasharray="339.3" stroke-dashoffset="0" stroke-linecap="round"
+                                id="timerProgress" class="timer-progress"/>
+                        </svg>
+                        <div class="timer-center">
+                            <div class="timer-value" id="timerValue">0:30</div>
+                            <div class="timer-label" id="timerLabel">Ready</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="vocab-list" id="vocabList"></div>
             </div>
-        </details>
 
-        <!-- Answer Preview (hidden, used for scoring) -->
-        <div id="previewBox" style="display:none"><em>Start typing to see your answer...</em></div>
-        <div id="elementCount" style="display:none">0/6 elements</div>
-        <div id="previewBreakdown" style="display:none"><div id="breakdownContent"></div></div>
+            <!-- Action Button -->
+            <div class="action-zone">
+                <button class="btn-action btn-speak" id="actionBtn" onclick="handleActionButton()">
+                    <span class="action-icon">🎤</span> Speak Now
+                </button>
+            </div>
 
-        <!-- AI Feedback -->
-        <section class="feedback-section" id="feedbackSection" style="display: none;">
-            <h3>AI Feedback</h3>
-            <div class="feedback-content" id="feedbackContent"></div>
-        </section>
+            <!-- Transcript Zone — appears during/after speaking -->
+            <div class="transcript-zone" id="transcriptZone" style="display:none">
+                <div class="transcript-live" id="liveTranscriptText">
+                    Your words will appear here as you speak...
+                </div>
+                <div class="transcript-meta">
+                    <span id="wordCount">0 words</span>
+                    <span id="scoreBadge"></span>
+                </div>
+            </div>
 
-        <!-- Navigation -->
-        <nav class="interview-nav">
-            <button class="nav-btn" onclick="previousQuestion()">← Previous</button>
-            <button class="nav-btn" onclick="scoreMyAnswer()">Score My Answer</button>
-            <button class="nav-btn nav-btn-primary" onclick="nextQuestion()">Next →</button>
-        </nav>
+            <!-- Main answer summary — shown during follow-up phase -->
+            <div class="main-answer-summary" id="mainAnswerSummary" style="display:none">
+                <div class="summary-label">Your answer:</div>
+                <div class="summary-text" id="mainAnswerText"></div>
+                <div class="summary-meta" id="mainAnswerMeta"></div>
+            </div>
+
+            <!-- Follow-up — amber card -->
+            <div class="followup-zone" id="followupZone" style="display:none">
+                <div class="followup-label">Examiner follow-up:</div>
+                <div class="followup-text" id="followupText"></div>
+            </div>
+
+            <!-- Review Panel — combined scoring after all answers -->
+            <div class="review-panel" id="reviewPanel" style="display:none">
+                <div class="review-answers" id="reviewAnswers"></div>
+                <div class="review-score" id="reviewScore"></div>
+                <div class="review-feedback" id="reviewFeedback"></div>
+                <!-- Audio controls -->
+                <div class="audio-preview review-audio" id="audioPreview" style="display:none">
+                    <audio controls id="audioPlayer"></audio>
+                    <div class="audio-actions">
+                        <button class="btn-download-audio" id="downloadAudioBtn" onclick="downloadRecording()">Download</button>
+                        <button class="btn-send-telegram" id="sendTelegramBtn" onclick="sendAudioToTelegram()">Send</button>
+                        <button class="btn-delete-audio" onclick="deleteRecording()">Delete</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation arrows -->
+            <nav class="interview-nav">
+                <button class="nav-arrow nav-prev" onclick="previousQuestion()" title="Previous question">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <button class="nav-arrow nav-next" onclick="nextQuestion()" title="Next question">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+            </nav>
+
+        </div><!-- /interview-stage -->
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- SLIDE-UP DRAWER — secondary content    -->
+        <!-- ═══════════════════════════════════════ -->
+        <div class="drawer-scrim" id="drawerScrim" onclick="closeDrawer()"></div>
+        <div class="drawer" id="drawer">
+            <div class="drawer-handle" id="drawerHandle" onclick="toggleDrawer()">
+                <div class="drawer-handle-bar"></div>
+                <span class="drawer-handle-label">Details</span>
+            </div>
+            <div class="drawer-content" id="drawerContent">
+
+                <!-- Score display (legacy, kept for JS compat) -->
+                <div class="hidden drawer-section" id="m2ScoreDisplay"></div>
+                <div class="m2-transcription hidden drawer-section" id="m2Transcription">
+                    <div class="drawer-section-title">Transcription</div>
+                    <div id="m2TranscriptionText"></div>
+                    <div id="m2TranscriptionWords" style="margin-top: 6px; font-size: 0.85em; color: var(--color-text-muted);"></div>
+                </div>
+
+                <!-- Manual answer fallback -->
+                <div class="manual-answer-area hidden drawer-section" id="manualAnswerArea">
+                    <label for="manualAnswerInput" class="drawer-section-title">Type Your Answer</label>
+                    <textarea id="manualAnswerInput" rows="3" class="manual-textarea" placeholder="Speech recognition is not available. Type your answer here..."></textarea>
+                    <button class="btn-transcribe-audio" onclick="submitM2ManualAnswer()">Submit Answer</button>
+                </div>
+
+                <!-- AI Feedback -->
+                <section class="feedback-section drawer-section" id="feedbackSection" style="display: none;">
+                    <div class="drawer-section-title">AI Feedback</div>
+                    <div class="feedback-content" id="feedbackContent"></div>
+                </section>
+
+                <!-- Plan Your Answer -->
+                <details class="detail-section" id="planSection">
+                    <summary>Plan Your Answer</summary>
+                    <div class="plan-fields" id="planFields"></div>
+                </details>
+
+                <!-- Sample Answer -->
+                <details class="detail-section" id="sampleSection">
+                    <summary>Sample Answer</summary>
+                    <div id="sampleContent">
+                        <div id="sampleCardsContainer"></div>
+                    </div>
+                </details>
+
+                <!-- Quick Tip -->
+                <details class="detail-section" id="tipSection">
+                    <summary>Quick Tip</summary>
+                    <div id="tipContent"></div>
+                </details>
+
+                <!-- Vocabulary -->
+                <details class="detail-section" id="vocabDetailSection" style="display:none">
+                    <summary>Useful Vocabulary</summary>
+                    <div id="vocabContent">
+                        <div class="vocab-loading" id="vocabLoading" style="display: none;"><p>Loading vocabulary...</p></div>
+                        <div class="vocab-list" id="vocabList"></div>
+                    </div>
+                </details>
+
+                <!-- Hidden scoring elements -->
+                <div id="previewBox" style="display:none"><em>Start typing to see your answer...</em></div>
+                <div id="elementCount" style="display:none">0/6 elements</div>
+                <div id="previewBreakdown" style="display:none"><div id="breakdownContent"></div></div>
+
+            </div>
+        </div>
+
     </main>
 
-    <!-- Scripts -->
+    <!-- Drawer JS (minimal, no logic changes) -->
+    <script>
+    // Drawer toggle
+    let drawerOpen = false;
+    function toggleDrawer() {
+        drawerOpen = !drawerOpen;
+        const drawer = document.getElementById('drawer');
+        const scrim = document.getElementById('drawerScrim');
+        drawer.classList.toggle('open', drawerOpen);
+        scrim.classList.toggle('active', drawerOpen);
+    }
+    function closeDrawer() {
+        drawerOpen = false;
+        document.getElementById('drawer').classList.remove('open');
+        document.getElementById('drawerScrim').classList.remove('active');
+    }
+    // Swipe-up on handle to open
+    (function() {
+        let startY = 0;
+        const handle = document.getElementById('drawerHandle');
+        if (!handle) return;
+        handle.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, {passive: true});
+        handle.addEventListener('touchend', e => {
+            const dy = startY - e.changedTouches[0].clientY;
+            if (dy > 30 && !drawerOpen) toggleDrawer();
+            if (dy < -30 && drawerOpen) toggleDrawer();
+        }, {passive: true});
+    })();
+    </script>
+
+    <!-- Scripts (unchanged) -->
     <script src="shared/telegram.js"></script>
     <script src="shared/scripts/audioConverter.js"></script>
     <script src="shared/scripts/ttsService.js"></script>
