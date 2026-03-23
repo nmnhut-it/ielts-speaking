@@ -29,7 +29,7 @@
                 <input type="password" id="apiKeyInput" placeholder="AIza...">
                 <button class="btn" id="saveApiKeyBtn">Save Key</button>
             </div>
-            <p class="note">✓ You can listen to lessons without API key, but need it for AI practice</p>
+            <p class="note">✓ All lessons, quizzes, and self-study features work without an API key. The key enables personalized AI feedback.</p>
         </div>
 
         <!-- Module Selection -->
@@ -310,6 +310,9 @@
             await window.audioManager.initialize();
             audioInitialized = true;
 
+            // Initialize TTS engine
+            initTTS();
+
             // Check API key
             checkApiKey();
 
@@ -324,6 +327,87 @@
             document.getElementById('prevSectionBtn').addEventListener('click', () => navigateSection(-1));
             document.getElementById('nextSectionBtn').addEventListener('click', () => navigateSection(1));
         });
+
+        // ===== TTS Engine (Browser SpeechSynthesis) =====
+        const TTS_STATE = {
+            utterance: null,
+            isPaused: false,
+            isPlaying: false,
+            rate: 0.9,
+            startTime: 0,
+            intervalId: null
+        };
+
+        function initTTS() {
+            // Warm up speechSynthesis (some browsers need this)
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+            }
+        }
+
+        function ttsPlay(text, callbacks = {}) {
+            ttsStop();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = TTS_STATE.rate;
+            utterance.pitch = 1.0;
+
+            // Pick a good English voice if available
+            const voices = speechSynthesis.getVoices();
+            const preferred = voices.find(v => v.lang === 'en-US' && v.name.includes('Google'))
+                || voices.find(v => v.lang === 'en-US')
+                || voices.find(v => v.lang.startsWith('en'));
+            if (preferred) utterance.voice = preferred;
+
+            utterance.onstart = () => {
+                TTS_STATE.isPlaying = true;
+                TTS_STATE.isPaused = false;
+                TTS_STATE.startTime = Date.now();
+                if (callbacks.onStart) callbacks.onStart();
+            };
+            utterance.onend = () => {
+                TTS_STATE.isPlaying = false;
+                TTS_STATE.isPaused = false;
+                clearInterval(TTS_STATE.intervalId);
+                if (callbacks.onEnd) callbacks.onEnd();
+            };
+            utterance.onerror = (e) => {
+                TTS_STATE.isPlaying = false;
+                if (callbacks.onError) callbacks.onError(e);
+            };
+
+            TTS_STATE.utterance = utterance;
+            speechSynthesis.speak(utterance);
+        }
+
+        function ttsPause() {
+            if (speechSynthesis.speaking && !speechSynthesis.paused) {
+                speechSynthesis.pause();
+                TTS_STATE.isPaused = true;
+                TTS_STATE.isPlaying = false;
+            }
+        }
+
+        function ttsResume() {
+            if (speechSynthesis.paused) {
+                speechSynthesis.resume();
+                TTS_STATE.isPaused = false;
+                TTS_STATE.isPlaying = true;
+            }
+        }
+
+        function ttsStop() {
+            speechSynthesis.cancel();
+            TTS_STATE.isPlaying = false;
+            TTS_STATE.isPaused = false;
+            TTS_STATE.utterance = null;
+            clearInterval(TTS_STATE.intervalId);
+        }
+
+        function ttsSetRate(rate) {
+            TTS_STATE.rate = rate;
+            // Rate change takes effect on next play
+        }
 
         function checkApiKey() {
             const hasKey = window.ieltsCoachAI.hasApiKey();
@@ -383,6 +467,7 @@
 
             // Load first section
             loadSection(0);
+            buildSectionSidebar();
 
             // Update last accessed
             window.lessonProgress.updateLastAccessed();
@@ -408,6 +493,9 @@
             document.getElementById('nextSectionBtn').textContent =
                 index === currentModule.sections.length - 1 ? 'Complete Module ✓' : 'Next ➡️';
 
+            // Stop any playing TTS
+            ttsStop();
+
             // Render section based on type
             const container = document.getElementById('sectionContainer');
             container.innerHTML = '';
@@ -431,6 +519,9 @@
                 default:
                     container.innerHTML = '<p>Unknown section type</p>';
             }
+
+            // Update sidebar
+            if (currentModule) buildSectionSidebar();
 
             // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -514,80 +605,145 @@
             const speedBtn = document.getElementById('audioSpeedBtn');
             const progressContainer = document.getElementById('audioProgressContainer');
             const controls = document.getElementById('audioControls');
-            const timeline = document.getElementById('audioTimeline');
             const fill = document.getElementById('audioTimelineFill');
             const currentTimeSpan = document.getElementById('audioCurrentTime');
             const durationSpan = document.getElementById('audioDuration');
 
-            let currentSpeed = 1.0;
+            let currentSpeed = 0.9;
+            const estimatedDuration = audioScript.duration || 30;
 
-            // Check if audio exists in cache
-            const hasAudio = await window.audioManager.hasAudio(audioId);
+            // Check if pre-recorded audio exists; otherwise use TTS
+            const hasPreRecorded = await window.audioManager.hasAudio(audioId);
+            const useTTS = !hasPreRecorded && ('speechSynthesis' in window);
 
-            if (!hasAudio) {
-                playBtn.innerHTML = `
-                    <span class="warning-icon">⚠️</span>
-                    <span class="btn-text">Audio not generated yet</span>
-                `;
+            if (!hasPreRecorded && !useTTS) {
+                playBtn.innerHTML = '<span class="warning-icon">!</span><span class="btn-text">Audio not available in this browser</span>';
                 playBtn.disabled = true;
-                playBtn.title = 'Generate audio using the Audio Generator tool first';
                 return;
             }
 
+            // Update button text for TTS mode
+            if (useTTS) {
+                playBtn.querySelector('.btn-text').textContent = 'Play Lesson (Text-to-Speech)';
+            }
+
             playBtn.addEventListener('click', async () => {
-                try {
-                    await window.audioManager.play(audioId);
+                if (useTTS) {
                     playBtn.style.display = 'none';
                     progressContainer.classList.remove('hidden');
                     controls.classList.remove('hidden');
-                } catch (error) {
-                    alert('Error playing audio: ' + error.message);
+                    durationSpan.textContent = formatTime(estimatedDuration);
+
+                    ttsPlay(audioScript.text, {
+                        onStart: () => {
+                            pauseBtn.textContent = '⏸️';
+                            // Simulate progress bar
+                            const startMs = Date.now();
+                            TTS_STATE.intervalId = setInterval(() => {
+                                const elapsed = (Date.now() - startMs) / 1000;
+                                const pct = Math.min((elapsed / estimatedDuration) * 100, 100);
+                                fill.style.width = `${pct}%`;
+                                currentTimeSpan.textContent = formatTime(elapsed);
+                            }, 500);
+                        },
+                        onEnd: () => {
+                            fill.style.width = '100%';
+                            currentTimeSpan.textContent = formatTime(estimatedDuration);
+                            document.getElementById('sectionCompleteCheck').checked = true;
+                            markSectionComplete();
+                        }
+                    });
+                } else {
+                    try {
+                        await window.audioManager.play(audioId);
+                        playBtn.style.display = 'none';
+                        progressContainer.classList.remove('hidden');
+                        controls.classList.remove('hidden');
+                    } catch (error) {
+                        alert('Error playing audio: ' + error.message);
+                    }
                 }
             });
 
             pauseBtn.addEventListener('click', () => {
-                if (window.audioManager.isPlaying) {
-                    window.audioManager.pause();
-                    pauseBtn.textContent = '▶️';
+                if (useTTS) {
+                    if (TTS_STATE.isPlaying) {
+                        ttsPause();
+                        pauseBtn.textContent = '▶️';
+                    } else {
+                        ttsResume();
+                        pauseBtn.textContent = '⏸️';
+                    }
                 } else {
-                    window.audioManager.resume();
-                    pauseBtn.textContent = '⏸️';
+                    if (window.audioManager.isPlaying) {
+                        window.audioManager.pause();
+                        pauseBtn.textContent = '▶️';
+                    } else {
+                        window.audioManager.resume();
+                        pauseBtn.textContent = '⏸️';
+                    }
                 }
             });
 
             replayBtn.addEventListener('click', () => {
-                window.audioManager.seek(0);
-                window.audioManager.resume();
+                if (useTTS) {
+                    ttsPlay(audioScript.text, {
+                        onStart: () => {
+                            pauseBtn.textContent = '⏸️';
+                            const startMs = Date.now();
+                            TTS_STATE.intervalId = setInterval(() => {
+                                const elapsed = (Date.now() - startMs) / 1000;
+                                const pct = Math.min((elapsed / estimatedDuration) * 100, 100);
+                                fill.style.width = `${pct}%`;
+                                currentTimeSpan.textContent = formatTime(elapsed);
+                            }, 500);
+                        },
+                        onEnd: () => {
+                            fill.style.width = '100%';
+                            document.getElementById('sectionCompleteCheck').checked = true;
+                            markSectionComplete();
+                        }
+                    });
+                } else {
+                    window.audioManager.seek(0);
+                    window.audioManager.resume();
+                }
             });
 
             speedBtn.addEventListener('click', () => {
-                currentSpeed = currentSpeed >= 2.0 ? 0.75 : currentSpeed + 0.25;
-                window.audioManager.setPlaybackRate(currentSpeed);
-                speedBtn.textContent = `${currentSpeed.toFixed(2)}x`;
+                currentSpeed = currentSpeed >= 1.5 ? 0.7 : currentSpeed + 0.1;
+                currentSpeed = Math.round(currentSpeed * 10) / 10;
+                if (useTTS) {
+                    ttsSetRate(currentSpeed);
+                } else {
+                    window.audioManager.setPlaybackRate(currentSpeed);
+                }
+                speedBtn.textContent = `${currentSpeed.toFixed(1)}x`;
             });
 
-            // Timeline seeking
-            timeline.addEventListener('click', (e) => {
-                const rect = timeline.getBoundingClientRect();
-                const clickX = e.clientX - rect.left;
-                const percentage = clickX / rect.width;
-                const duration = window.audioManager.getDuration();
-                window.audioManager.seek(duration * percentage);
-            });
+            // Pre-recorded audio event handlers
+            if (!useTTS) {
+                const timeline = document.getElementById('audioTimeline');
+                timeline.addEventListener('click', (e) => {
+                    const rect = timeline.getBoundingClientRect();
+                    const clickX = e.clientX - rect.left;
+                    const percentage = clickX / rect.width;
+                    const duration = window.audioManager.getDuration();
+                    window.audioManager.seek(duration * percentage);
+                });
 
-            // Time update
-            window.audioManager.on('timeupdate', (currentTime, duration) => {
-                const percentage = (currentTime / duration) * 100;
-                fill.style.width = `${percentage}%`;
-                currentTimeSpan.textContent = formatTime(currentTime);
-                durationSpan.textContent = formatTime(duration);
-            });
+                window.audioManager.on('timeupdate', (currentTime, duration) => {
+                    const percentage = (currentTime / duration) * 100;
+                    fill.style.width = `${percentage}%`;
+                    currentTimeSpan.textContent = formatTime(currentTime);
+                    durationSpan.textContent = formatTime(duration);
+                });
 
-            // On end
-            window.audioManager.on('end', () => {
-                document.getElementById('sectionCompleteCheck').checked = true;
-                markSectionComplete();
-            });
+                window.audioManager.on('end', () => {
+                    document.getElementById('sectionCompleteCheck').checked = true;
+                    markSectionComplete();
+                });
+            }
         }
 
         function formatTime(seconds) {
@@ -709,8 +865,14 @@
             // Now update question after elements are in DOM
             updateQuestion();
 
+            // Update button text based on API key availability
+            const feedbackBtn = document.getElementById('getAIFeedbackBtn');
+            if (!window.ieltsCoachAI.hasApiKey()) {
+                feedbackBtn.textContent = 'Check My Answer';
+            }
+
             // Setup AI feedback button
-            document.getElementById('getAIFeedbackBtn').addEventListener('click', async () => {
+            feedbackBtn.addEventListener('click', async () => {
                 await getAIPracticeFeedback(section, currentQuestionIndex);
                 completedExercises++;
                 document.getElementById('completedCount').textContent = `Completed: ${completedExercises}`;
@@ -823,11 +985,7 @@
                 return;
             }
 
-            if (!window.ieltsCoachAI.hasApiKey()) {
-                alert('Please set up your API key first');
-                document.getElementById('apiKeySection').classList.remove('hidden');
-                return;
-            }
+            const hasApiKey = window.ieltsCoachAI.hasApiKey();
 
             const feedbackBox = document.getElementById('aiFeedbackBox');
             const feedbackContent = document.getElementById('aiFeedbackContent');
@@ -835,48 +993,46 @@
 
             try {
                 btn.disabled = true;
-                btn.textContent = '⏳ Getting AI Feedback...';
+                btn.textContent = hasApiKey ? '⏳ Getting AI Feedback...' : '⏳ Analyzing...';
 
                 let feedback;
                 let currentQuestion;
+                let sampleAnswer = null;
 
                 // Get the current question (handle both string and object format)
                 if (section.practiceQuestions) {
                     const q = section.practiceQuestions[questionIndex];
-                    currentQuestion = typeof q === 'string' ? q : q.question;
+                    if (typeof q === 'string') {
+                        currentQuestion = q;
+                    } else {
+                        currentQuestion = q.question;
+                        sampleAnswer = q.sampleAnswer || null;
+                    }
                 } else if (section.exercises) {
                     currentQuestion = section.exercises[questionIndex].basic;
                 } else {
                     currentQuestion = section.practiceQuestion;
                 }
 
-                // Determine feedback type based on section
-                if (section.id && section.id.includes('m2')) {
-                    // Module 2: Idea generation
-                    feedback = await window.ieltsCoachAI.feedbackOnIdeas(
-                        currentQuestion,
-                        studentResponse
-                    );
-                } else if (section.id && section.id.includes('m3')) {
-                    // Module 3: Sentence building
-                    feedback = await window.ieltsCoachAI.improveSentence(studentResponse, 7.0, currentQuestion);
-                } else if (section.id && section.id.includes('m4')) {
-                    // Module 4: Part 2 practice
-                    if (section.cueCard) {
-                        feedback = await window.ieltsCoachAI.analyzePreparationNotes(
-                            section.cueCard.topic,
-                            section.cueCard.points,
-                            studentResponse
-                        );
-                    } else {
+                if (hasApiKey) {
+                    // Use Gemini AI for feedback
+                    if (section.id && section.id.includes('m2')) {
                         feedback = await window.ieltsCoachAI.feedbackOnIdeas(currentQuestion, studentResponse);
+                    } else if (section.id && section.id.includes('m3')) {
+                        feedback = await window.ieltsCoachAI.improveSentence(studentResponse, 7.0, currentQuestion);
+                    } else if (section.id && section.id.includes('m4')) {
+                        if (section.cueCard) {
+                            feedback = await window.ieltsCoachAI.analyzePreparationNotes(
+                                section.cueCard.topic, section.cueCard.points, studentResponse);
+                        } else {
+                            feedback = await window.ieltsCoachAI.feedbackOnIdeas(currentQuestion, studentResponse);
+                        }
+                    } else {
+                        feedback = await window.ieltsCoachAI.feedbackOnIdeas(currentQuestion || section.title, studentResponse);
                     }
                 } else {
-                    // Generic feedback
-                    feedback = await window.ieltsCoachAI.feedbackOnIdeas(
-                        currentQuestion || section.title,
-                        studentResponse
-                    );
+                    // Local self-study feedback (no API key required)
+                    feedback = generateLocalFeedback(studentResponse, currentQuestion, sampleAnswer, section);
                 }
 
                 feedbackContent.innerHTML = feedback.replace(/\n/g, '<br>');
@@ -887,10 +1043,14 @@
 
             } catch (error) {
                 console.error('AI Feedback Error:', error);
-                alert('Error getting feedback: ' + error.message);
+                // Fallback to local feedback on API error
+                const localFb = generateLocalFeedback(studentResponse, currentQuestion, sampleAnswer, section);
+                feedbackContent.innerHTML = localFb.replace(/\n/g, '<br>');
+                feedbackBox.classList.remove('hidden');
+                markSectionComplete();
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'Get AI Feedback';
+                btn.textContent = hasApiKey ? 'Get AI Feedback' : 'Check My Answer';
             }
         }
 
@@ -928,12 +1088,14 @@
                 revealBtn.disabled = true;
                 revealBtn.textContent = '✓ Revealed';
 
-                // Play teacher audio if available
+                // Play teacher audio if available (TTS fallback)
                 if (section.teacherView && section.teacherView.audioScript) {
                     const audioId = section.id + '_teacher';
                     const hasAudio = await window.audioManager.hasAudio(audioId);
                     if (hasAudio) {
                         await window.audioManager.play(audioId);
+                    } else if ('speechSynthesis' in window) {
+                        ttsPlay(section.teacherView.audioScript.text);
                     }
                 }
 
@@ -954,13 +1116,29 @@
             let questionCount = 0;
             const maxQuestions = section.conversationSettings?.numberOfQuestions || 5;
 
+            // Scripted questions for no-API-key mode
+            const scriptedQuestions = section.scriptedQuestions || [
+                "Let's start. Can you tell me about your hometown?",
+                "What do you like most about living there?",
+                "Do you think it has changed much in recent years?",
+                "What would you recommend a visitor see there?",
+                "Do you think you will continue living there in the future?"
+            ];
+
             // Start conversation
             startConversation();
 
             async function startConversation() {
-                // Get first question from AI
-                const result = await window.ieltsCoachAI.conductPart1Practice(0);
-                addMessage('teacher', result.content);
+                if (window.ieltsCoachAI.hasApiKey()) {
+                    try {
+                        const result = await window.ieltsCoachAI.conductPart1Practice(0);
+                        addMessage('teacher', result.content);
+                    } catch (e) {
+                        addMessage('teacher', scriptedQuestions[0]);
+                    }
+                } else {
+                    addMessage('teacher', scriptedQuestions[0]);
+                }
                 questionCount++;
             }
 
@@ -976,15 +1154,24 @@
                 conversationHistory.push({ role: 'student', message: response });
                 textarea.value = '';
 
-                // Get AI response
+                // Get AI response or use scripted questions
                 if (questionCount < maxQuestions) {
-                    const result = await window.ieltsCoachAI.conductPart1Practice(
-                        questionCount,
-                        conversationHistory,
-                        response
-                    );
-                    addMessage('teacher', result.content);
-                    conversationHistory.push({ role: 'teacher', message: result.content });
+                    if (window.ieltsCoachAI.hasApiKey()) {
+                        try {
+                            const result = await window.ieltsCoachAI.conductPart1Practice(
+                                questionCount, conversationHistory, response);
+                            addMessage('teacher', result.content);
+                            conversationHistory.push({ role: 'teacher', message: result.content });
+                        } catch (e) {
+                            const q = scriptedQuestions[questionCount % scriptedQuestions.length];
+                            addMessage('teacher', q);
+                            conversationHistory.push({ role: 'teacher', message: q });
+                        }
+                    } else {
+                        const q = scriptedQuestions[questionCount % scriptedQuestions.length];
+                        addMessage('teacher', q);
+                        conversationHistory.push({ role: 'teacher', message: q });
+                    }
                     questionCount++;
                 } else {
                     // End conversation
@@ -1002,19 +1189,49 @@
                 document.getElementById('sendResponseBtn').disabled = true;
                 document.getElementById('endConversationBtn').disabled = true;
 
-                // Get comprehensive feedback
                 const feedbackDiv = document.getElementById('conversationFeedback');
                 feedbackDiv.innerHTML = '<p>⏳ Analyzing your performance...</p>';
                 feedbackDiv.classList.remove('hidden');
 
-                const feedback = await window.ieltsCoachAI.providePart3Feedback(
-                    section.title,
-                    conversationHistory
-                );
+                let feedbackHtml;
+                if (window.ieltsCoachAI.hasApiKey()) {
+                    try {
+                        const feedback = await window.ieltsCoachAI.providePart3Feedback(
+                            section.title, conversationHistory);
+                        feedbackHtml = feedback.replace(/\n/g, '<br>');
+                    } catch (e) {
+                        feedbackHtml = generateConversationSummary(conversationHistory);
+                    }
+                } else {
+                    feedbackHtml = generateConversationSummary(conversationHistory);
+                }
 
-                feedbackDiv.innerHTML = `<div class="feedback-content">${feedback.replace(/\n/g, '<br>')}</div>`;
-
+                feedbackDiv.innerHTML = '<div class="feedback-content">' + feedbackHtml + '</div>';
                 markSectionComplete();
+            }
+
+            function generateConversationSummary(history) {
+                const studentMsgs = history.filter(h => h.role === 'student');
+                const totalWords = studentMsgs.reduce((sum, m) => sum + m.message.split(/\s+/).length, 0);
+                const avgWords = Math.round(totalWords / Math.max(studentMsgs.length, 1));
+                const lines = [
+                    '<strong>📊 Practice Summary</strong>',
+                    '',
+                    '✓ Questions answered: ' + studentMsgs.length,
+                    '✓ Total words: ' + totalWords,
+                    '✓ Average words per answer: ' + avgWords,
+                    ''
+                ];
+                if (avgWords < 20) {
+                    lines.push('💡 Try to give longer answers (aim for 30-50 words per response).');
+                } else if (avgWords < 40) {
+                    lines.push('📝 Good length! Try to extend even more with examples and details.');
+                } else {
+                    lines.push('✓ Great length! You are giving well-developed answers.');
+                }
+                lines.push('');
+                lines.push('ℹ️ <em>Add a Gemini API key for personalized AI feedback on grammar, vocabulary, and fluency.</em>');
+                return lines.join('<br>');
             }
 
             function addMessage(role, text) {
@@ -1060,14 +1277,140 @@
             document.getElementById('lessonInterface').classList.add('hidden');
             document.getElementById('moduleSelection').classList.remove('hidden');
 
-            // Stop any playing audio
+            // Stop any playing audio/TTS
+            ttsStop();
             window.audioManager.stop();
+
+            // Remove section sidebar
+            const sidebar = document.getElementById('sectionSidebar');
+            if (sidebar) sidebar.remove();
 
             // Update progress
             updateAllProgress();
 
             currentModule = null;
             currentSectionIndex = 0;
+        }
+
+        // ===== Local Feedback (no API key) =====
+        function generateLocalFeedback(response, question, sampleAnswer, section) {
+            const words = response.trim().split(/\s+/);
+            const wordCount = words.length;
+            const sentences = response.split(/[.!?]+/).filter(s => s.trim());
+            const lines = [];
+
+            lines.push('📊 <strong>Self-Study Analysis</strong>');
+            lines.push('');
+
+            // Word count assessment
+            if (wordCount < 20) {
+                lines.push('⚠️ <strong>Length:</strong> Your answer is quite short (' + wordCount + ' words). Aim for 40-60 words for Part 1, or 150+ for Part 2.');
+            } else if (wordCount < 40) {
+                lines.push('📝 <strong>Length:</strong> ' + wordCount + ' words — decent, but try to extend a bit more.');
+            } else {
+                lines.push('✓ <strong>Length:</strong> ' + wordCount + ' words — good length!');
+            }
+
+            // Sentence variety
+            if (sentences.length <= 1) {
+                lines.push('⚠️ <strong>Sentences:</strong> Try breaking your answer into multiple sentences.');
+            } else {
+                lines.push('✓ <strong>Sentences:</strong> ' + sentences.length + ' sentences — good structure.');
+            }
+
+            // Check for 5W1H coverage (Module 2 related)
+            if (section && section.id && section.id.includes('m2')) {
+                const w5h1Keywords = {
+                    'What': /\b(like|enjoy|prefer|do|play|watch|read|make|use)\b/i,
+                    'When': /\b(when|morning|evening|weekend|daily|usually|often|sometimes|always|night|afternoon)\b/i,
+                    'Where': /\b(where|home|school|office|park|city|online|outside|room|kitchen)\b/i,
+                    'Who': /\b(who|friend|family|alone|myself|colleague|partner|parents|together)\b/i,
+                    'Why': /\b(because|since|reason|enjoy|love|helps|makes me|feel)\b/i,
+                    'How': /\b(how|feel|makes? me|exciting|relaxing|interesting|boring|happy|calm)\b/i
+                };
+                const covered = [];
+                const missing = [];
+                Object.entries(w5h1Keywords).forEach(([key, regex]) => {
+                    if (regex.test(response)) covered.push(key);
+                    else missing.push(key);
+                });
+                lines.push('');
+                lines.push('🔍 <strong>5W1H Coverage:</strong>');
+                if (covered.length > 0) lines.push('✓ Covered: ' + covered.join(', '));
+                if (missing.length > 0) lines.push('💡 Try adding: ' + missing.join(', '));
+            }
+
+            // Compare with sample answer if available
+            if (sampleAnswer) {
+                lines.push('');
+                lines.push('📖 <strong>Comparison with Model Answer:</strong>');
+                const sampleWords = sampleAnswer.toLowerCase().split(/\s+/);
+                const responseWords = new Set(response.toLowerCase().split(/\s+/));
+                // Find key phrases from sample (words > 4 chars)
+                const keyWords = [...new Set(sampleWords.filter(w => w.length > 4))];
+                const matched = keyWords.filter(w => responseWords.has(w));
+                const matchPct = Math.round((matched.length / Math.max(keyWords.length, 1)) * 100);
+
+                if (matchPct > 50) {
+                    lines.push('✓ Strong overlap with model answer (' + matchPct + '% key vocabulary match)');
+                } else if (matchPct > 20) {
+                    lines.push('📝 Some overlap with model answer (' + matchPct + '% key vocabulary match). Review the model for more ideas.');
+                } else {
+                    lines.push('💡 Your approach differs from the model (' + matchPct + '% overlap). Click "Show Sample Answer" to compare.');
+                }
+
+                // Word count comparison
+                const sampleWordCount = sampleWords.length;
+                if (wordCount < sampleWordCount * 0.5) {
+                    lines.push('💡 The model answer has ~' + sampleWordCount + ' words. Try expanding your response.');
+                }
+            }
+
+            // Connector words check
+            const connectors = ['because', 'however', 'although', 'moreover', 'furthermore',
+                'in addition', 'for example', 'for instance', 'on the other hand',
+                'as a result', 'therefore', 'meanwhile', 'actually', 'honestly',
+                'in fact', 'basically', 'especially', 'particularly'];
+            const usedConnectors = connectors.filter(c => response.toLowerCase().includes(c));
+            lines.push('');
+            if (usedConnectors.length > 0) {
+                lines.push('✓ <strong>Connectors used:</strong> ' + usedConnectors.join(', '));
+            } else {
+                lines.push('💡 <strong>Tip:</strong> Add connectors like "because", "for example", "actually" to improve fluency.');
+            }
+
+            if (!window.ieltsCoachAI.hasApiKey()) {
+                lines.push('');
+                lines.push('ℹ️ <em>For personalized AI feedback, add a free Gemini API key in the setup section above.</em>');
+            }
+
+            return lines.join('\n');
+        }
+
+        // ===== Section Sidebar =====
+        function buildSectionSidebar() {
+            let sidebar = document.getElementById('sectionSidebar');
+            if (!sidebar) {
+                sidebar = document.createElement('div');
+                sidebar.id = 'sectionSidebar';
+                sidebar.className = 'section-sidebar';
+                document.querySelector('.section-container').parentNode.insertBefore(
+                    sidebar, document.querySelector('.section-container'));
+            }
+
+            const sections = currentModule.sections;
+            sidebar.innerHTML = '<div class="sidebar-title">Sections</div>' +
+                sections.map((sec, i) => {
+                    const isComplete = window.lessonProgress.isSectionComplete(currentModule.id, sec.id);
+                    const isCurrent = i === currentSectionIndex;
+                    const typeIcon = { audio_lesson: '🎧', interactive_quiz: '❓', ai_practice: '🤖', dual_view: '👥', ai_conversation: '💬' }[sec.type] || '📄';
+                    return '<div class="sidebar-item' +
+                        (isCurrent ? ' active' : '') +
+                        (isComplete ? ' completed' : '') +
+                        '" onclick="loadSection(' + i + '); buildSectionSidebar();">' +
+                        '<span class="sidebar-icon">' + (isComplete ? '✓' : typeIcon) + '</span>' +
+                        '<span class="sidebar-label">' + sec.title + '</span></div>';
+                }).join('');
         }
     </script>
 </body>

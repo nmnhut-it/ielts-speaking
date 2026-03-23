@@ -340,6 +340,20 @@ function renderCurrentQuestion() {
     // Hide feedback
     document.getElementById('feedbackSection').style.display = 'none';
 
+    // Reset scoring display
+    const scoreDisplay = document.getElementById('m2ScoreDisplay');
+    if (scoreDisplay) scoreDisplay.classList.add('hidden');
+
+    // Reset M2 transcription
+    document.getElementById('m2Transcription').classList.add('hidden');
+
+    // Remove Try Again button if present
+    const tryBtn = document.getElementById('m2TryAgainBtn');
+    if (tryBtn) tryBtn.remove();
+
+    // Show attempt badge
+    updateM2AttemptBadge(currentIndex);
+
     // Reset sample expansion
     if (sampleExpanded) toggleSample();
 
@@ -1811,7 +1825,156 @@ async function transcribeM2Recording() {
         textDiv.textContent = transcript;
         const wc = transcript.split(/\s+/).filter(w => w).length;
         wordsDiv.textContent = wc + ' words';
+
+        // Store transcript for improvement comparison
+        localStorage.setItem('m2_last_transcript_' + currentIndex, transcript);
+
+        // Auto-run band scoring
+        runM2BandScoring(transcript, currentIndex);
+
+        // Show Try Again button
+        showM2TryAgainButton();
     } catch (error) {
         textDiv.textContent = 'Transcription failed: ' + error.message;
+    }
+}
+
+// ========== PHASE 4: TRY AGAIN & ATTEMPT TRACKING (Module 2) ==========
+
+/** Get attempt count for a question index */
+function getM2AttemptCount(questionIndex) {
+    return parseInt(localStorage.getItem('m2_attempts_' + questionIndex) || '0', 10);
+}
+
+/** Increment attempt counter */
+function incrementM2Attempt(questionIndex) {
+    const count = getM2AttemptCount(questionIndex) + 1;
+    localStorage.setItem('m2_attempts_' + questionIndex, String(count));
+    return count;
+}
+
+/** Update attempt badge next to question header */
+function updateM2AttemptBadge(questionIndex) {
+    let badge = document.getElementById('m2AttemptBadge');
+    if (!badge) {
+        const header = document.getElementById('questionNum');
+        if (!header) return;
+        badge = document.createElement('span');
+        badge.id = 'm2AttemptBadge';
+        badge.style.cssText = 'margin-left:8px;font-size:0.75em;background:#6c757d;color:#fff;padding:2px 8px;border-radius:10px;vertical-align:middle;';
+        header.parentNode.insertBefore(badge, header.nextSibling);
+    }
+    const count = getM2AttemptCount(questionIndex);
+    if (count > 0) {
+        badge.textContent = 'Attempt #' + count;
+        badge.style.display = 'inline';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+/** Show Try Again button in audio preview */
+function showM2TryAgainButton() {
+    if (document.getElementById('m2TryAgainBtn')) return;
+
+    const preview = document.getElementById('audioPreview');
+    if (!preview) return;
+
+    const btn = document.createElement('button');
+    btn.id = 'm2TryAgainBtn';
+    btn.textContent = 'Try Again';
+    btn.className = 'btn-download-audio';
+    btn.style.cssText = 'background:#28a745;color:#fff;font-weight:600;border-color:#28a745;';
+    btn.onclick = tryAgainM2;
+    preview.appendChild(btn);
+}
+
+/** Reset for a new attempt, keep question visible */
+function tryAgainM2() {
+    incrementM2Attempt(currentIndex);
+    updateM2AttemptBadge(currentIndex);
+
+    // Reset recording
+    currentRecording = null;
+    const audioPlayer = document.getElementById('audioPlayer');
+    if (audioPlayer.src) {
+        URL.revokeObjectURL(audioPlayer.src);
+        audioPlayer.src = '';
+    }
+    document.getElementById('audioPreview').style.display = 'none';
+    document.getElementById('m2Transcription').classList.add('hidden');
+
+    // Hide scoring
+    const scoreDisplay = document.getElementById('m2ScoreDisplay');
+    if (scoreDisplay) scoreDisplay.classList.add('hidden');
+
+    // Remove try again button
+    const btn = document.getElementById('m2TryAgainBtn');
+    if (btn) btn.remove();
+}
+
+// ========== PHASE 5: BAND SCORING (Module 2) ==========
+
+/** Run band scoring for Module 2 */
+function runM2BandScoring(transcript, questionIndex) {
+    if (!window.calculateBandScores) return;
+
+    const scores = calculateBandScores(transcript);
+    if (!scores || scores.overall === 0) return;
+
+    // Check previous scores for trend
+    let previousScores = null;
+    if (window.scoreHistory) {
+        const question = allQuestions[questionIndex];
+        const qId = getQuestionId(question, questionIndex);
+        const prev = window.scoreHistory.getPreviousScore('module2', qId);
+        if (prev && prev.scores) previousScores = prev.scores;
+    }
+
+    // Improvement tip for 2+ attempts
+    const attemptCount = getM2AttemptCount(questionIndex);
+    let improvementHTML = '';
+    if (attemptCount >= 2) {
+        const prevTranscript = localStorage.getItem('m2_last_transcript_' + questionIndex);
+        if (prevTranscript) {
+            const prevWC = prevTranscript.split(/\s+/).filter(w => w).length;
+            const currWC = transcript.split(/\s+/).filter(w => w).length;
+            improvementHTML = '<div style="margin-top:8px;padding:8px;background:#e8f5e9;border-radius:6px;font-size:0.85em;">';
+            improvementHTML += 'Word count: <strong>' + prevWC + '</strong> -> <strong>' + currWC + '</strong>';
+            if (currWC > prevWC) {
+                improvementHTML += ' <span style="color:#28a745;">(+' + (currWC - prevWC) + ')</span>';
+            } else if (currWC < prevWC) {
+                improvementHTML += ' <span style="color:#dc3545;">(' + (currWC - prevWC) + ')</span>';
+            }
+            improvementHTML += '</div>';
+        }
+    }
+
+    // Render
+    let container = document.getElementById('m2ScoreDisplay');
+    if (!container) return;
+
+    container.innerHTML = '<h4 style="margin:0 0 12px;font-size:1em;">IELTS Band Score Analysis</h4>' +
+        renderScoreHTML(scores, previousScores) + improvementHTML;
+    container.classList.remove('hidden');
+
+    // Save to history
+    if (window.scoreHistory) {
+        const question = allQuestions[questionIndex];
+        const qId = getQuestionId(question, questionIndex);
+        window.scoreHistory.addScore({
+            date: new Date().toISOString(),
+            module: 'module2',
+            questionId: qId,
+            scores: {
+                overall: scores.overall,
+                fluency: scores.fluency,
+                vocab: scores.vocabulary,
+                grammar: scores.grammar,
+                pronunciation: scores.pronunciation
+            },
+            wordCount: scores.wordCount,
+            duration: null
+        });
     }
 }

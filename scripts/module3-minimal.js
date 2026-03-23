@@ -1388,6 +1388,13 @@ function renderCurrentCard() {
     document.getElementById('stopRecordingBtn').classList.add('hidden');
     document.getElementById('recordingTimer').classList.add('hidden');
 
+    // Reset scoring display
+    const scoreDisplay = document.getElementById('m3ScoreDisplay');
+    if (scoreDisplay) scoreDisplay.classList.add('hidden');
+
+    // Show attempt badge
+    updateAttemptBadge(currentIndex);
+
     // Reset sample expansion
     if (sampleExpanded) toggleSample();
 
@@ -1996,6 +2003,9 @@ function showRecordingResult(blob) {
     // Hide comparison and transcription from previous
     document.getElementById('transcriptionArea').classList.add('hidden');
     document.getElementById('answerComparison').classList.add('hidden');
+
+    // Show Try Again button
+    showTryAgainButton();
 }
 
 function cleanupAnswerRecording() {
@@ -2090,7 +2100,14 @@ async function transcribeRecording() {
         const wordCount = transcript.split(/\s+/).filter(w => w).length;
         wordcountDiv.textContent = wordCount + ' words';
 
+        // Store transcript for improvement comparison
+        const cardIdx = currentIndex;
+        localStorage.setItem('m3_last_transcript_' + cardIdx, transcript);
+
         showAnswerComparison(transcript);
+
+        // Auto-run band scoring
+        runBandScoring(transcript, cardIdx);
     } catch (error) {
         textDiv.textContent = 'Transcription failed: ' + error.message;
     }
@@ -2248,4 +2265,244 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', setupJumpSearch);
 } else {
     setupJumpSearch();
+}
+
+// ========== PHASE 4: TRY AGAIN & ATTEMPT TRACKING ==========
+
+/** Get attempt count for a card index */
+function getAttemptCount(cardIndex) {
+    return parseInt(localStorage.getItem('m3_attempts_' + cardIndex) || '0', 10);
+}
+
+/** Increment attempt counter for a card index */
+function incrementAttempt(cardIndex) {
+    const count = getAttemptCount(cardIndex) + 1;
+    localStorage.setItem('m3_attempts_' + cardIndex, String(count));
+    return count;
+}
+
+/** Update the attempt badge display next to cue card header */
+function updateAttemptBadge(cardIndex) {
+    let badge = document.getElementById('m3AttemptBadge');
+    if (!badge) {
+        const header = document.getElementById('cuecardNum');
+        if (!header) return;
+        badge = document.createElement('span');
+        badge.id = 'm3AttemptBadge';
+        badge.style.cssText = 'margin-left:8px;font-size:0.75em;background:#6c757d;color:#fff;padding:2px 8px;border-radius:10px;vertical-align:middle;';
+        header.parentNode.insertBefore(badge, header.nextSibling);
+    }
+    const count = getAttemptCount(cardIndex);
+    if (count > 0) {
+        badge.textContent = 'Attempt #' + count;
+        badge.style.display = 'inline';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+/** Show the "Try Again" button after recording/transcription */
+function showTryAgainButton() {
+    if (document.getElementById('m3TryAgainBtn')) return;
+
+    const resultDiv = document.getElementById('recordingResult');
+    if (!resultDiv) return;
+
+    const btn = document.createElement('button');
+    btn.id = 'm3TryAgainBtn';
+    btn.textContent = 'Try Again';
+    btn.className = 'btn-recording-action';
+    btn.style.cssText = 'background:#28a745;color:#fff;font-weight:600;margin-top:8px;';
+    btn.onclick = tryAgainM3;
+    resultDiv.appendChild(btn);
+}
+
+/** Reset recording state for a new attempt, keep cue card visible */
+function tryAgainM3() {
+    const cardIdx = currentIndex;
+    incrementAttempt(cardIdx);
+    updateAttemptBadge(cardIdx);
+
+    // Reset recording
+    answerRecordingBlob = null;
+    document.getElementById('recordingResult').classList.add('hidden');
+    document.getElementById('recordAnswerBtn').classList.remove('hidden');
+    document.getElementById('transcriptionArea').classList.add('hidden');
+    document.getElementById('answerComparison').classList.add('hidden');
+
+    // Hide scoring
+    const scoreDisplay = document.getElementById('m3ScoreDisplay');
+    if (scoreDisplay) scoreDisplay.classList.add('hidden');
+
+    // Remove try again button
+    const btn = document.getElementById('m3TryAgainBtn');
+    if (btn) btn.remove();
+}
+
+// ========== PHASE 5: BAND SCORING INTEGRATION ==========
+
+/** Run band scoring on a transcript and display results */
+function runBandScoring(transcript, cardIndex) {
+    if (!window.calculateBandScores) return;
+
+    const scores = calculateBandScores(transcript);
+    if (!scores || scores.overall === 0) return;
+
+    // Check for previous scores for trend display
+    let previousScores = null;
+    if (window.scoreHistory) {
+        const cardId = getCardId(allCards[cardIndex], cardIndex);
+        const prev = window.scoreHistory.getPreviousScore('module3', cardId);
+        if (prev && prev.scores) {
+            previousScores = prev.scores;
+        }
+    }
+
+    // Show improvement tip if 2+ attempts and previous transcript exists
+    const attemptCount = getAttemptCount(cardIndex);
+    let improvementHTML = '';
+    if (attemptCount >= 2) {
+        const prevTranscript = localStorage.getItem('m3_last_transcript_' + cardIndex);
+        if (prevTranscript) {
+            const prevWC = prevTranscript.split(/\s+/).filter(w => w).length;
+            const currWC = transcript.split(/\s+/).filter(w => w).length;
+            improvementHTML = '<div style="margin-top:8px;padding:8px;background:#e8f5e9;border-radius:6px;font-size:0.85em;">';
+            improvementHTML += 'Word count: <strong>' + prevWC + '</strong> -> <strong>' + currWC + '</strong>';
+            if (currWC > prevWC) {
+                improvementHTML += ' <span style="color:#28a745;">(+' + (currWC - prevWC) + ')</span>';
+            } else if (currWC < prevWC) {
+                improvementHTML += ' <span style="color:#dc3545;">(' + (currWC - prevWC) + ')</span>';
+            }
+            improvementHTML += '</div>';
+        }
+    }
+
+    // Render score display
+    let container = document.getElementById('m3ScoreDisplay');
+    if (!container) return;
+
+    container.innerHTML = '<h4 style="margin:0 0 12px;font-size:1em;">IELTS Band Score Analysis</h4>' +
+        renderScoreHTML(scores, previousScores) + improvementHTML +
+        buildHistoryButton();
+    container.classList.remove('hidden');
+
+    // Save to score history
+    if (window.scoreHistory) {
+        const card = allCards[cardIndex];
+        const cardId = getCardId(card, cardIndex);
+        window.scoreHistory.addScore({
+            date: new Date().toISOString(),
+            module: 'module3',
+            questionId: cardId,
+            scores: {
+                overall: scores.overall,
+                fluency: scores.fluency,
+                vocab: scores.vocabulary,
+                grammar: scores.grammar,
+                pronunciation: scores.pronunciation
+            },
+            wordCount: scores.wordCount,
+            duration: null
+        });
+    }
+
+    // Show trend if previous scores exist
+    showScoreTrend('module3');
+}
+
+/** Build History button HTML */
+function buildHistoryButton() {
+    return '<div style="margin-top:10px;text-align:center;">' +
+        '<button onclick="showScoreHistoryModal()" style="padding:6px 16px;border:1px solid #007bff;background:#fff;color:#007bff;border-radius:4px;cursor:pointer;font-size:0.85em;">View Score History</button>' +
+        '</div>';
+}
+
+/** Show score trend summary if data exists */
+function showScoreTrend(moduleName) {
+    if (!window.scoreHistory) return;
+
+    const trend = window.scoreHistory.getProgressTrend(10);
+    if (!trend) return;
+
+    let trendDiv = document.getElementById('m3ScoreTrend');
+    if (!trendDiv) {
+        trendDiv = document.createElement('div');
+        trendDiv.id = 'm3ScoreTrend';
+        trendDiv.style.cssText = 'margin-top:8px;padding:8px 12px;background:#fff3cd;border-radius:6px;font-size:0.83em;';
+        const container = document.getElementById('m3ScoreDisplay');
+        if (container) container.appendChild(trendDiv);
+    }
+
+    const items = [];
+    if (trend.vocab.delta !== 0) {
+        items.push('Vocabulary: ' + trend.vocab.from + ' -> ' + trend.vocab.to);
+    }
+    if (trend.fluency.delta !== 0) {
+        items.push('Fluency: ' + trend.fluency.from + ' -> ' + trend.fluency.to);
+    }
+    if (trend.grammar.delta !== 0) {
+        items.push('Grammar: ' + trend.grammar.from + ' -> ' + trend.grammar.to);
+    }
+
+    if (items.length > 0) {
+        trendDiv.innerHTML = '<strong>Recent trend (' + trend.entries + ' sessions):</strong><br>' + items.join(' | ');
+        trendDiv.style.display = 'block';
+    } else {
+        trendDiv.style.display = 'none';
+    }
+}
+
+/** Show a modal with full score history */
+function showScoreHistoryModal() {
+    if (!window.scoreHistory) return;
+
+    const all = window.scoreHistory.getLatest(20);
+    if (all.length === 0) {
+        alert('No score history yet.');
+        return;
+    }
+
+    // Create modal overlay
+    let overlay = document.getElementById('scoreHistoryOverlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'scoreHistoryOverlay';
+        overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:999;display:flex;align-items:center;justify-content:center;';
+        overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+        document.body.appendChild(overlay);
+    }
+
+    let html = '<div style="background:#fff;border-radius:12px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;padding:20px;">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
+    html += '<h3 style="margin:0;">Score History</h3>';
+    html += '<button onclick="document.getElementById(\'scoreHistoryOverlay\').remove()" style="border:none;background:none;font-size:1.5em;cursor:pointer;">x</button>';
+    html += '</div>';
+
+    // Average scores
+    const avg = window.scoreHistory.getAverageScores();
+    if (avg) {
+        html += '<div style="padding:10px;background:#e3f2fd;border-radius:6px;margin-bottom:12px;font-size:0.85em;">';
+        html += '<strong>Average Scores (' + avg.count + ' sessions):</strong><br>';
+        html += 'Overall: ' + avg.overall + ' | F: ' + avg.fluency + ' | V: ' + avg.vocab + ' | G: ' + avg.grammar + ' | P: ' + avg.pronunciation;
+        html += '</div>';
+    }
+
+    // Recent entries
+    all.reverse().forEach(entry => {
+        const date = new Date(entry.date).toLocaleDateString();
+        const s = entry.scores || {};
+        html += '<div style="padding:8px;border-bottom:1px solid #eee;font-size:0.83em;">';
+        html += '<div style="display:flex;justify-content:space-between;">';
+        html += '<span>' + date + ' - ' + (entry.module || '') + '</span>';
+        html += '<strong style="color:' + getScoreColor(s.overall || 0) + ';">' + (s.overall || '-') + '</strong>';
+        html += '</div>';
+        html += '<div style="color:#888;">F:' + (s.fluency || '-') + ' V:' + (s.vocab || '-') + ' G:' + (s.grammar || '-') + ' P:' + (s.pronunciation || '-') + ' | ' + (entry.wordCount || 0) + ' words</div>';
+        html += '</div>';
+    });
+
+    html += '<div style="margin-top:12px;text-align:center;">';
+    html += '<button onclick="if(confirm(\'Clear all history?\')) { window.scoreHistory.clear(); document.getElementById(\'scoreHistoryOverlay\').remove(); }" style="padding:6px 16px;border:1px solid #dc3545;background:#fff;color:#dc3545;border-radius:4px;cursor:pointer;font-size:0.83em;">Clear History</button>';
+    html += '</div></div>';
+
+    overlay.innerHTML = html;
 }
