@@ -66,6 +66,7 @@ let templateExpanded = false;
 
 // Interview state machine: ready, speaking, scored, followup
 let interviewState = 'ready';
+let followUpAnswered = false;
 let interviewTimer = null;
 let interviewSeconds = 0;
 const INTERVIEW_MAX_SECONDS = 30;
@@ -384,6 +385,7 @@ function renderCurrentQuestion() {
 /** Reset interview UI to ready state */
 function resetInterviewUI() {
     interviewState = 'ready';
+    followUpAnswered = false;
 
     // Hide dynamic zones
     document.getElementById('speakingZone').style.display = 'none';
@@ -1027,6 +1029,11 @@ function handleActionButton() {
 
 /** Start speaking: show timer ring, begin recording + STT */
 async function startSpeaking() {
+    // If answering follow-up, mark it
+    if (interviewState === 'followup') {
+        followUpAnswered = true;
+    }
+
     // Show speaking zone with timer
     document.getElementById('speakingZone').style.display = 'flex';
     document.getElementById('transcriptZone').style.display = 'block';
@@ -1142,28 +1149,37 @@ async function stopSpeaking() {
             'm2_last_transcript_' + currentIndex, transcript
         );
 
-        // Auto-score
+        // Auto-score (inline badge only — no duplicate full display)
         autoScoreTranscript(transcript);
-
-        // Show transcript result in the m2Transcription area too
-        showM2LiveTranscriptResult(transcript);
     }
 
     // Show follow-up if available
     const question = allQuestions[currentIndex];
     const hasFollowUp = typeof question === 'object' && question.followUp;
 
-    if (hasFollowUp) {
+    if (hasFollowUp && !followUpAnswered) {
         document.getElementById('followupZone').style.display = 'block';
         document.getElementById('followupText').textContent = question.followUp;
+
+        // Read follow-up aloud after a pause
+        if (document.getElementById('autoVoice')?.checked) {
+            setTimeout(() => {
+                PracticeCommon.speakAsExaminer(question.followUp);
+            }, 1500);
+        }
+
+        // Button becomes "Answer Follow-up"
+        const actionBtn = document.getElementById('actionBtn');
+        actionBtn.className = 'btn-action btn-speak';
+        actionBtn.textContent = '🎤 Answer Follow-up';
+        interviewState = 'followup';
+    } else {
+        // No follow-up or already answered — button becomes "Next Question"
+        const actionBtn = document.getElementById('actionBtn');
+        actionBtn.className = 'btn-action btn-next-q';
+        actionBtn.textContent = 'Next Question →';
+        interviewState = 'scored';
     }
-
-    // Update action button
-    const actionBtn = document.getElementById('actionBtn');
-    actionBtn.className = 'btn-action btn-next-q';
-    actionBtn.textContent = 'Next Question →';
-
-    interviewState = 'scored';
 }
 
 /** Force stop speaking without scoring (used on question change) */
@@ -1188,8 +1204,10 @@ function forceStopSpeaking() {
 function autoScoreTranscript(transcript) {
     if (!transcript || !window.calculateBandScores) return;
 
+    const words = transcript.trim().split(/\s+/).filter(Boolean);
+    const wordCount = words.length;
     const duration = interviewSeconds;
-    const scores = calculateBandScores(transcript, duration);
+    const scores = calculateBandScores(transcript, duration, 'part1');
     const overall = parseFloat(scores.overall);
 
     const badgeEl = document.getElementById('scoreBadge');
@@ -1197,7 +1215,28 @@ function autoScoreTranscript(transcript) {
     if (overall >= 6.5) badgeClass = 'band-high';
     else if (overall >= 5.5) badgeClass = 'band-mid';
 
-    badgeEl.innerHTML = `<span class="score-badge ${badgeClass}">Band ${scores.overall}</span>`;
+    let html = `<span class="score-badge ${badgeClass}">Band ${scores.overall}</span>`;
+
+    // Warn if too short
+    if (wordCount < 15) {
+        html += `<span style="display:block;font-size:0.75rem;color:#dc2626;margin-top:4px;">⚠ Too short — aim for 30-60 words (20-30 seconds)</span>`;
+    } else if (wordCount < 30) {
+        html += `<span style="display:block;font-size:0.75rem;color:#d97706;margin-top:4px;">Try to develop your answer more — aim for 40-60 words</span>`;
+    }
+
+    badgeEl.innerHTML = html;
+
+    // Save to score history
+    if (window.scoreHistory) {
+        scoreHistory.addScore({
+            date: new Date().toISOString(),
+            module: 'module2',
+            questionId: currentIndex,
+            scores: scores,
+            wordCount: wordCount,
+            duration: duration
+        });
+    }
 }
 
 // ========== QUICK ANSWER TIPS BY CATEGORY ==========

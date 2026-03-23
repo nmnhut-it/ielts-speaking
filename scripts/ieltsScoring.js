@@ -129,6 +129,19 @@ function calculateBandScores(transcript, durationSeconds, partType, audioBlob) {
         vocabBand = Math.min(vocabBand, 6.0);
     }
 
+    // Length penalty: very short answers can't demonstrate ability
+    // Cap all scores if answer is extremely short
+    if (wordCount < 10) {
+        fluencyBand = Math.min(fluencyBand, 4.5);
+        vocabBand = Math.min(vocabBand, 4.5);
+        grammarBand = Math.min(grammarBand, 4.5);
+        pronBand = Math.min(pronBand, 5.0);
+    } else if (wordCount < 20) {
+        fluencyBand = Math.min(fluencyBand, 5.5);
+        vocabBand = Math.min(vocabBand, 5.5);
+        grammarBand = Math.min(grammarBand, 5.5);
+    }
+
     const raw = (fluencyBand + vocabBand + grammarBand + pronBand) / 4;
     const overall = Math.round(raw * 2) / 2;
 
