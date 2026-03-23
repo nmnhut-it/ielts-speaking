@@ -391,6 +391,8 @@ function resetInterviewUI() {
     document.getElementById('speakingZone').style.display = 'none';
     const autoFeedback = document.getElementById('autoFeedback');
     if (autoFeedback) autoFeedback.style.display = 'none';
+    const followupFeedback = document.getElementById('followupFeedback');
+    if (followupFeedback) followupFeedback.style.display = 'none';
     document.getElementById('transcriptZone').style.display = 'none';
     document.getElementById('followupZone').style.display = 'none';
     document.getElementById('audioPreview').style.display = 'none';
@@ -1152,11 +1154,15 @@ async function stopSpeaking() {
             : 'm2_last_transcript_' + currentIndex;
         localStorage.setItem(storageKey, transcript);
 
-        // Score it
-        await autoScoreTranscript(transcript);
+        if (isFollowUp) {
+            // Score follow-up in a SEPARATE section (don't replace main score)
+            await autoScoreFollowUp(transcript);
+        } else {
+            await autoScoreTranscript(transcript);
+        }
 
         // Scroll to feedback
-        const feedbackEl = document.getElementById('autoFeedback');
+        const feedbackEl = document.getElementById(isFollowUp ? 'followupFeedback' : 'autoFeedback');
         if (feedbackEl) feedbackEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
@@ -1378,6 +1384,68 @@ async function autoScoreTranscript(transcript) {
             duration: duration
         });
     }
+}
+
+/** Score follow-up answer — shown in a separate panel below main feedback */
+async function autoScoreFollowUp(transcript) {
+    if (!transcript || !window.calculateBandScores) return;
+
+    const words = transcript.trim().split(/\s+/).filter(Boolean);
+    const wordCount = words.length;
+    const scores = calculateBandScores(transcript, interviewSeconds, 'part1');
+
+    let el = document.getElementById('followupFeedback');
+    if (!el) {
+        el = document.createElement('div');
+        el.id = 'followupFeedback';
+        el.style.cssText = 'margin-top:16px;padding:16px;background:#fffbeb;border:1px solid #fde68a;border-radius:12px;';
+        const autoFeedback = document.getElementById('autoFeedback');
+        if (autoFeedback) autoFeedback.after(el);
+        else {
+            const zone = document.getElementById('transcriptZone');
+            if (zone) zone.after(el);
+        }
+    }
+
+    const bandColor = scores.overall >= 7 ? '#16a34a' : scores.overall >= 6 ? '#d97706' : '#dc2626';
+    let html = `<div style="font-weight:700;margin-bottom:8px;">Follow-up Answer Feedback</div>`;
+    html += `<div style="font-size:1.2rem;font-weight:700;color:${bandColor};margin-bottom:6px;">Band ${scores.overall}</div>`;
+
+    // Mini criteria
+    const criteria = [
+        { label: 'F', val: scores.fluency },
+        { label: 'V', val: scores.vocabulary },
+        { label: 'G', val: scores.grammar },
+        { label: 'P', val: scores.pronunciation }
+    ];
+    html += '<div style="display:flex;gap:6px;margin-bottom:10px;">';
+    criteria.forEach(c => {
+        const pct = Math.max(5, ((c.val - 4) / 5) * 100);
+        const clr = c.val >= 7 ? '#16a34a' : c.val >= 6 ? '#d97706' : '#dc2626';
+        html += `<div style="flex:1;text-align:center;"><div style="font-size:0.65rem;color:#6b7280;">${c.label}</div>`;
+        html += `<div style="height:4px;background:#e5e7eb;border-radius:2px;margin:2px 0;"><div style="height:100%;width:${pct}%;background:${clr};border-radius:2px;"></div></div>`;
+        html += `<div style="font-size:0.7rem;font-weight:600;color:${clr};">${c.val}</div></div>`;
+    });
+    html += '</div>';
+
+    html += `<div style="font-size:0.8rem;color:#6b7280;">${wordCount} words</div>`;
+
+    // Strengths & weaknesses
+    if (scores.details) {
+        if (scores.details.weaknesses.length) {
+            html += '<div style="margin-top:6px;font-size:0.82rem;">';
+            scores.details.weaknesses.forEach(w => html += `<div style="color:#dc2626;">• ${w}</div>`);
+            html += '</div>';
+        }
+        if (scores.details.tips.length) {
+            html += '<div style="margin-top:4px;font-size:0.82rem;">';
+            scores.details.tips.slice(0, 2).forEach(t => html += `<div style="color:#2563eb;">💡 ${t}</div>`);
+            html += '</div>';
+        }
+    }
+
+    el.innerHTML = html;
+    el.style.display = 'block';
 }
 
 // ========== QUICK ANSWER TIPS BY CATEGORY ==========
