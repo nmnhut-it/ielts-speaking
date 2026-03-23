@@ -264,7 +264,7 @@
         }
 
         .setup-panel.open {
-            max-height: 400px;
+            max-height: 800px;
             opacity: 1;
         }
 
@@ -640,6 +640,50 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--paper); }
         ::-webkit-scrollbar-thumb { background: var(--warm); border-radius: 3px; }
+
+        /* ─── Cache badges ─── */
+        .cache-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .cache-badge.cached { background: #dcfce7; color: #166534; }
+        .cache-badge.expiring { background: #fef9c3; color: #854d0e; }
+        .cache-badge.not-cached { background: #f3f4f6; color: #6b7280; }
+
+        .cache-model-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: var(--paper);
+            border-radius: 8px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .cache-model-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+        .cache-model-name { font-size: 0.88rem; font-weight: 600; }
+        .cache-model-meta { font-size: 0.75rem; color: var(--muted); }
+        .cache-model-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+        .cache-btn {
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-body);
+            transition: all 0.2s;
+        }
+        .cache-btn-download { background: var(--ocean); color: white; }
+        .cache-btn-download:hover { background: var(--ocean-deep); }
+        .cache-btn-download:disabled { opacity: 0.5; cursor: not-allowed; }
+        .cache-btn-clear { background: var(--cream); color: var(--ink); }
+        .cache-btn-clear:hover { background: var(--warm); }
     </style>
 </head>
 <body>
@@ -696,6 +740,41 @@
                     <input type="text" id="nameInput" placeholder="Enter your name"
                            oninput="saveName()" autocomplete="name">
                     <div class="field-hint">Used to personalize your practice sessions</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── MODEL CACHE ─── -->
+    <section class="container setup-section" style="animation-delay:0.7s">
+        <button class="setup-toggle" id="cacheToggle" onclick="toggleCache()">
+            <div class="setup-toggle-left">
+                <div class="setup-toggle-icon" id="cacheIcon">&#128230;</div>
+                <div class="setup-toggle-text">
+                    <strong>Model Cache</strong>
+                    <span id="cacheSubtext">Pre-download AI models for offline use</span>
+                </div>
+            </div>
+            <span class="setup-chevron" id="cacheChevron">&#9662;</span>
+        </button>
+        <div class="setup-panel" id="cachePanel">
+            <div class="setup-panel-inner" id="cachePanelInner">
+                <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px">
+                    Download speech recognition models ahead of time so practice sessions start instantly.
+                </p>
+                <div id="cacheModelList" style="display:flex;flex-direction:column;gap:12px">
+                    <!-- Populated by JS -->
+                </div>
+                <div style="margin-top:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+                    <span id="cacheTotalSize" style="font-size:0.78rem;color:var(--muted)"></span>
+                    <button onclick="clearAllModelCache()" class="btn btn-outline" style="padding:8px 18px;font-size:0.78rem;border-radius:8px">Clear All Cache</button>
+                </div>
+                <!-- Progress bar (hidden by default) -->
+                <div id="cacheProgressWrap" style="display:none;margin-top:16px">
+                    <div style="font-size:0.8rem;color:var(--muted);margin-bottom:6px" id="cacheProgressLabel">Downloading...</div>
+                    <div style="width:100%;height:6px;background:var(--cream);border-radius:3px;overflow:hidden">
+                        <div id="cacheProgressBar" style="width:0%;height:100%;background:var(--ocean);border-radius:3px;transition:width 0.3s"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -931,6 +1010,152 @@
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
         init();
+    </script>
+
+    <script src="scripts/modelCacheManager.js"></script>
+    <script>
+        // ─── Cache panel toggle ───
+        function toggleCache() {
+            const panel = document.getElementById('cachePanel');
+            const chevron = document.getElementById('cacheChevron');
+            const toggle = document.getElementById('cacheToggle');
+            panel.classList.toggle('open');
+            chevron.classList.toggle('open');
+            if (panel.classList.contains('open')) {
+                toggle.style.borderRadius = 'var(--radius) var(--radius) 0 0';
+                refreshCacheUI();
+            } else {
+                setTimeout(() => { toggle.style.borderRadius = 'var(--radius)'; }, 300);
+            }
+        }
+
+        // ─── Render cache status for all models ───
+        async function refreshCacheUI() {
+            const mgr = window.modelCacheManager;
+            if (!mgr) return;
+            try {
+                await mgr.initDB();
+                const status = await mgr.getCacheStatus();
+                const list = document.getElementById('cacheModelList');
+                list.innerHTML = '';
+
+                for (const model of window.MODEL_REGISTRY) {
+                    const s = status[model.id];
+                    list.appendChild(buildModelRow(model, s));
+                }
+
+                // Total storage
+                const totals = await mgr.getCacheSizeTotal();
+                const el = document.getElementById('cacheTotalSize');
+                if (totals.usage > 0) {
+                    el.textContent = `Storage used: ${formatBytesUI(totals.usage)} of ${formatBytesUI(totals.quota)}`;
+                } else {
+                    el.textContent = '';
+                }
+            } catch (e) {
+                console.warn('Cache UI error:', e);
+            }
+        }
+
+        function buildModelRow(model, s) {
+            const row = document.createElement('div');
+            row.className = 'cache-model-row';
+
+            let badgeClass = 'not-cached';
+            let badgeText = 'Not cached';
+            if (s.cached && !s.expired) {
+                badgeClass = s.expiringSoon ? 'expiring' : 'cached';
+                badgeText = s.expiringSoon
+                    ? `Expires in ${s.daysLeft}d`
+                    : `Cached${s.daysLeft !== null ? ' — ' + s.daysLeft + 'd left' : ''}`;
+            } else if (s.expired) {
+                badgeClass = 'expiring';
+                badgeText = 'Expired';
+            }
+
+            const sizeInfo = s.cached && s.sizeBytes > 0 ? s.sizeFormatted : model.estimatedSize;
+
+            row.innerHTML = `
+                <div class="cache-model-info">
+                    <span class="cache-model-name">${model.label}</span>
+                    <span class="cache-model-meta">${sizeInfo} <span class="cache-badge ${badgeClass}">${badgeText}</span></span>
+                </div>
+                <div class="cache-model-actions">
+                    ${!s.cached || s.expired
+                        ? `<button class="cache-btn cache-btn-download" onclick="downloadModel('${model.id}', this)">Download</button>`
+                        : `<button class="cache-btn cache-btn-clear" onclick="clearModel('${model.id}')">Clear</button>`
+                    }
+                </div>
+            `;
+            return row;
+        }
+
+        // ─── Download a model (pre-cache) ───
+        async function downloadModel(modelId, btn) {
+            if (btn) btn.disabled = true;
+            const progressWrap = document.getElementById('cacheProgressWrap');
+            const progressBar = document.getElementById('cacheProgressBar');
+            const progressLabel = document.getElementById('cacheProgressLabel');
+            progressWrap.style.display = 'block';
+            progressBar.style.width = '0%';
+            progressLabel.textContent = 'Starting download...';
+
+            try {
+                const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2');
+                env.allowRemoteModels = true;
+                env.allowLocalModels = true;
+                env.localModelPath = '/models/';
+
+                const fileProgress = new Map();
+                let totalFiles = 0;
+
+                await pipeline('automatic-speech-recognition', modelId, {
+                    quantized: false,
+                    device: 'wasm',
+                    progress_callback: (p) => {
+                        if (p.status === 'progress' && p.file) {
+                            fileProgress.set(p.file, p.progress || 0);
+                            totalFiles = Math.max(totalFiles, fileProgress.size);
+                            const avg = Array.from(fileProgress.values()).reduce((a, b) => a + b, 0) / totalFiles;
+                            progressBar.style.width = `${Math.round(avg)}%`;
+                            progressLabel.textContent = `Downloading: ${Math.round(avg)}% (${fileProgress.size} files)`;
+                        } else if (p.status === 'done') {
+                            progressLabel.textContent = 'Processing...';
+                        }
+                    }
+                });
+
+                await window.modelCacheManager.recordModelDownload(modelId);
+                progressBar.style.width = '100%';
+                progressLabel.textContent = 'Download complete!';
+                setTimeout(() => { progressWrap.style.display = 'none'; }, 2000);
+                refreshCacheUI();
+            } catch (e) {
+                progressLabel.textContent = 'Download failed: ' + e.message;
+                console.error('Model download failed:', e);
+            }
+            if (btn) btn.disabled = false;
+        }
+
+        // ─── Clear a single model ───
+        async function clearModel(modelId) {
+            await window.modelCacheManager.clearModelCache(modelId);
+            refreshCacheUI();
+        }
+
+        // ─── Clear all cache ───
+        async function clearAllModelCache() {
+            await window.modelCacheManager.clearAllCache();
+            refreshCacheUI();
+        }
+
+        function formatBytesUI(bytes) {
+            if (bytes === 0) return '0 B';
+            const units = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(1024));
+            const val = bytes / Math.pow(1024, i);
+            return `${val < 10 ? val.toFixed(1) : Math.round(val)} ${units[i]}`;
+        }
     </script>
 </body>
 </html>
