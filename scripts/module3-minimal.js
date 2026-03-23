@@ -1077,17 +1077,11 @@ function initModule() {
 }
 
 function showIdentificationModal() {
-    var modal = document.getElementById('identificationModal');
-    var overlay = document.getElementById('identificationOverlay');
-    if (modal) modal.classList.add('active');
-    if (overlay) overlay.classList.add('active');
+    PracticeCommon.showIdentificationModal();
 }
 
 function hideIdentificationModal() {
-    var modal = document.getElementById('identificationModal');
-    var overlay = document.getElementById('identificationOverlay');
-    if (modal) modal.classList.remove('active');
-    if (overlay) overlay.classList.remove('active');
+    PracticeCommon.hideIdentificationModal();
 }
 
 function setupIdentificationListeners() {
@@ -1156,80 +1150,47 @@ async function submitIdentification() {
 }
 
 async function sendSessionStartToTelegram(sName, photoDataUrl) {
-    if (!telegramSender) return;
-    try {
-        var photoBlob = m3DataURLtoBlob(photoDataUrl);
-        var caption = '<b>New Practice Session Started</b>\n\n' +
-            '<b>Student:</b> ' + sName + '\n' +
-            '<b>Module:</b> Module 3 - Part 2 Long Turn\n' +
-            '<b>Time:</b> ' + new Date().toLocaleString();
-        await telegramSender.sendPhoto(photoBlob, caption, sName + '_session.jpg');
-    } catch (error) {
-        console.error('Failed to send session start to Telegram:', error);
-    }
+    await PracticeCommon.sendSessionStartToTelegram({
+        telegramSender: telegramSender,
+        studentName: sName,
+        photoDataUrl: photoDataUrl,
+        moduleName: 'Module 3 - Part 2 Long Turn'
+    });
 }
 
 async function sendApprovalRequest(sName, sessionId) {
-    if (!telegramSender) return;
-    var message = '<b>New Practice Session Request</b>\n\n' +
-        '<b>Student:</b> ' + sName + '\n' +
-        '<b>Module:</b> Module 3 - Part 2 Long Turn\n' +
-        '<b>Time:</b> ' + new Date().toLocaleString() + '\n\n' +
-        "Please approve or reject this student's practice session.";
-    var keyboard = [[
-        { text: 'Accept', callback_data: 'approve_' + sessionId },
-        { text: 'Reject', callback_data: 'reject_' + sessionId }
-    ]];
-    var result = await telegramSender.sendMessageWithKeyboard(message, keyboard);
-    studentSession.setTelegramMessageId(result.message_id);
+    await PracticeCommon.sendApprovalRequest({
+        telegramSender: telegramSender,
+        studentName: sName,
+        sessionId: sessionId,
+        moduleName: 'Module 3 - Part 2 Long Turn',
+        studentSession: studentSession
+    });
 }
 
 function showApprovalWaiting() {
-    var modalBody = document.querySelector('#identificationModal .modal-body');
-    if (!modalBody) return;
-    modalBody.innerHTML = '<div class="approval-waiting">' +
-        '<div class="approval-spinner"></div>' +
-        '<h3>Waiting for teacher approval</h3>' +
-        '<p class="approval-dots">Please wait<span class="dots-anim">...</span></p>' +
-        '<p class="approval-hint">Your teacher will review your session request.</p></div>';
+    PracticeCommon.showApprovalWaiting();
 }
 
 function showApprovalRejected() {
-    var modalBody = document.querySelector('#identificationModal .modal-body');
-    if (!modalBody) return;
-    modalBody.innerHTML = '<div class="approval-result">' +
-        '<h3>Session Not Approved</h3>' +
-        '<p>Your session was not approved. Please contact your teacher.</p>' +
-        '<button class="btn-primary" onclick="retryIdentification()">Try Again</button></div>';
+    PracticeCommon.showApprovalRejected();
 }
 
 function showApprovalTimeout() {
-    var modalBody = document.querySelector('#identificationModal .modal-body');
-    if (!modalBody) return;
-    modalBody.innerHTML = '<div class="approval-result">' +
-        '<h3>Teacher Unavailable</h3>' +
-        '<p>Please try again later.</p>' +
-        '<button class="btn-primary" onclick="retryIdentification()">Try Again</button></div>';
+    PracticeCommon.showApprovalTimeout();
 }
 
 function retryIdentification() {
-    studentSession.clearSession();
     capturedPhotoData = null;
-    location.reload();
+    PracticeCommon.retryIdentification(studentSession);
 }
 
 async function startApprovalPolling(sessionId) {
-    if (!telegramSender) {
-        onApprovalComplete({ approved: true });
-        return;
-    }
-    try {
-        var result = await telegramSender.pollForApproval(sessionId);
-        onApprovalComplete(result);
-    } catch (error) {
-        console.error('Approval polling error:', error);
-        showApprovalTimeout();
-    }
+    await PracticeCommon.startApprovalPolling({
+        telegramSender: telegramSender,
+        sessionId: sessionId,
+        onComplete: onApprovalComplete
+    });
 }
 
 function onApprovalComplete(result) {
@@ -1248,15 +1209,7 @@ function onApprovalComplete(result) {
 }
 
 function m3DataURLtoBlob(dataURL) {
-    var parts = dataURL.split(',');
-    var mimeMatch = parts[0].match(/:(.*?);/);
-    var mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
-    var binary = atob(parts[1]);
-    var array = new Uint8Array(binary.length);
-    for (var i = 0; i < binary.length; i++) {
-        array[i] = binary.charCodeAt(i);
-    }
-    return new Blob([array], { type: mime });
+    return PracticeCommon.dataURLtoBlob(dataURL);
 }
 
 // Load cue cards
@@ -1935,12 +1888,7 @@ function getCardId(card, index) {
 }
 
 function shuffleArray(array) {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
+    return PracticeCommon.shuffleArray(array);
 }
 
 // ========== AUDIO RECORDING FUNCTIONS ==========
@@ -1959,21 +1907,10 @@ async function startAnswerRecording() {
         document.getElementById('manualAnswerArea').classList.add('hidden');
 
         // Start live transcription
-        const liveArea = document.getElementById('liveTranscriptArea');
-        const liveText = document.getElementById('liveTranscriptText');
-        liveText.textContent = '';
-
-        try {
-            liveArea.classList.remove('hidden');
-            window.liveSTT = window.sttService.startLiveTranscription(
-                (interim) => { liveText.textContent = interim; },
-                (final) => { liveText.textContent = final; }
-            );
-        } catch (e) {
-            console.warn('Live transcription not available:', e.message);
-            liveArea.classList.add('hidden');
-            window.liveSTT = null;
-        }
+        window.liveSTT = PracticeCommon.startLiveSTT({
+            liveAreaEl: 'liveTranscriptArea',
+            liveTextEl: 'liveTranscriptText'
+        });
 
         startAnswerRecordingTimer();
     } catch (error) {
@@ -1986,12 +1923,10 @@ async function stopAnswerRecording() {
     if (!answerRecorder) return;
 
     // Stop live transcription and get result
-    let liveTranscript = '';
-    if (window.liveSTT) {
-        liveTranscript = window.liveSTT.stop();
-        window.liveSTT = null;
-    }
-    document.getElementById('liveTranscriptArea').classList.add('hidden');
+    const liveTranscript = PracticeCommon.stopLiveSTT(
+        window.liveSTT, 'liveTranscriptArea'
+    );
+    window.liveSTT = null;
 
     const recording = await answerRecorder.stopRecording();
     stopAnswerRecordingTimer();
@@ -2109,20 +2044,17 @@ async function sendRecordingToTelegram() {
 
 // Display live transcript result and auto-score
 function showLiveTranscriptResult(transcript) {
-    const area = document.getElementById('transcriptionArea');
-    const textDiv = document.getElementById('transcriptionText');
-    const wordcountDiv = document.getElementById('transcriptionWordcount');
-
-    area.classList.remove('hidden');
-    textDiv.textContent = transcript;
-    const wordCount = transcript.split(/\s+/).filter(w => w).length;
-    wordcountDiv.textContent = wordCount + ' words';
-
-    const cardIdx = currentIndex;
-    localStorage.setItem('m3_last_transcript_' + cardIdx, transcript);
-
-    showAnswerComparison(transcript);
-    runBandScoring(transcript, cardIdx);
+    PracticeCommon.showTranscriptResult(transcript, {
+        areaEl: 'transcriptionArea',
+        textEl: 'transcriptionText',
+        wordcountEl: 'transcriptionWordcount',
+        storagePrefix: 'm3_last_transcript_',
+        index: currentIndex,
+        onAfterDisplay: function(t, idx) {
+            showAnswerComparison(t);
+            runBandScoring(t, idx);
+        }
+    });
 }
 
 // Fallback: show manual input area for typing answer
@@ -2138,36 +2070,33 @@ async function transcribeRecording() {
 
 // Submit manually typed answer
 function submitManualAnswer() {
-    const textarea = document.getElementById('manualAnswerInput');
-    const transcript = (textarea.value || '').trim();
-    if (!transcript) {
-        alert('Please type your answer first.');
-        return;
-    }
-
-    document.getElementById('manualAnswerArea').classList.add('hidden');
-    showLiveTranscriptResult(transcript);
+    PracticeCommon.submitManualAnswer({
+        textareaId: 'manualAnswerInput',
+        manualAreaEl: 'manualAnswerArea',
+        areaEl: 'transcriptionArea',
+        textEl: 'transcriptionText',
+        wordcountEl: 'transcriptionWordcount',
+        storagePrefix: 'm3_last_transcript_',
+        index: currentIndex,
+        onAfterDisplay: function(t, idx) {
+            showAnswerComparison(t);
+            runBandScoring(t, idx);
+        }
+    });
 }
 
 function showAnswerComparison(transcript) {
     const card = allCards[currentIndex];
     if (!card.sampleAnswer || !card.sampleAnswer.text) return;
 
-    const compDiv = document.getElementById('answerComparison');
-    const yoursText = document.getElementById('comparisonYours');
-    const sampleText = document.getElementById('comparisonSample');
-    const yoursWords = document.getElementById('comparisonYoursWords');
-    const sampleWords = document.getElementById('comparisonSampleWords');
-
-    const yourWC = transcript.split(/\s+/).filter(w => w).length;
-    const sampleWC = card.sampleAnswer.text.split(/\s+/).filter(w => w).length;
-
-    yoursText.textContent = transcript;
-    sampleText.textContent = card.sampleAnswer.text;
-    yoursWords.textContent = yourWC + ' words';
-    sampleWords.textContent = sampleWC + ' words';
-
-    compDiv.classList.remove('hidden');
+    PracticeCommon.showAnswerComparison(transcript, {
+        comparisonEl: 'answerComparison',
+        yoursTextEl: 'comparisonYours',
+        sampleTextEl: 'comparisonSample',
+        yoursWordsEl: 'comparisonYoursWords',
+        sampleWordsEl: 'comparisonSampleWords',
+        sampleText: card.sampleAnswer.text
+    });
 }
 
 // ========== JUMP MODAL ==========
@@ -2307,143 +2236,67 @@ if (document.readyState === 'loading') {
 
 /** Get attempt count for a card index */
 function getAttemptCount(cardIndex) {
-    return parseInt(localStorage.getItem('m3_attempts_' + cardIndex) || '0', 10);
+    return PracticeCommon.getAttemptCount('m3_attempts_', cardIndex);
 }
 
 /** Increment attempt counter for a card index */
 function incrementAttempt(cardIndex) {
-    const count = getAttemptCount(cardIndex) + 1;
-    localStorage.setItem('m3_attempts_' + cardIndex, String(count));
-    return count;
+    return PracticeCommon.incrementAttempt('m3_attempts_', cardIndex);
 }
 
 /** Update the attempt badge display next to cue card header */
 function updateAttemptBadge(cardIndex) {
-    let badge = document.getElementById('m3AttemptBadge');
-    if (!badge) {
-        const header = document.getElementById('cuecardNum');
-        if (!header) return;
-        badge = document.createElement('span');
-        badge.id = 'm3AttemptBadge';
-        badge.style.cssText = 'margin-left:8px;font-size:0.75em;background:#6c757d;color:#fff;padding:2px 8px;border-radius:10px;vertical-align:middle;';
-        header.parentNode.insertBefore(badge, header.nextSibling);
-    }
-    const count = getAttemptCount(cardIndex);
-    if (count > 0) {
-        badge.textContent = 'Attempt #' + count;
-        badge.style.display = 'inline';
-    } else {
-        badge.style.display = 'none';
-    }
+    PracticeCommon.updateAttemptBadge({
+        badgeId: 'm3AttemptBadge',
+        headerId: 'cuecardNum',
+        prefix: 'm3_attempts_',
+        index: cardIndex
+    });
 }
 
 /** Show the "Try Again" button after recording/transcription */
 function showTryAgainButton() {
-    if (document.getElementById('m3TryAgainBtn')) return;
-
-    const resultDiv = document.getElementById('recordingResult');
-    if (!resultDiv) return;
-
-    const btn = document.createElement('button');
-    btn.id = 'm3TryAgainBtn';
-    btn.textContent = 'Try Again';
-    btn.className = 'btn-recording-action';
-    btn.style.cssText = 'background:#28a745;color:#fff;font-weight:600;margin-top:8px;';
-    btn.onclick = tryAgainM3;
-    resultDiv.appendChild(btn);
+    PracticeCommon.showTryAgainButton({
+        btnId: 'm3TryAgainBtn',
+        containerEl: 'recordingResult',
+        btnClass: 'btn-recording-action',
+        onTryAgain: tryAgainM3
+    });
 }
 
 /** Reset recording state for a new attempt, keep cue card visible */
 function tryAgainM3() {
-    const cardIdx = currentIndex;
-    incrementAttempt(cardIdx);
-    updateAttemptBadge(cardIdx);
-
-    // Reset recording
-    answerRecordingBlob = null;
-    document.getElementById('recordingResult').classList.add('hidden');
-    document.getElementById('recordAnswerBtn').classList.remove('hidden');
-    document.getElementById('transcriptionArea').classList.add('hidden');
-    document.getElementById('answerComparison').classList.add('hidden');
-
-    // Hide scoring
-    const scoreDisplay = document.getElementById('m3ScoreDisplay');
-    if (scoreDisplay) scoreDisplay.classList.add('hidden');
-
-    // Remove try again button
-    const btn = document.getElementById('m3TryAgainBtn');
-    if (btn) btn.remove();
+    PracticeCommon.tryAgain({
+        prefix: 'm3_attempts_',
+        index: currentIndex,
+        updateBadge: function() { updateAttemptBadge(currentIndex); },
+        onReset: function() { answerRecordingBlob = null; },
+        resetElements: [
+            { id: 'recordingResult', action: 'hideClass' },
+            { id: 'recordAnswerBtn', action: 'showClass' },
+            { id: 'transcriptionArea', action: 'hideClass' },
+            { id: 'answerComparison', action: 'hideClass' }
+        ],
+        scoreDisplayEl: 'm3ScoreDisplay',
+        tryAgainBtnId: 'm3TryAgainBtn'
+    });
 }
 
 // ========== PHASE 5: BAND SCORING INTEGRATION ==========
 
 /** Run band scoring on a transcript and display results */
 function runBandScoring(transcript, cardIndex) {
-    if (!window.calculateBandScores) return;
-
-    const scores = calculateBandScores(transcript);
-    if (!scores || scores.overall === 0) return;
-
-    // Check for previous scores for trend display
-    let previousScores = null;
-    if (window.scoreHistory) {
-        const cardId = getCardId(allCards[cardIndex], cardIndex);
-        const prev = window.scoreHistory.getPreviousScore('module3', cardId);
-        if (prev && prev.scores) {
-            previousScores = prev.scores;
-        }
-    }
-
-    // Show improvement tip if 2+ attempts and previous transcript exists
-    const attemptCount = getAttemptCount(cardIndex);
-    let improvementHTML = '';
-    if (attemptCount >= 2) {
-        const prevTranscript = localStorage.getItem('m3_last_transcript_' + cardIndex);
-        if (prevTranscript) {
-            const prevWC = prevTranscript.split(/\s+/).filter(w => w).length;
-            const currWC = transcript.split(/\s+/).filter(w => w).length;
-            improvementHTML = '<div style="margin-top:8px;padding:8px;background:#e8f5e9;border-radius:6px;font-size:0.85em;">';
-            improvementHTML += 'Word count: <strong>' + prevWC + '</strong> -> <strong>' + currWC + '</strong>';
-            if (currWC > prevWC) {
-                improvementHTML += ' <span style="color:#28a745;">(+' + (currWC - prevWC) + ')</span>';
-            } else if (currWC < prevWC) {
-                improvementHTML += ' <span style="color:#dc3545;">(' + (currWC - prevWC) + ')</span>';
-            }
-            improvementHTML += '</div>';
-        }
-    }
-
-    // Render score display
-    let container = document.getElementById('m3ScoreDisplay');
-    if (!container) return;
-
-    container.innerHTML = '<h4 style="margin:0 0 12px;font-size:1em;">IELTS Band Score Analysis</h4>' +
-        renderScoreHTML(scores, previousScores) + improvementHTML +
-        buildHistoryButton();
-    container.classList.remove('hidden');
-
-    // Save to score history
-    if (window.scoreHistory) {
-        const card = allCards[cardIndex];
-        const cardId = getCardId(card, cardIndex);
-        window.scoreHistory.addScore({
-            date: new Date().toISOString(),
-            module: 'module3',
-            questionId: cardId,
-            scores: {
-                overall: scores.overall,
-                fluency: scores.fluency,
-                vocab: scores.vocabulary,
-                grammar: scores.grammar,
-                pronunciation: scores.pronunciation
-            },
-            wordCount: scores.wordCount,
-            duration: null
-        });
-    }
-
-    // Show trend if previous scores exist
-    showScoreTrend('module3');
+    PracticeCommon.runBandScoring(transcript, cardIndex, {
+        moduleId: 'module3',
+        scoreDisplayEl: 'm3ScoreDisplay',
+        attemptPrefix: 'm3_attempts_',
+        transcriptPrefix: 'm3_last_transcript_',
+        getQuestionId: function(idx) {
+            return getCardId(allCards[idx], idx);
+        },
+        extraHTML: buildHistoryButton(),
+        onAfterScore: function() { showScoreTrend('module3'); }
+    });
 }
 
 /** Build History button HTML */

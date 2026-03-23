@@ -200,22 +200,14 @@ function initializeAudioRecording() {
 }
 
 function showIdentificationModal() {
-    const modal = document.getElementById('identificationModal');
-    const overlay = document.getElementById('identificationOverlay');
+    PracticeCommon.showIdentificationModal();
     const mainContainer = document.getElementById('mainContainer');
-
-    if (modal) modal.classList.add('active');
-    if (overlay) overlay.classList.add('active');
     if (mainContainer) mainContainer.classList.add('hidden');
 }
 
 function hideIdentificationModal() {
-    const modal = document.getElementById('identificationModal');
-    const overlay = document.getElementById('identificationOverlay');
+    PracticeCommon.hideIdentificationModal();
     const mainContainer = document.getElementById('mainContainer');
-
-    if (modal) modal.classList.remove('active');
-    if (overlay) overlay.classList.remove('active');
     if (mainContainer) mainContainer.classList.remove('hidden');
 }
 
@@ -1042,12 +1034,7 @@ function getQuestionId(question, index) {
 }
 
 function shuffleArray(array) {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
+    return PracticeCommon.shuffleArray(array);
 }
 
 // Load favorites on init
@@ -1160,89 +1147,38 @@ async function submitIdentification() {
 }
 
 async function sendApprovalRequest(studentName, sessionId) {
-    if (!telegramSender) return;
-
-    try {
-        const message = `📚 <b>New Practice Session Request</b>\n\n` +
-            `<b>Student:</b> ${studentName}\n` +
-            `<b>Module:</b> Module 2 - Finding Ideas Fast\n` +
-            `<b>Time:</b> ${new Date().toLocaleString()}\n\n` +
-            `Please approve or reject this student's practice session.`;
-
-        const keyboard = [[
-            { text: '✅ Accept', callback_data: `approve_${sessionId}` },
-            { text: '❌ Reject', callback_data: `reject_${sessionId}` }
-        ]];
-
-        const result = await telegramSender.sendMessageWithKeyboard(message, keyboard);
-        studentSession.setTelegramMessageId(result.message_id);
-    } catch (error) {
-        console.error('Failed to send approval request:', error);
-        throw error;
-    }
+    await PracticeCommon.sendApprovalRequest({
+        telegramSender: telegramSender,
+        studentName: studentName,
+        sessionId: sessionId,
+        moduleName: 'Module 2 - Finding Ideas Fast',
+        studentSession: studentSession
+    });
 }
 
 function showApprovalWaiting() {
-    const modalBody = document.querySelector('#identificationModal .modal-body');
-    if (!modalBody) return;
-
-    modalBody.innerHTML = `
-        <div class="approval-waiting">
-            <div class="approval-spinner"></div>
-            <h3>Waiting for teacher approval</h3>
-            <p class="approval-dots">Please wait<span class="dots-anim">...</span></p>
-            <p class="approval-hint">Your teacher will review your session request.</p>
-        </div>
-    `;
+    PracticeCommon.showApprovalWaiting();
 }
 
 function showApprovalRejected() {
-    const modalBody = document.querySelector('#identificationModal .modal-body');
-    if (!modalBody) return;
-
-    modalBody.innerHTML = `
-        <div class="approval-result">
-            <div class="approval-icon rejected">❌</div>
-            <h3>Session Not Approved</h3>
-            <p>Your session was not approved. Please contact your teacher.</p>
-            <button class="btn-primary" onclick="retryIdentification()">Try Again</button>
-        </div>
-    `;
+    PracticeCommon.showApprovalRejected();
 }
 
 function showApprovalTimeout() {
-    const modalBody = document.querySelector('#identificationModal .modal-body');
-    if (!modalBody) return;
-
-    modalBody.innerHTML = `
-        <div class="approval-result">
-            <div class="approval-icon timeout">⏰</div>
-            <h3>Teacher Unavailable</h3>
-            <p>Please try again later.</p>
-            <button class="btn-primary" onclick="retryIdentification()">Try Again</button>
-        </div>
-    `;
+    PracticeCommon.showApprovalTimeout();
 }
 
 function retryIdentification() {
-    studentSession.clearSession();
     capturedPhotoData = null;
-    location.reload();
+    PracticeCommon.retryIdentification(studentSession);
 }
 
 async function startApprovalPolling(sessionId) {
-    if (!telegramSender) {
-        onApprovalComplete({ approved: true });
-        return;
-    }
-
-    try {
-        const result = await telegramSender.pollForApproval(sessionId);
-        onApprovalComplete(result);
-    } catch (error) {
-        console.error('Approval polling error:', error);
-        showApprovalTimeout();
-    }
+    await PracticeCommon.startApprovalPolling({
+        telegramSender: telegramSender,
+        sessionId: sessionId,
+        onComplete: onApprovalComplete
+    });
 }
 
 function onApprovalComplete(result) {
@@ -1266,33 +1202,16 @@ function onApprovalComplete(result) {
 }
 
 async function sendSessionStartToTelegram(studentName, photoDataUrl) {
-    if (!telegramSender) return;
-
-    try {
-        const photoBlob = dataURLtoBlob(photoDataUrl);
-        const caption = `<b>📚 New Practice Session Started</b>\n\n` +
-                       `<b>Student:</b> ${studentName}\n` +
-                       `<b>Module:</b> Module 2 - Finding Ideas Fast\n` +
-                       `<b>Time:</b> ${new Date().toLocaleString()}`;
-
-        await telegramSender.sendPhoto(photoBlob, caption, `${studentName}_session.jpg`);
-    } catch (error) {
-        console.error('Failed to send session start to Telegram:', error);
-    }
+    await PracticeCommon.sendSessionStartToTelegram({
+        telegramSender: telegramSender,
+        studentName: studentName,
+        photoDataUrl: photoDataUrl,
+        moduleName: 'Module 2 - Finding Ideas Fast'
+    });
 }
 
 function dataURLtoBlob(dataURL) {
-    const parts = dataURL.split(',');
-    const mimeMatch = parts[0].match(/:(.*?);/);
-    const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
-    const binary = atob(parts[1]);
-    const array = new Uint8Array(binary.length);
-
-    for (let i = 0; i < binary.length; i++) {
-        array[i] = binary.charCodeAt(i);
-    }
-
-    return new Blob([array], { type: mime });
+    return PracticeCommon.dataURLtoBlob(dataURL);
 }
 
 function endStudentSession() {
@@ -1330,22 +1249,11 @@ async function startRecording() {
         startRecordingTimer();
 
         // Start live transcription
-        const liveArea = document.getElementById('liveTranscriptArea');
-        const liveText = document.getElementById('liveTranscriptText');
-        liveText.textContent = '';
-        document.getElementById('manualAnswerArea').classList.add('hidden');
-
-        try {
-            liveArea.classList.remove('hidden');
-            window.liveSTT = window.sttService.startLiveTranscription(
-                (interim) => { liveText.textContent = interim; },
-                (final) => { liveText.textContent = final; }
-            );
-        } catch (e) {
-            console.warn('Live transcription not available:', e.message);
-            liveArea.classList.add('hidden');
-            window.liveSTT = null;
-        }
+        window.liveSTT = PracticeCommon.startLiveSTT({
+            liveAreaEl: 'liveTranscriptArea',
+            liveTextEl: 'liveTranscriptText',
+            manualAreaEl: 'manualAnswerArea'
+        });
     } catch (error) {
         alert(`Recording error: ${error.message}`);
         audioRecorder = null;
@@ -1354,12 +1262,10 @@ async function startRecording() {
 
 async function stopRecording() {
     // Stop live transcription and get result
-    let liveTranscript = '';
-    if (window.liveSTT) {
-        liveTranscript = window.liveSTT.stop();
-        window.liveSTT = null;
-    }
-    document.getElementById('liveTranscriptArea').classList.add('hidden');
+    const liveTranscript = PracticeCommon.stopLiveSTT(
+        window.liveSTT, 'liveTranscriptArea'
+    );
+    window.liveSTT = null;
 
     const recording = await audioRecorder.stopRecording();
 
@@ -1417,10 +1323,7 @@ function stopRecordingTimer() {
 }
 
 function formatDuration(milliseconds) {
-    const totalSeconds = Math.floor(milliseconds / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    return PracticeCommon.formatDuration(milliseconds);
 }
 
 function displayAudioPreview(audioBlob) {
@@ -1836,18 +1739,17 @@ function stopSampleAudio() {
 
 // Display live transcript result and auto-score for module 2
 function showM2LiveTranscriptResult(transcript) {
-    const area = document.getElementById('m2Transcription');
-    const textDiv = document.getElementById('m2TranscriptionText');
-    const wordsDiv = document.getElementById('m2TranscriptionWords');
-
-    area.classList.remove('hidden');
-    textDiv.textContent = transcript;
-    const wc = transcript.split(/\s+/).filter(w => w).length;
-    wordsDiv.textContent = wc + ' words';
-
-    localStorage.setItem('m2_last_transcript_' + currentIndex, transcript);
-    runM2BandScoring(transcript, currentIndex);
-    showM2TryAgainButton();
+    PracticeCommon.showTranscriptResult(transcript, {
+        areaEl: 'm2Transcription',
+        textEl: 'm2TranscriptionText',
+        wordcountEl: 'm2TranscriptionWords',
+        storagePrefix: 'm2_last_transcript_',
+        index: currentIndex,
+        onAfterDisplay: function(t, idx) {
+            runM2BandScoring(t, idx);
+            showM2TryAgainButton();
+        }
+    });
 }
 
 // Fallback: show manual input area for typing answer
@@ -1862,153 +1764,87 @@ async function transcribeM2Recording() {
 
 // Submit manually typed answer for module 2
 function submitM2ManualAnswer() {
-    const textarea = document.getElementById('manualAnswerInput');
-    const transcript = (textarea.value || '').trim();
-    if (!transcript) {
-        alert('Please type your answer first.');
-        return;
-    }
-
-    document.getElementById('manualAnswerArea').classList.add('hidden');
-    showM2LiveTranscriptResult(transcript);
+    PracticeCommon.submitManualAnswer({
+        textareaId: 'manualAnswerInput',
+        manualAreaEl: 'manualAnswerArea',
+        areaEl: 'm2Transcription',
+        textEl: 'm2TranscriptionText',
+        wordcountEl: 'm2TranscriptionWords',
+        storagePrefix: 'm2_last_transcript_',
+        index: currentIndex,
+        onAfterDisplay: function(t, idx) {
+            runM2BandScoring(t, idx);
+            showM2TryAgainButton();
+        }
+    });
 }
 
 // ========== PHASE 4: TRY AGAIN & ATTEMPT TRACKING (Module 2) ==========
 
 /** Get attempt count for a question index */
 function getM2AttemptCount(questionIndex) {
-    return parseInt(localStorage.getItem('m2_attempts_' + questionIndex) || '0', 10);
+    return PracticeCommon.getAttemptCount('m2_attempts_', questionIndex);
 }
 
 /** Increment attempt counter */
 function incrementM2Attempt(questionIndex) {
-    const count = getM2AttemptCount(questionIndex) + 1;
-    localStorage.setItem('m2_attempts_' + questionIndex, String(count));
-    return count;
+    return PracticeCommon.incrementAttempt('m2_attempts_', questionIndex);
 }
 
 /** Update attempt badge next to question header */
 function updateM2AttemptBadge(questionIndex) {
-    let badge = document.getElementById('m2AttemptBadge');
-    if (!badge) {
-        const header = document.getElementById('questionNum');
-        if (!header) return;
-        badge = document.createElement('span');
-        badge.id = 'm2AttemptBadge';
-        badge.style.cssText = 'margin-left:8px;font-size:0.75em;background:#6c757d;color:#fff;padding:2px 8px;border-radius:10px;vertical-align:middle;';
-        header.parentNode.insertBefore(badge, header.nextSibling);
-    }
-    const count = getM2AttemptCount(questionIndex);
-    if (count > 0) {
-        badge.textContent = 'Attempt #' + count;
-        badge.style.display = 'inline';
-    } else {
-        badge.style.display = 'none';
-    }
+    PracticeCommon.updateAttemptBadge({
+        badgeId: 'm2AttemptBadge',
+        headerId: 'questionNum',
+        prefix: 'm2_attempts_',
+        index: questionIndex
+    });
 }
 
 /** Show Try Again button in audio preview */
 function showM2TryAgainButton() {
-    if (document.getElementById('m2TryAgainBtn')) return;
-
-    const preview = document.getElementById('audioPreview');
-    if (!preview) return;
-
-    const btn = document.createElement('button');
-    btn.id = 'm2TryAgainBtn';
-    btn.textContent = 'Try Again';
-    btn.className = 'btn-download-audio';
-    btn.style.cssText = 'background:#28a745;color:#fff;font-weight:600;border-color:#28a745;';
-    btn.onclick = tryAgainM2;
-    preview.appendChild(btn);
+    PracticeCommon.showTryAgainButton({
+        btnId: 'm2TryAgainBtn',
+        containerEl: 'audioPreview',
+        btnClass: 'btn-download-audio',
+        onTryAgain: tryAgainM2
+    });
 }
 
 /** Reset for a new attempt, keep question visible */
 function tryAgainM2() {
-    incrementM2Attempt(currentIndex);
-    updateM2AttemptBadge(currentIndex);
-
-    // Reset recording
-    currentRecording = null;
-    const audioPlayer = document.getElementById('audioPlayer');
-    if (audioPlayer.src) {
-        URL.revokeObjectURL(audioPlayer.src);
-        audioPlayer.src = '';
-    }
-    document.getElementById('audioPreview').style.display = 'none';
-    document.getElementById('m2Transcription').classList.add('hidden');
-
-    // Hide scoring
-    const scoreDisplay = document.getElementById('m2ScoreDisplay');
-    if (scoreDisplay) scoreDisplay.classList.add('hidden');
-
-    // Remove try again button
-    const btn = document.getElementById('m2TryAgainBtn');
-    if (btn) btn.remove();
+    PracticeCommon.tryAgain({
+        prefix: 'm2_attempts_',
+        index: currentIndex,
+        updateBadge: function() { updateM2AttemptBadge(currentIndex); },
+        onReset: function() {
+            currentRecording = null;
+            const audioPlayer = document.getElementById('audioPlayer');
+            if (audioPlayer.src) {
+                URL.revokeObjectURL(audioPlayer.src);
+                audioPlayer.src = '';
+            }
+        },
+        resetElements: [
+            { id: 'audioPreview', action: 'hide' },
+            { id: 'm2Transcription', action: 'hideClass' }
+        ],
+        scoreDisplayEl: 'm2ScoreDisplay',
+        tryAgainBtnId: 'm2TryAgainBtn'
+    });
 }
 
 // ========== PHASE 5: BAND SCORING (Module 2) ==========
 
 /** Run band scoring for Module 2 */
 function runM2BandScoring(transcript, questionIndex) {
-    if (!window.calculateBandScores) return;
-
-    const scores = calculateBandScores(transcript);
-    if (!scores || scores.overall === 0) return;
-
-    // Check previous scores for trend
-    let previousScores = null;
-    if (window.scoreHistory) {
-        const question = allQuestions[questionIndex];
-        const qId = getQuestionId(question, questionIndex);
-        const prev = window.scoreHistory.getPreviousScore('module2', qId);
-        if (prev && prev.scores) previousScores = prev.scores;
-    }
-
-    // Improvement tip for 2+ attempts
-    const attemptCount = getM2AttemptCount(questionIndex);
-    let improvementHTML = '';
-    if (attemptCount >= 2) {
-        const prevTranscript = localStorage.getItem('m2_last_transcript_' + questionIndex);
-        if (prevTranscript) {
-            const prevWC = prevTranscript.split(/\s+/).filter(w => w).length;
-            const currWC = transcript.split(/\s+/).filter(w => w).length;
-            improvementHTML = '<div style="margin-top:8px;padding:8px;background:#e8f5e9;border-radius:6px;font-size:0.85em;">';
-            improvementHTML += 'Word count: <strong>' + prevWC + '</strong> -> <strong>' + currWC + '</strong>';
-            if (currWC > prevWC) {
-                improvementHTML += ' <span style="color:#28a745;">(+' + (currWC - prevWC) + ')</span>';
-            } else if (currWC < prevWC) {
-                improvementHTML += ' <span style="color:#dc3545;">(' + (currWC - prevWC) + ')</span>';
-            }
-            improvementHTML += '</div>';
+    PracticeCommon.runBandScoring(transcript, questionIndex, {
+        moduleId: 'module2',
+        scoreDisplayEl: 'm2ScoreDisplay',
+        attemptPrefix: 'm2_attempts_',
+        transcriptPrefix: 'm2_last_transcript_',
+        getQuestionId: function(idx) {
+            return getQuestionId(allQuestions[idx], idx);
         }
-    }
-
-    // Render
-    let container = document.getElementById('m2ScoreDisplay');
-    if (!container) return;
-
-    container.innerHTML = '<h4 style="margin:0 0 12px;font-size:1em;">IELTS Band Score Analysis</h4>' +
-        renderScoreHTML(scores, previousScores) + improvementHTML;
-    container.classList.remove('hidden');
-
-    // Save to history
-    if (window.scoreHistory) {
-        const question = allQuestions[questionIndex];
-        const qId = getQuestionId(question, questionIndex);
-        window.scoreHistory.addScore({
-            date: new Date().toISOString(),
-            module: 'module2',
-            questionId: qId,
-            scores: {
-                overall: scores.overall,
-                fluency: scores.fluency,
-                vocab: scores.vocabulary,
-                grammar: scores.grammar,
-                pronunciation: scores.pronunciation
-            },
-            wordCount: scores.wordCount,
-            duration: null
-        });
-    }
+    });
 }
