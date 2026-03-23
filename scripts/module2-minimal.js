@@ -389,6 +389,8 @@ function resetInterviewUI() {
 
     // Hide dynamic zones
     document.getElementById('speakingZone').style.display = 'none';
+    const autoFeedback = document.getElementById('autoFeedback');
+    if (autoFeedback) autoFeedback.style.display = 'none';
     document.getElementById('transcriptZone').style.display = 'none';
     document.getElementById('followupZone').style.display = 'none';
     document.getElementById('audioPreview').style.display = 'none';
@@ -1210,21 +1212,97 @@ function autoScoreTranscript(transcript) {
     const scores = calculateBandScores(transcript, duration, 'part1');
     const overall = parseFloat(scores.overall);
 
+    // Inline badge
     const badgeEl = document.getElementById('scoreBadge');
     let badgeClass = 'band-low';
     if (overall >= 6.5) badgeClass = 'band-high';
     else if (overall >= 5.5) badgeClass = 'band-mid';
 
-    let html = `<span class="score-badge ${badgeClass}">Band ${scores.overall}</span>`;
-
-    // Warn if too short
+    let badgeHtml = `<span class="score-badge ${badgeClass}">Band ${scores.overall}</span>`;
     if (wordCount < 15) {
-        html += `<span style="display:block;font-size:0.75rem;color:#dc2626;margin-top:4px;">⚠ Too short — aim for 30-60 words (20-30 seconds)</span>`;
+        badgeHtml += `<span style="display:block;font-size:0.75rem;color:#dc2626;margin-top:4px;">⚠ Too short — aim for 30-60 words (20-30 seconds)</span>`;
     } else if (wordCount < 30) {
-        html += `<span style="display:block;font-size:0.75rem;color:#d97706;margin-top:4px;">Try to develop your answer more — aim for 40-60 words</span>`;
+        badgeHtml += `<span style="display:block;font-size:0.75rem;color:#d97706;margin-top:4px;">Develop more — aim for 40-60 words</span>`;
+    }
+    badgeEl.innerHTML = badgeHtml;
+
+    // Full feedback panel (below transcript)
+    let feedbackEl = document.getElementById('autoFeedback');
+    if (!feedbackEl) {
+        feedbackEl = document.createElement('div');
+        feedbackEl.id = 'autoFeedback';
+        feedbackEl.style.cssText = 'margin-top:16px;padding:16px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;';
+        const transcriptZone = document.getElementById('transcriptZone');
+        if (transcriptZone) transcriptZone.after(feedbackEl);
     }
 
-    badgeEl.innerHTML = html;
+    let html = '';
+
+    // Criteria breakdown
+    html += `<div style="font-weight:700;margin-bottom:10px;">AI Feedback</div>`;
+    html += `<div style="font-size:0.85rem;color:#666;margin-bottom:8px;">Band Score: ${scores.overall} | Words: ${wordCount}</div>`;
+
+    const criteria = [
+        { label: 'Fluency', val: scores.fluency },
+        { label: 'Vocabulary', val: scores.vocabulary },
+        { label: 'Grammar', val: scores.grammar },
+        { label: 'Pronunciation', val: scores.pronunciation }
+    ];
+    html += '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;">';
+    criteria.forEach(c => {
+        const color = c.val >= 7 ? '#16a34a' : c.val >= 6 ? '#d97706' : '#dc2626';
+        html += `<div style="font-size:0.8rem;"><span style="color:${color};font-weight:700;">${c.val}</span> ${c.label}</div>`;
+    });
+    html += '</div>';
+
+    // Strengths & weaknesses
+    if (scores.details) {
+        if (scores.details.strengths.length) {
+            html += '<div style="margin-bottom:8px;"><strong style="color:#16a34a;font-size:0.8rem;">Strengths:</strong>';
+            html += '<ul style="margin:4px 0;padding-left:20px;font-size:0.82rem;">';
+            scores.details.strengths.forEach(s => html += `<li>${s}</li>`);
+            html += '</ul></div>';
+        }
+        if (scores.details.weaknesses.length) {
+            html += '<div style="margin-bottom:8px;"><strong style="color:#dc2626;font-size:0.8rem;">Areas to Improve:</strong>';
+            html += '<ul style="margin:4px 0;padding-left:20px;font-size:0.82rem;">';
+            scores.details.weaknesses.forEach(w => html += `<li>${w}</li>`);
+            html += '</ul></div>';
+        }
+        if (scores.details.tips.length) {
+            html += '<div style="margin-bottom:8px;"><strong style="color:#2563eb;font-size:0.8rem;">Tips:</strong>';
+            html += '<ul style="margin:4px 0;padding-left:20px;font-size:0.82rem;">';
+            scores.details.tips.forEach(t => html += `<li>${t}</li>`);
+            html += '</ul></div>';
+        }
+    }
+
+    // Pronunciation challenges
+    if (scores.pronunciationChallenges && scores.pronunciationChallenges.length > 0) {
+        html += '<div style="margin-top:8px;padding:10px;background:#eff6ff;border-radius:8px;font-size:0.82rem;">';
+        html += '<strong>Pronunciation Practice:</strong><ul style="margin:4px 0;padding-left:20px;">';
+        const shown = new Set();
+        scores.pronunciationChallenges.forEach(c => {
+            if (!shown.has(c.category)) {
+                shown.add(c.category);
+                html += `<li><strong>${c.word}</strong> — ${c.tip}</li>`;
+            }
+        });
+        html += '</ul></div>';
+    }
+
+    // Sample answer
+    const question = allQuestions[currentIndex];
+    const sampleAnswer = typeof question === 'object' ? question.sampleAnswer : null;
+    if (sampleAnswer) {
+        html += '<div style="margin-top:12px;padding:12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;">';
+        html += '<strong style="font-size:0.8rem;color:#166534;">Sample Answer:</strong>';
+        html += `<div style="font-size:0.85rem;margin-top:6px;color:#334155;line-height:1.6;font-style:italic;">${sampleAnswer}</div>`;
+        html += '</div>';
+    }
+
+    feedbackEl.innerHTML = html;
+    feedbackEl.style.display = 'block';
 
     // Save to score history
     if (window.scoreHistory) {
