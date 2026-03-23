@@ -46,7 +46,7 @@
     <!-- Top Bar -->
     <header class="top-bar">
         <a href="index.html" class="back-link">← Home</a>
-        <h1 class="title">Part 3: Discussion Practice</h1>
+        <h1 class="title">Part 3: Discussion</h1>
         <div class="progress-mini">
             <span id="progressCount" onclick="openJumpModal()" style="cursor: pointer;" title="Click to jump to question">0/40</span>
             <button class="settings-btn" onclick="toggleSettings()" aria-label="Settings">⚙</button>
@@ -97,136 +97,57 @@
                 <option value="past-present-future">Past-Present-Future</option>
             </select>
         </div>
+        <div class="setting-group">
+            <label>Examiner Voice:</label>
+            <div class="btn-group">
+                <button class="btn-mode active" data-voice="on" onclick="toggleExaminerVoice(true)">On</button>
+                <button class="btn-mode" data-voice="off" onclick="toggleExaminerVoice(false)">Off</button>
+            </div>
+        </div>
         <button class="btn-close" onclick="toggleSettings()">Done</button>
     </aside>
 
-    <!-- Main Content -->
-    <main class="container">
-        <!-- Strategy Info Card -->
-        <section class="strategy-info" id="strategyInfo">
-            <div class="strategy-name" id="strategyName">Direct Answer Plus</div>
-            <div class="strategy-desc" id="strategyDesc">State opinion → Give reason → Provide example → Extend/qualify</div>
-        </section>
+    <!-- Main Content - Chat Layout -->
+    <main id="mainContent">
+        <!-- Topic header -->
+        <div class="topic-header" id="topicHeader">
+            <span class="topic-badge" id="topicBadge">Society & Culture</span>
+            <span class="q-counter" id="qCounter">1 / 40</span>
+            <button class="btn-fav" id="favBtn" onclick="toggleFavorite()">☆</button>
+        </div>
 
-        <!-- Discussion Question Card -->
-        <section class="question-card">
-            <div class="question-header">
-                <span class="question-num" id="questionNum">Question 1</span>
-                <span class="category-badge" id="categoryBadge">Society</span>
-                <span class="question-type-badge" id="typeBadge">opinion</span>
-                <button class="btn-favorite" id="favBtn" onclick="toggleFavorite()" aria-label="Favorite">☆</button>
-            </div>
-            <div class="related-topic" id="relatedTopic">Related to: Describe a tradition in your culture</div>
-            <h2 class="question-text" id="questionText">Do you think traditional customs are still important in modern society?</h2>
-        </section>
+        <!-- Chat container -->
+        <div class="chat-container" id="chatContainer">
+            <!-- Messages appended dynamically -->
+        </div>
 
-        <!-- Strategy Guide -->
-        <section class="strategy-guide" id="strategyGuide">
-            <div class="strategy-guide-title" id="guideTitle">Recommended approach: Direct Answer Plus</div>
-            <ol class="strategy-guide-steps" id="guideSteps"></ol>
-        </section>
-
-        <!-- Recording Section -->
-        <section class="recording-section" id="recordingSection">
-            <h3 class="section-title">Record Your Answer</h3>
-            <div class="recording-controls">
-                <button class="btn-record-answer" id="recordAnswerBtn" onclick="startAnswerRecording()">
-                    <span class="record-btn-icon" id="recordBtnIcon">🎤</span>
-                    <span class="record-btn-label" id="recordBtnLabel">Record Your Answer</span>
-                </button>
-                <button class="btn-stop-recording hidden" id="stopRecordingBtn" onclick="stopAnswerRecording()">
-                    <span>⏹️</span> Stop Recording
-                </button>
-                <div class="recording-timer hidden" id="recordingTimer">
-                    <span class="recording-dot-pulse"></span>
-                    <span id="recordingElapsed">0:00</span>
-                    <span class="recording-limit">/ 1:00</span>
+        <!-- Speaking input (bottom, sticky) -->
+        <div class="chat-input" id="chatInput">
+            <div class="input-transcript" id="inputTranscript" style="display:none">
+                <div id="liveText">Listening...</div>
+                <div class="input-meta">
+                    <span id="liveWordCount">0 words</span>
+                    <span id="liveTimer">0:00</span>
                 </div>
             </div>
-            <div class="live-transcript-area hidden" id="liveTranscriptArea" style="margin-top:12px;padding:12px 16px;background:#f0f7ff;border:1px solid #b3d4fc;border-radius:8px;min-height:60px;">
-                <div style="font-size:0.85em;color:#666;margin-bottom:4px;">Your spoken answer will appear here as you speak...</div>
-                <div id="liveTranscriptText" style="color:#333;line-height:1.5;"></div>
+            <div class="manual-input-area hidden" id="manualAnswerArea">
+                <textarea id="manualAnswerInput" rows="4" placeholder="Type your answer here..."></textarea>
+                <button onclick="submitManualAnswer()">Submit Answer</button>
             </div>
-            <div class="manual-answer-area hidden" id="manualAnswerArea" style="margin-top:12px;">
-                <label for="manualAnswerInput" style="display:block;margin-bottom:4px;font-weight:600;color:#333;">Type Your Answer</label>
-                <textarea id="manualAnswerInput" rows="5" style="width:100%;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:1em;resize:vertical;" placeholder="Speech recognition is not available. Type your answer here..."></textarea>
-                <button class="btn-recording-action" onclick="submitManualAnswer()" style="margin-top:8px;">Submit Answer</button>
+            <div class="input-actions">
+                <button class="btn-prev" onclick="previousQuestion()">←</button>
+                <button class="btn-mic" id="micBtn" onclick="toggleRecording()">🎤</button>
+                <button class="btn-skip" id="skipBtn" onclick="skipToNext()">Skip →</button>
             </div>
-            <div class="recording-result hidden" id="recordingResult">
-                <audio controls id="recordingPlayback" class="recording-audio"></audio>
-                <div class="recording-actions">
-                    <button class="btn-recording-action" onclick="downloadAnswerRecording()">⬇️ Download</button>
-                    <button class="btn-recording-action" onclick="sendRecordingToTelegram()">📤 Send to Telegram</button>
-                    <button class="btn-recording-action btn-transcribe" id="transcribeBtn" onclick="transcribeRecording()">📝 Type Your Answer</button>
-                </div>
-                <div class="transcription-area hidden" id="transcriptionArea">
-                    <h4>Your Transcription</h4>
-                    <div class="transcription-text" id="transcriptionText"></div>
-                    <div class="transcription-wordcount" id="transcriptionWordcount"></div>
-                </div>
-                <div class="answer-comparison hidden" id="answerComparison">
-                    <div class="comparison-col">
-                        <h4>Your Answer</h4>
-                        <div class="comparison-text" id="comparisonYours"></div>
-                        <div class="comparison-words" id="comparisonYoursWords"></div>
-                    </div>
-                    <div class="comparison-col">
-                        <h4>Band 7-8 Sample</h4>
-                        <div class="comparison-text" id="comparisonSample"></div>
-                        <div class="comparison-words" id="comparisonSampleWords"></div>
-                    </div>
-                </div>
-                <div class="hidden" id="p3ScoreDisplay" style="margin-top:12px;padding:16px;background:#f8f9fa;border-radius:8px;border:1px solid #dee2e6;"></div>
-            </div>
-        </section>
+        </div>
 
-        <!-- Answer Builder -->
-        <section class="input-section">
-            <h3 class="section-title">Build Your Answer</h3>
-            <div class="form-container" id="formContainer"></div>
-
-            <!-- Connector Guide -->
-            <div class="connector-guide" style="margin-top: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleConnectors()">
-                    <strong style="color: #333;">Discourse Markers &amp; Templates</strong>
-                    <button id="connectorToggleBtn" style="padding: 5px 12px; border: none; background: #2563eb; color: white; border-radius: 4px; cursor: pointer; font-size: 0.9em;">Show</button>
-                </div>
-                <div id="connectorContent" style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
-                    <div id="connectorText" style="color: #555; line-height: 1.6;"></div>
-                </div>
+        <!-- Strategy hint (floating, collapsible) -->
+        <div class="strategy-hint" id="strategyHint">
+            <button class="hint-toggle" onclick="toggleStrategyHint()">💡 Strategy</button>
+            <div class="hint-content" id="hintContent" style="display:none">
+                <!-- Filled dynamically -->
             </div>
-        </section>
-
-        <!-- Answer Preview -->
-        <section class="preview-section">
-            <h3 class="preview-title">Your Answer Preview:</h3>
-            <div class="preview-box" id="previewBox">
-                <em>Start filling in the fields to see your answer...</em>
-            </div>
-            <div class="preview-meta">
-                <span id="elementCount">0/4 elements</span>
-                <span id="wordCount">0 words</span>
-                <span id="timeEstimate" class="time-estimate">~0:00 speaking time</span>
-            </div>
-        </section>
-
-        <!-- Sample Answer (Collapsible) -->
-        <section class="sample-section" id="sampleSection" style="display: none;">
-            <button class="sample-toggle" onclick="toggleSample()">
-                <span id="sampleToggleIcon">▶</span>
-                <span>Compare with Band 7-8 Sample Answer</span>
-            </button>
-            <div class="sample-content" id="sampleContent" style="display: none;">
-                <div class="sample-breakdown" id="sampleBreakdown"></div>
-                <div class="sample-answer" id="sampleAnswer"></div>
-            </div>
-        </section>
-
-        <!-- Navigation -->
-        <nav class="nav-section">
-            <button class="btn-nav" onclick="previousQuestion()">← Previous</button>
-            <button class="btn-nav" onclick="nextQuestion()">Next →</button>
-        </nav>
+        </div>
     </main>
 
     <!-- Scripts -->

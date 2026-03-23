@@ -64,6 +64,13 @@ let completed = new Set();
 let sampleExpanded = false;
 let templateExpanded = false;
 
+// Interview state machine: ready, speaking, scored, followup
+let interviewState = 'ready';
+let interviewTimer = null;
+let interviewSeconds = 0;
+const INTERVIEW_MAX_SECONDS = 30;
+const TIMER_CIRCUMFERENCE = 339.3;
+
 // Audio recording state
 let audioRecorder = null;
 let recordingTimer = null;
@@ -305,13 +312,18 @@ function renderCurrentQuestion() {
         stopSampleAudio();
     }
 
+    // Stop any active recording/timer
+    if (interviewState === 'speaking') {
+        forceStopSpeaking();
+    }
+
     const question = allQuestions[currentIndex];
     const questionText = typeof question === 'string' ? question : question.question;
     const category = typeof question === 'object' && question.category
         ? question.category
         : getCategoryFromIndex(currentIndex);
 
-    // Update UI
+    // Update interview card
     document.getElementById('questionNum').textContent = `Question ${currentIndex + 1}`;
     document.getElementById('questionText').textContent = questionText;
     document.getElementById('questionCategory').textContent = category;
@@ -322,24 +334,25 @@ function renderCurrentQuestion() {
     favBtn.textContent = favorites.has(questionId) ? '★' : '☆';
     favBtn.classList.toggle('active', favorites.has(questionId));
 
-    // Render form
-    renderForm();
+    // Reset interview state
+    resetInterviewUI();
 
-    // Handle sample answers (including alternatives)
+    // Render plan fields (collapsible)
+    renderPlanFields();
+
+    // Handle sample answers
+    const sampleDetail = document.getElementById('sampleSection');
     if (typeof question === 'object' && question.sampleAnswer) {
-        document.getElementById('sampleSection').style.display = 'block';
+        sampleDetail.style.display = 'block';
         renderSampleAnswers(question);
     } else {
-        document.getElementById('sampleSection').style.display = 'none';
+        sampleDetail.style.display = 'none';
     }
 
-    // Update follow-up question section
-    updateFollowUpSection(question);
+    // Update tip content
+    updateTipContent(category);
 
-    // Update quick answer tips
-    updateQuickAnswerTips(category);
-
-    // Update vocabulary section
+    // Update vocabulary detail section
     updateVocabularySection();
 
     // Hide feedback
@@ -359,11 +372,86 @@ function renderCurrentQuestion() {
     // Show attempt badge
     updateM2AttemptBadge(currentIndex);
 
-    // Reset sample expansion
-    if (sampleExpanded) toggleSample();
-
     updateProgress();
     updateURLParameter(currentIndex + 1);
+
+    // Auto-read question if enabled
+    if (document.getElementById('autoVoice')?.checked) {
+        examinerAskQuestion();
+    }
+}
+
+/** Reset interview UI to ready state */
+function resetInterviewUI() {
+    interviewState = 'ready';
+
+    // Hide dynamic zones
+    document.getElementById('speakingZone').style.display = 'none';
+    document.getElementById('transcriptZone').style.display = 'none';
+    document.getElementById('followupZone').style.display = 'none';
+    document.getElementById('audioPreview').style.display = 'none';
+
+    // Reset action button
+    const actionBtn = document.getElementById('actionBtn');
+    actionBtn.className = 'btn-action btn-speak';
+    actionBtn.textContent = '🎤 Speak Now';
+
+    // Reset transcript
+    document.getElementById('liveTranscriptText').textContent =
+        'Your words will appear here as you speak...';
+    document.getElementById('wordCount').textContent = '0 words';
+    document.getElementById('scoreBadge').textContent = '';
+
+    // Reset timer ring
+    const progress = document.getElementById('timerProgress');
+    if (progress) {
+        progress.style.strokeDashoffset = '0';
+        progress.style.stroke = '#2563eb';
+    }
+    document.getElementById('timerValue').textContent = '0:30';
+    document.getElementById('timerLabel').textContent = 'Ready';
+}
+
+/** Update tip content from category tips */
+function updateTipContent(category) {
+    const tipContent = document.getElementById('tipContent');
+    if (!tipContent) return;
+    const tip = CATEGORY_TIPS[category];
+    tipContent.textContent = tip || 'Focus on giving a clear, direct answer with one example.';
+}
+
+/** Render plan fields into the collapsible plan section */
+function renderPlanFields() {
+    const config = TECHNIQUE_CONFIG[currentTechnique];
+    if (!config) return;
+
+    const container = document.getElementById('planFields');
+    if (!container) return;
+    container.innerHTML = '';
+
+    config.fields.forEach(field => {
+        const fieldDiv = document.createElement('div');
+        fieldDiv.className = 'form-field';
+        fieldDiv.style.marginBottom = '8px';
+
+        const label = document.createElement('label');
+        label.className = 'field-label';
+        label.textContent = `${field.icon} ${field.label}`;
+        label.htmlFor = `input-${field.id}`;
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.id = `input-${field.id}`;
+        input.className = 'field-input';
+        input.placeholder = field.placeholder;
+        input.addEventListener('input', updatePreview);
+
+        fieldDiv.appendChild(label);
+        fieldDiv.appendChild(input);
+        container.appendChild(fieldDiv);
+    });
+
+    updatePreview();
 }
 
 // Render form fields
@@ -371,7 +459,10 @@ function renderForm() {
     const config = TECHNIQUE_CONFIG[currentTechnique];
     if (!config) return;
 
-    const container = document.getElementById('formContainer');
+    // formContainer removed in interview redesign; use planFields instead
+    const container = document.getElementById('formContainer')
+        || document.getElementById('planFields');
+    if (!container) return;
     container.innerHTML = '';
 
     config.fields.forEach(field => {
@@ -872,30 +963,17 @@ function getFieldMapping(technique) {
 
 /** Show/hide follow-up question for current question */
 function updateFollowUpSection(question) {
-    const section = document.getElementById('followUpSection');
-    const btn = document.getElementById('followUpBtn');
-    const box = document.getElementById('followUpBox');
-    if (!section || !btn || !box) return;
-
-    const hasFollowUp = typeof question === 'object' && question.followUp;
-    section.style.display = hasFollowUp ? 'block' : 'none';
-    box.style.display = 'none';
-    btn.textContent = 'Show Follow-up Question';
-
-    if (hasFollowUp) {
-        box.textContent = question.followUp;
-    }
+    // Follow-up is now shown dynamically after speaking via stopSpeaking()
+    // This function is kept for backward compatibility
+    const followupZone = document.getElementById('followupZone');
+    if (followupZone) followupZone.style.display = 'none';
 }
 
 /** Toggle follow-up question visibility */
 function toggleFollowUp() {
-    const box = document.getElementById('followUpBox');
-    const btn = document.getElementById('followUpBtn');
-    if (!box || !btn) return;
-
-    const isHidden = box.style.display === 'none';
-    box.style.display = isHidden ? 'block' : 'none';
-    btn.textContent = isHidden ? 'Hide Follow-up' : 'Show Follow-up Question';
+    const zone = document.getElementById('followupZone');
+    if (!zone) return;
+    zone.style.display = zone.style.display === 'none' ? 'block' : 'none';
 }
 
 // ========== RECORDING TIMER WITH COLOR CODING ==========
@@ -915,6 +993,211 @@ function updateRecordingTimerColor(seconds) {
     } else {
         timerEl.style.color = '#dc2626'; // red
     }
+}
+
+// ========== INTERVIEW STATE MACHINE ==========
+
+/** Examiner reads the question aloud via browser TTS */
+function examinerAskQuestion() {
+    const q = allQuestions[currentIndex];
+    const text = typeof q === 'string' ? q : q.question;
+    PracticeCommon.speakAsExaminer(text, () => {
+        // After examiner finishes, do NOT auto-start speaking
+        // Student clicks "Speak Now" when ready
+    });
+}
+
+/** Main action button handler - behavior depends on state */
+function handleActionButton() {
+    switch (interviewState) {
+        case 'ready':
+            startSpeaking();
+            break;
+        case 'speaking':
+            stopSpeaking();
+            break;
+        case 'scored':
+            nextQuestion();
+            break;
+        case 'followup':
+            startSpeaking();
+            break;
+    }
+}
+
+/** Start speaking: show timer ring, begin recording + STT */
+async function startSpeaking() {
+    // Show speaking zone with timer
+    document.getElementById('speakingZone').style.display = 'flex';
+    document.getElementById('transcriptZone').style.display = 'block';
+    document.getElementById('liveTranscriptText').textContent = '';
+
+    // Update action button to stop
+    const actionBtn = document.getElementById('actionBtn');
+    actionBtn.className = 'btn-action btn-speak recording';
+    actionBtn.textContent = '⏹ Stop Speaking';
+
+    // Reset timer
+    interviewSeconds = 0;
+    updateTimerRing(INTERVIEW_MAX_SECONDS);
+    document.getElementById('timerLabel').textContent = 'Speaking...';
+
+    // Start recording + live STT
+    try {
+        audioRecorder = new AudioRecorder();
+        await audioRecorder.initialize();
+        audioRecorder.startRecording();
+
+        window.liveSTT = PracticeCommon.startLiveSTT({
+            liveAreaEl: 'transcriptZone',
+            liveTextEl: 'liveTranscriptText',
+            manualAreaEl: 'manualAnswerArea'
+        });
+    } catch (error) {
+        console.error('Recording error:', error);
+        audioRecorder = null;
+        // Show manual input as fallback
+        document.getElementById('manualAnswerArea').classList.remove('hidden');
+    }
+
+    // Start countdown timer
+    interviewTimer = setInterval(() => {
+        interviewSeconds++;
+        const remaining = INTERVIEW_MAX_SECONDS - interviewSeconds;
+        updateTimerRing(remaining);
+
+        if (remaining <= 0) {
+            stopSpeaking();
+        }
+    }, 1000);
+
+    interviewState = 'speaking';
+}
+
+/** Update timer ring SVG and colors */
+function updateTimerRing(secondsRemaining) {
+    const progress = document.getElementById('timerProgress');
+    const timerValue = document.getElementById('timerValue');
+    const fraction = secondsRemaining / INTERVIEW_MAX_SECONDS;
+    const offset = TIMER_CIRCUMFERENCE * (1 - fraction);
+
+    progress.style.strokeDashoffset = offset.toString();
+    timerValue.textContent = `0:${String(
+        Math.max(0, secondsRemaining)
+    ).padStart(2, '0')}`;
+
+    // Color coding
+    if (secondsRemaining > 10) {
+        progress.style.stroke = '#16a34a'; // green
+    } else if (secondsRemaining > 5) {
+        progress.style.stroke = '#ca8a04'; // yellow
+    } else {
+        progress.style.stroke = '#dc2626'; // red
+    }
+}
+
+/** Stop speaking: stop recording, get transcript, score */
+async function stopSpeaking() {
+    // Clear timer
+    if (interviewTimer) {
+        clearInterval(interviewTimer);
+        interviewTimer = null;
+    }
+
+    document.getElementById('timerLabel').textContent = 'Done';
+
+    // Stop live STT
+    const liveTranscript = PracticeCommon.stopLiveSTT(
+        window.liveSTT, 'transcriptZone'
+    );
+    window.liveSTT = null;
+
+    // Keep transcript zone visible after stopping
+    document.getElementById('transcriptZone').classList.remove('hidden');
+    document.getElementById('transcriptZone').style.display = 'block';
+
+    // Stop recording
+    if (audioRecorder) {
+        const recording = await audioRecorder.stopRecording();
+        if (recording) {
+            currentRecording = recording;
+            displayAudioPreview(recording.blob);
+        }
+        audioRecorder.cleanup();
+        audioRecorder = null;
+    }
+
+    // Get transcript text
+    const transcriptEl = document.getElementById('liveTranscriptText');
+    const transcript = liveTranscript || transcriptEl.textContent.trim();
+
+    if (transcript && transcript.length > 0) {
+        // Update word count
+        const words = transcript.trim().split(/\s+/).filter(Boolean);
+        document.getElementById('wordCount').textContent =
+            `${words.length} words`;
+
+        // Store transcript for scoring
+        localStorage.setItem(
+            'm2_last_transcript_' + currentIndex, transcript
+        );
+
+        // Auto-score
+        autoScoreTranscript(transcript);
+
+        // Show transcript result in the m2Transcription area too
+        showM2LiveTranscriptResult(transcript);
+    }
+
+    // Show follow-up if available
+    const question = allQuestions[currentIndex];
+    const hasFollowUp = typeof question === 'object' && question.followUp;
+
+    if (hasFollowUp) {
+        document.getElementById('followupZone').style.display = 'block';
+        document.getElementById('followupText').textContent = question.followUp;
+    }
+
+    // Update action button
+    const actionBtn = document.getElementById('actionBtn');
+    actionBtn.className = 'btn-action btn-next-q';
+    actionBtn.textContent = 'Next Question →';
+
+    interviewState = 'scored';
+}
+
+/** Force stop speaking without scoring (used on question change) */
+function forceStopSpeaking() {
+    if (interviewTimer) {
+        clearInterval(interviewTimer);
+        interviewTimer = null;
+    }
+    if (window.liveSTT) {
+        PracticeCommon.stopLiveSTT(window.liveSTT, null);
+        window.liveSTT = null;
+    }
+    if (audioRecorder) {
+        audioRecorder.stopRecording().catch(() => {});
+        audioRecorder.cleanup();
+        audioRecorder = null;
+    }
+    interviewState = 'ready';
+}
+
+/** Auto-score transcript and show inline badge */
+function autoScoreTranscript(transcript) {
+    if (!transcript || !window.calculateBandScores) return;
+
+    const duration = interviewSeconds;
+    const scores = calculateBandScores(transcript, duration);
+    const overall = parseFloat(scores.overall);
+
+    const badgeEl = document.getElementById('scoreBadge');
+    let badgeClass = 'band-low';
+    if (overall >= 6.5) badgeClass = 'band-high';
+    else if (overall >= 5.5) badgeClass = 'band-mid';
+
+    badgeEl.innerHTML = `<span class="score-badge ${badgeClass}">Band ${scores.overall}</span>`;
 }
 
 // ========== QUICK ANSWER TIPS BY CATEGORY ==========
@@ -942,30 +1225,15 @@ const CATEGORY_TIPS = {
     'Time Management': 'Talk about priorities and scheduling with time expressions'
 };
 
-/** Update the quick answer tips section */
+/** Update the quick answer tips section - now handled by updateTipContent() */
 function updateQuickAnswerTips(category) {
-    const section = document.getElementById('quickTipsSection');
-    const content = document.getElementById('quickTipsContent');
-    if (!section || !content) return;
-
-    const tip = CATEGORY_TIPS[category];
-    if (tip) {
-        content.textContent = tip;
-        section.style.display = 'block';
-    } else {
-        section.style.display = 'none';
-    }
+    // Kept for backward compatibility; tips now in detail-section
+    updateTipContent(category);
 }
 
-/** Toggle quick tips expansion */
+/** Toggle quick tips expansion (legacy, now <details>) */
 function toggleQuickTips() {
-    const content = document.getElementById('quickTipsContent');
-    const btn = document.getElementById('quickTipsToggle');
-    if (!content || !btn) return;
-
-    const isHidden = content.style.display === 'none';
-    content.style.display = isHidden ? 'block' : 'none';
-    btn.textContent = isHidden ? '▼' : '▶';
+    // No-op: tips are in a native <details> element now
 }
 
 // Navigation
@@ -1021,12 +1289,11 @@ function toggleFavorite() {
 }
 
 function toggleSample() {
-    const content = document.getElementById('sampleContent');
-    const icon = document.getElementById('sampleToggleIcon');
-
-    sampleExpanded = !sampleExpanded;
-    content.style.display = sampleExpanded ? 'block' : 'none';
-    icon.textContent = sampleExpanded ? '▼' : '▶';
+    // Sample section is now a <details> element, toggle is native
+    const detail = document.getElementById('sampleSection');
+    if (detail) {
+        sampleExpanded = detail.open;
+    }
 }
 
 function toggleTemplate() {
@@ -1051,17 +1318,21 @@ function updateTemplateDisplay() {
 
 // Score My Answer - run band scoring on the preview text and show comparison
 function scoreMyAnswer() {
-    const previewBox = document.getElementById('previewBox');
-    let answer = previewBox.textContent;
-
-    if (!answer || answer.length < 10 || answer === 'Start typing to see your answer...') {
-        answer = localStorage.getItem('m2_last_transcript_' + currentIndex) || '';
+    // Try transcript first, then preview box, then manual input
+    let answer = localStorage.getItem('m2_last_transcript_' + currentIndex) || '';
+    if (!answer || answer.length < 10) {
+        const transcriptEl = document.getElementById('liveTranscriptText');
+        if (transcriptEl) answer = transcriptEl.textContent.trim();
     }
     if (!answer || answer.length < 10) {
+        const previewBox = document.getElementById('previewBox');
+        answer = previewBox?.textContent || '';
+    }
+    if (!answer || answer.length < 10 || answer === 'Start typing to see your answer...') {
         answer = document.getElementById('manualAnswerInput')?.value || '';
     }
     if (!answer || answer.length < 10) {
-        alert('Please fill in at least 2-3 fields before scoring');
+        alert('Please record or type your answer before scoring');
         return;
     }
 
@@ -1414,23 +1685,27 @@ async function stopRecording() {
 }
 
 function updateRecordingUI(isRecording) {
+    // Old record button UI - now handled by interview state machine
+    // Kept for backward compatibility
     const recordBtn = document.getElementById('recordBtn');
+    if (!recordBtn) return;
     const recordIcon = document.getElementById('recordIcon');
     const recordLabel = document.getElementById('recordLabel');
 
     if (isRecording) {
         recordBtn.classList.add('recording');
-        recordIcon.textContent = '⏹️';
-        recordLabel.textContent = 'Stop Recording';
+        if (recordIcon) recordIcon.textContent = '⏹️';
+        if (recordLabel) recordLabel.textContent = 'Stop Recording';
     } else {
         recordBtn.classList.remove('recording');
-        recordIcon.textContent = '🎤';
-        recordLabel.textContent = 'Record Answer';
+        if (recordIcon) recordIcon.textContent = '🎤';
+        if (recordLabel) recordLabel.textContent = 'Record Answer';
     }
 }
 
 function startRecordingTimer() {
     const timerDisplay = document.getElementById('recordTimer');
+    if (!timerDisplay) return;
     timerDisplay.style.display = 'inline';
     timerDisplay.textContent = '0:00';
 
@@ -1450,7 +1725,8 @@ function stopRecordingTimer() {
         clearInterval(recordingTimer);
         recordingTimer = null;
     }
-    document.getElementById('recordTimer').style.display = 'none';
+    const timerDisplay = document.getElementById('recordTimer');
+    if (timerDisplay) timerDisplay.style.display = 'none';
 }
 
 function formatDuration(milliseconds) {
@@ -1610,18 +1886,22 @@ async function downloadRecording() {
 
 // Vocabulary Toggle
 function toggleVocab() {
-    const vocabContent = document.getElementById('vocabContent');
-    const vocabToggleIcon = document.getElementById('vocabToggleIcon');
-
-    if (vocabContent.style.display === 'none') {
-        vocabContent.style.display = 'block';
-        vocabToggleIcon.textContent = '▼';
+    // Vocab is now in a <details> element; load on open
+    const detail = document.getElementById('vocabDetailSection');
+    if (detail && detail.open) {
         loadVocabularyForCurrentQuestion();
-    } else {
-        vocabContent.style.display = 'none';
-        vocabToggleIcon.textContent = '▶';
     }
 }
+
+// Listen for details toggle to load vocab
+document.addEventListener('DOMContentLoaded', () => {
+    const vocabDetail = document.getElementById('vocabDetailSection');
+    if (vocabDetail) {
+        vocabDetail.addEventListener('toggle', () => {
+            if (vocabDetail.open) loadVocabularyForCurrentQuestion();
+        });
+    }
+});
 
 // Question to vocabulary category mapping
 const QUESTION_TO_VOCAB = {
@@ -1779,16 +2059,16 @@ async function loadVocabularyForCurrentQuestion() {
 
 // Show/hide vocabulary section based on question
 function updateVocabularySection() {
-    const vocabSection = document.getElementById('vocabSection');
+    const vocabSection = document.getElementById('vocabDetailSection');
+    if (!vocabSection) return;
     const currentQuestion = allQuestions[currentIndex];
 
     if (currentQuestion && currentTechnique === '5w1h') {
-        const category = getVocabCategoryForQuestion(currentQuestion.question);
-        if (category) {
-            vocabSection.style.display = 'block';
-        } else {
-            vocabSection.style.display = 'none';
-        }
+        const category = getVocabCategoryForQuestion(
+            typeof currentQuestion === 'string'
+                ? currentQuestion : currentQuestion.question
+        );
+        vocabSection.style.display = category ? 'block' : 'none';
     } else {
         vocabSection.style.display = 'none';
     }
@@ -1938,7 +2218,7 @@ function incrementM2Attempt(questionIndex) {
 /** Update attempt badge next to question header */
 function updateM2AttemptBadge(questionIndex) {
     PracticeCommon.updateAttemptBadge({
-        badgeId: 'm2AttemptBadge',
+        badgeId: 'attemptBadge',
         headerId: 'questionNum',
         prefix: 'm2_attempts_',
         index: questionIndex

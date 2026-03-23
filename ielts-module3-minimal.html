@@ -120,191 +120,122 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="container">
-        <!-- Strategy Info Card -->
-        <section class="strategy-info" id="strategyInfo">
-            <div class="strategy-name" id="strategyName">STAR Structure</div>
-            <div class="strategy-desc" id="strategyDesc">Storytelling framework: Situation → Task → Action → Result</div>
-        </section>
+    <main id="mainContent" class="container">
+        <!-- Phase indicator -->
+        <div class="phase-bar">
+            <div class="phase active" id="phase1" data-phase="prep">
+                <span class="phase-num">1</span> Preparation
+            </div>
+            <div class="phase" id="phase2" data-phase="speak">
+                <span class="phase-num">2</span> Speaking
+            </div>
+            <div class="phase" id="phase3" data-phase="review">
+                <span class="phase-num">3</span> Review
+            </div>
+        </div>
 
-        <!-- Timer Section (Enhanced with progress ring) -->
-        <section class="timer-section" id="timerSection">
-            <div class="timer-display" style="position: relative; display: flex; align-items: center; justify-content: center;">
-                <svg width="110" height="110" style="position: absolute; transform: rotate(-90deg);">
-                    <circle cx="55" cy="55" r="45" fill="none" stroke="#e5e7eb" stroke-width="6"/>
-                    <circle id="timerProgressRing" cx="55" cy="55" r="45" fill="none" stroke="#3b82f6" stroke-width="6"
-                        stroke-dasharray="282.74" stroke-dashoffset="282.74" stroke-linecap="round"
-                        style="transition: stroke-dashoffset 0.5s ease, stroke 0.3s ease;"/>
-                </svg>
-                <div style="text-align: center; z-index: 1;">
-                    <div class="timer-label" id="timerLabel" style="font-size: 0.75em; color: #666;">Preparation Time</div>
-                    <div class="timer-value" id="timerValue" style="font-size: 1.8em; font-weight: 700;">1:00</div>
+        <!-- PHASE 1: Cue Card + Prep -->
+        <section class="phase-content" id="prepPhase">
+            <div class="cuecard-hero" id="cuecardHero">
+                <div class="cuecard-meta">
+                    <span class="card-number" id="cardNumber">Card 1</span>
+                    <span class="card-category" id="cardCategory">Experience</span>
+                    <span id="attemptBadge" style="display:none"></span>
+                    <button class="btn-fav" id="favBtn" onclick="toggleFavorite()">☆</button>
                 </div>
-            </div>
-            <div class="timer-controls">
-                <button class="btn-timer" id="startPrepBtn" onclick="startPreparation()">Start 1 Min Prep</button>
-                <button class="btn-timer hidden" id="startSpeakBtn" onclick="startSpeaking()">Start 2 Min Speaking</button>
-                <button class="btn-timer-small" id="resetTimerBtn" onclick="resetTimer()">Reset</button>
-            </div>
-        </section>
-
-        <!-- Cue Card Section -->
-        <section class="cuecard-section">
-            <div class="cuecard-header">
-                <span class="cuecard-num" id="cuecardNum">Cue Card 1</span>
-                <span class="cuecard-category" id="cuecardCategory">Experience</span>
-                <button class="btn-favorite" id="favBtn" onclick="toggleFavorite()" aria-label="Favorite">☆</button>
-            </div>
-            <div class="cuecard-content">
-                <h2 class="cuecard-topic" id="cuecardTopic">Describe a time when you helped someone</h2>
-                <div class="cuecard-prompts" id="cuecardPrompts">
+                <h2 class="cuecard-topic" id="cardTopic">Describe a time when you helped someone</h2>
+                <div class="cuecard-prompts" id="cardPrompts">
                     <p>You should say:</p>
-                    <ul>
-                        <li>Who you helped</li>
-                        <li>How you helped them</li>
-                        <li>Why you helped them</li>
-                        <li>And explain how you felt about it</li>
-                    </ul>
+                    <ul id="promptsList"></ul>
                 </div>
             </div>
-        </section>
 
-        <!-- Notes Area (for 1 min prep) -->
-        <section class="notes-section" id="notesSection">
-            <h3 class="notes-title">📝 Your Notes (1 minute preparation)</h3>
-            <textarea
-                id="notesArea"
-                class="notes-textarea"
-                placeholder="Use this space to jot down key points during your 1-minute preparation...&#10;&#10;Tip: Write keywords, not full sentences!"
-            ></textarea>
-        </section>
-
-        <!-- Record Your Answer Section -->
-        <section class="recording-section" id="recordingSection">
-            <h3 class="section-title">Record Your Answer</h3>
-            <div class="recording-controls">
-                <button class="btn-record-answer" id="recordAnswerBtn" onclick="startAnswerRecording()">
-                    <span class="record-btn-icon" id="recordBtnIcon">&#x1F3A4;</span>
-                    <span class="record-btn-label" id="recordBtnLabel">Record Your Answer</span>
-                </button>
-                <button class="btn-stop-recording hidden" id="stopRecordingBtn" onclick="stopAnswerRecording()">
-                    <span>&#x23F9;&#xFE0F;</span> Stop Recording
-                </button>
-                <div class="recording-timer hidden" id="recordingTimer">
-                    <span class="recording-dot-pulse"></span>
-                    <span id="recordingElapsed">0:00</span>
-                    <span class="recording-limit">/ 2:30</span>
-                </div>
-            </div>
-            <div class="live-transcript-area hidden" id="liveTranscriptArea" style="margin-top:12px;padding:12px 16px;background:#f0f7ff;border:1px solid #b3d4fc;border-radius:8px;min-height:60px;">
-                <div style="font-size:0.85em;color:#666;margin-bottom:4px;">Your spoken answer will appear here as you speak...</div>
-                <div id="liveTranscriptText" style="color:#333;line-height:1.5;"></div>
-            </div>
-            <div class="manual-answer-area hidden" id="manualAnswerArea" style="margin-top:12px;">
-                <label for="manualAnswerInput" style="display:block;margin-bottom:4px;font-weight:600;color:#333;">Type Your Answer</label>
-                <textarea id="manualAnswerInput" rows="5" style="width:100%;padding:10px;border:1px solid #ccc;border-radius:8px;font-size:1em;resize:vertical;" placeholder="Speech recognition is not available. Type your answer here..."></textarea>
-                <button class="btn-recording-action" onclick="submitManualAnswer()" style="margin-top:8px;">Submit Answer</button>
-            </div>
-            <div class="recording-result hidden" id="recordingResult">
-                <audio controls id="recordingPlayback" class="recording-audio"></audio>
-                <div class="recording-actions">
-                    <button class="btn-recording-action" onclick="downloadAnswerRecording()">&#x2B07;&#xFE0F; Download</button>
-                    <button class="btn-recording-action" onclick="sendRecordingToTelegram()">&#x1F4E4; Send to Telegram</button>
-                    <button class="btn-recording-action btn-transcribe" id="transcribeBtn" onclick="transcribeRecording()">&#x1F4DD; Type Your Answer</button>
-                </div>
-                <div class="transcription-area hidden" id="transcriptionArea">
-                    <h4>Your Transcription</h4>
-                    <div class="transcription-text" id="transcriptionText"></div>
-                    <div class="transcription-wordcount" id="transcriptionWordcount"></div>
-                </div>
-                <div class="answer-comparison hidden" id="answerComparison">
-                    <div class="comparison-col">
-                        <h4>Your Answer</h4>
-                        <div class="comparison-text" id="comparisonYours"></div>
-                        <div class="comparison-words" id="comparisonYoursWords"></div>
-                    </div>
-                    <div class="comparison-col">
-                        <h4>Band 7-8 Sample</h4>
-                        <div class="comparison-text" id="comparisonSample"></div>
-                        <div class="comparison-words" id="comparisonSampleWords"></div>
+            <div class="prep-area">
+                <div class="prep-timer">
+                    <svg class="timer-ring" viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="54" fill="none" stroke="#e5e7eb" stroke-width="6"/>
+                        <circle cx="60" cy="60" r="54" fill="none" stroke="#16a34a" stroke-width="6"
+                            stroke-dasharray="339.3" stroke-dashoffset="0" stroke-linecap="round"
+                            id="prepTimerProgress"/>
+                    </svg>
+                    <div class="timer-center">
+                        <div class="timer-value" id="prepTimerValue">1:00</div>
+                        <div class="timer-label">Prep Time</div>
                     </div>
                 </div>
-                <div class="hidden" id="m3ScoreDisplay" style="margin-top:12px;padding:16px;background:#f8f9fa;border-radius:8px;border:1px solid #dee2e6;"></div>
-            </div>
-        </section>
-
-        <!-- Key Vocabulary Section -->
-        <section class="m3-vocab-section" id="m3VocabSection" style="display: none; margin-bottom: 16px;">
-            <div style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px 14px; background: #f0f9ff; border: 1px solid #bfdbfe; border-radius: 8px;" onclick="toggleM3Vocab()">
-                <span id="m3VocabToggleIcon" style="font-size: 0.85em; color: #666;">▶</span>
-                <span style="font-size: 0.95em; color: #1e40af; font-weight: 600;">Key Vocabulary for This Topic</span>
-            </div>
-            <div id="m3VocabContent" style="display: none; margin-top: 8px; padding: 12px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
-                <div id="m3VocabList"></div>
-            </div>
-        </section>
-
-        <!-- Input Form (Strategy-based structure) -->
-        <section class="input-section">
-            <h3 class="section-title">🎯 Build Your 2-Minute Answer</h3>
-            <div class="form-container" id="formContainer">
-                <!-- Dynamically generated form fields based on strategy -->
+                <textarea class="prep-notes" id="prepNotes" placeholder="Jot down keywords..."></textarea>
             </div>
 
-            <!-- Sentence Connectors Guide -->
-            <div class="connector-guide" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #28a745;">
-                <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleConnectors()">
-                    <strong style="color: #333;">🔗 Sentence Connectors & Templates</strong>
-                    <button id="connectorToggleBtn" style="padding: 5px 12px; border: none; background: #28a745; color: white; border-radius: 4px; cursor: pointer; font-size: 0.9em;">Show</button>
-                </div>
-                <div id="connectorContent" style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
-                    <div id="connectorText" style="color: #555; line-height: 1.6;"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Answer Preview -->
-        <section class="preview-section">
-            <h3 class="preview-title">Your Answer Preview:</h3>
-            <div class="preview-box" id="previewBox">
-                <em>Start filling in the fields to see your answer...</em>
-            </div>
-            <div class="preview-meta">
-                <span id="elementCount">0/4 elements</span>
-                <span id="wordCount">0 words</span>
-                <span id="timeEstimate" class="time-estimate">~0:00 speaking time</span>
-            </div>
-        </section>
-
-        <!-- Sample Answer (Collapsible) -->
-        <section class="sample-section" id="sampleSection" style="display: none;">
-            <button class="sample-toggle" onclick="toggleSample()">
-                <span id="sampleToggleIcon">▶</span>
-                <span>Compare with Band 7-8 Sample (2 minutes)</span>
+            <button class="btn-action btn-prep" id="startPrepBtn" onclick="startPrep()">
+                Start 1-Minute Preparation
             </button>
-            <div class="sample-content" id="sampleContent" style="display: none;">
-                <div class="sample-breakdown" id="sampleBreakdown"></div>
-                <div class="sample-answer" id="sampleAnswer"></div>
+
+            <!-- Key Vocabulary -->
+            <details class="detail-section" id="vocabSection" style="display:none">
+                <summary>Key Vocabulary</summary>
+                <div id="vocabContent"></div>
+            </details>
+        </section>
+
+        <!-- PHASE 2: Speaking -->
+        <section class="phase-content" id="speakPhase" style="display:none">
+            <div class="cuecard-mini" id="cuecardMini">
+                <!-- Shrunk cue card at top for reference -->
+            </div>
+
+            <div class="speaking-center">
+                <svg class="timer-ring timer-ring-large" viewBox="0 0 200 200">
+                    <circle cx="100" cy="100" r="90" fill="none" stroke="#e5e7eb" stroke-width="8"/>
+                    <circle cx="100" cy="100" r="90" fill="none" stroke="#16a34a" stroke-width="8"
+                        stroke-dasharray="565.5" stroke-dashoffset="0" stroke-linecap="round"
+                        id="speakTimerProgress"/>
+                </svg>
+                <div class="timer-center-large">
+                    <div class="timer-value-large" id="speakTimerValue">2:00</div>
+                    <div class="timer-label">Speaking</div>
+                    <div class="word-counter" id="liveWordCount">0 words</div>
+                </div>
+            </div>
+
+            <div class="live-transcript" id="liveTranscript">
+                Speak now — your words will appear here...
+            </div>
+
+            <button class="btn-action btn-stop" id="stopSpeakBtn" onclick="stopSpeaking()">
+                Done Speaking
+            </button>
+        </section>
+
+        <!-- PHASE 3: Review -->
+        <section class="phase-content" id="reviewPhase" style="display:none">
+            <div class="review-score" id="reviewScore">
+                <!-- Score display inserted here -->
+            </div>
+
+            <div class="review-comparison" id="reviewComparison">
+                <!-- Side-by-side comparison -->
+            </div>
+
+            <div class="review-followup" id="reviewFollowup" style="display:none">
+                <h3>Examiner Follow-up Questions</h3>
+                <div id="followupContent"></div>
+            </div>
+
+            <details class="detail-section">
+                <summary>Band 7-8 Sample Answer</summary>
+                <div id="sampleContent"></div>
+            </details>
+
+            <div class="review-actions">
+                <button class="btn-action btn-retry" onclick="tryAgain()">Try Again</button>
+                <button class="btn-action btn-next" onclick="nextCard()">Next Card</button>
             </div>
         </section>
 
-        <!-- Follow-up Questions (shown after recording or viewing sample) -->
-        <section class="m3-follow-up-section" id="m3FollowUpSection" style="display: none; margin-top: 16px;">
-            <button class="btn-follow-up" id="m3FollowUpBtn" onclick="toggleM3FollowUp()" style="padding: 10px 18px; background: #f59e0b; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 0.95em; font-weight: 600; width: 100%;">Show Follow-up Questions</button>
-            <div class="follow-up-box" id="m3FollowUpBox" style="display: none; margin-top: 10px; padding: 14px 18px; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; line-height: 1.6;"></div>
-        </section>
-
-        <!-- AI Feedback -->
-        <section class="feedback-section" id="feedbackSection" style="display: none;">
-            <h3>AI Feedback</h3>
-            <div class="feedback-content" id="feedbackContent"></div>
-        </section>
-
-        <!-- Navigation -->
-        <nav class="nav-section">
-            <button class="btn-nav" onclick="previousCard()">← Previous</button>
-            <button class="btn-primary" onclick="scoreMyAnswer()">Score My Answer</button>
-            <button class="btn-nav" onclick="nextCard()">Next →</button>
+        <!-- Navigation (always visible) -->
+        <nav class="card-nav">
+            <button class="nav-btn" onclick="previousCard()">Previous</button>
+            <button class="nav-btn nav-btn-primary" onclick="nextCard()">Next</button>
         </nav>
     </main>
 

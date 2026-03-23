@@ -487,6 +487,68 @@ const PracticeCommon = {
         }
         document.getElementById(liveAreaEl).classList.add('hidden');
         return transcript;
+    },
+
+    // --- Examiner Voice (browser speechSynthesis) ---
+
+    /** Speak text as IELTS examiner (British English) */
+    speakAsExaminer(text, onEnd) {
+        speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-GB';
+        utterance.rate = 0.92;
+        utterance.pitch = 1.0;
+        if (onEnd) utterance.onend = onEnd;
+        utterance.onerror = () => { if (onEnd) onEnd(); };
+        speechSynthesis.speak(utterance);
+    },
+
+    /** Stop examiner speech */
+    stopExaminer() {
+        speechSynthesis.cancel();
+    },
+
+    /** Check if speechSynthesis is available */
+    canSpeak() {
+        return 'speechSynthesis' in window;
+    },
+
+    // --- Audio Cues ---
+
+    /** Play a beep tone (frequency in Hz, duration in ms) */
+    playBeep(freq, durationMs) {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.frequency.value = freq || 880;
+            gain.gain.value = 0.3;
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            setTimeout(() => { osc.stop(); ctx.close(); }, durationMs || 200);
+        } catch (e) { /* silent fail if AudioContext unavailable */ }
+    },
+
+    /** Play prep-end beep (higher pitch) */
+    playPrepEndBeep() { this.playBeep(880, 300); },
+
+    /** Play time-up chime (two tones) */
+    playTimeUpChime() {
+        this.playBeep(660, 150);
+        setTimeout(() => this.playBeep(880, 300), 200);
+    },
+
+    // --- Score Badge ---
+
+    /** Generate inline score badge HTML */
+    scoreBadgeHTML(band) {
+        const num = parseFloat(band) || 0;
+        let cls = 'score-badge ';
+        if (num >= 7) cls += 'band-high';
+        else if (num >= 6) cls += 'band-mid';
+        else cls += 'band-low';
+        return `<span class="${cls}">Band ${num.toFixed(1)}</span>`;
     }
 };
 
