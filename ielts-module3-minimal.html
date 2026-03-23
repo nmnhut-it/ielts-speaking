@@ -7,6 +7,54 @@
     <link rel="stylesheet" href="styles/module3-minimal.css">
 </head>
 <body>
+    <!-- Student Identification Modal (reuses approved session from module2) -->
+    <div class="identification-overlay" id="identificationOverlay"></div>
+    <div class="identification-modal" id="identificationModal">
+        <div class="modal-header">
+            <h3>👤 Student Identification</h3>
+        </div>
+        <div class="modal-body">
+            <p class="identification-intro">Please enter your name and take a photo to start your practice session.</p>
+
+            <div class="form-field">
+                <label for="studentName">Your Name</label>
+                <input type="text" id="studentName" placeholder="Enter your full name" autocomplete="name" required>
+            </div>
+
+            <div class="camera-section">
+                <div class="camera-preview" id="cameraPreview">
+                    <video id="cameraVideo" autoplay playsinline></video>
+                    <div class="camera-placeholder" id="cameraPlaceholder">
+                        <span class="camera-icon">📷</span>
+                        <p>Camera will appear here</p>
+                    </div>
+                </div>
+
+                <div class="photo-preview" id="photoPreview" style="display: none;">
+                    <img id="capturedPhoto" alt="Your photo">
+                </div>
+
+                <div class="camera-controls">
+                    <button class="btn-camera" id="startCameraBtn" onclick="startIdentificationCamera()">
+                        📷 Start Camera
+                    </button>
+                    <button class="btn-camera" id="capturePhotoBtn" onclick="captureIdentificationPhoto()" style="display: none;">
+                        📸 Capture Photo
+                    </button>
+                    <button class="btn-camera-secondary" id="retakePhotoBtn" onclick="retakeIdentificationPhoto()" style="display: none;">
+                        🔄 Retake
+                    </button>
+                </div>
+            </div>
+
+            <button class="btn-primary btn-submit-identification" id="submitIdentificationBtn" onclick="submitIdentification()" disabled>
+                Start Practice Session
+            </button>
+
+            <p class="identification-note">⚠️ Your photo will be sent to your instructor via Telegram.</p>
+        </div>
+    </div>
+
     <!-- Top Bar -->
     <header class="top-bar">
         <a href="ielts-speaking-lessons.html" class="back-link">← Lessons</a>
@@ -182,6 +230,10 @@
     </main>
 
     <!-- Scripts -->
+    <script src="shared/telegram.js"></script>
+    <script src="shared/scripts/cameraCapture.js"></script>
+    <script src="shared/scripts/studentSession.js"></script>
+    <script src="shared/scripts/telegramSender.js"></script>
     <script src="scripts/ieltsLessons.js"></script>
     <script src="scripts/ieltsCoachAI.js"></script>
     <script src="scripts/module3-minimal.js"></script>

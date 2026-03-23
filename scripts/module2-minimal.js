@@ -104,10 +104,11 @@ function init() {
 
     // Check if student has active session
     const hasSession = studentSession.hasActiveSession();
-    console.log('Student has active session:', hasSession);
+    const hasPending = studentSession.hasPendingSession();
+    console.log('Student has active session:', hasSession, 'pending:', hasPending);
 
     if (hasSession) {
-        // Student is authenticated, ensure modal is hidden and load content
+        // Student is authenticated and approved
         console.log('Hiding identification modal - student authenticated');
         hideIdentificationModal();
         displayStudentInfo();
@@ -116,6 +117,13 @@ function init() {
         checkURLParameters();
         setupEventListeners();
         renderCurrentQuestion();
+    } else if (hasPending) {
+        // Session exists but pending approval, resume polling
+        console.log('Resuming approval polling for pending session');
+        showIdentificationModal();
+        const session = studentSession.getSession();
+        showApprovalWaiting();
+        startApprovalPolling(session.sessionId);
     } else {
         // No active session, show modal and setup listeners
         console.log('Showing identification modal - no active session');
@@ -1109,7 +1117,107 @@ async function submitIdentification() {
     try {
         studentSession.createSession(studentName, capturedPhotoData);
         await sendSessionStartToTelegram(studentName, capturedPhotoData);
+        await sendApprovalRequest(studentName, studentSession.getSession().sessionId);
 
+        showApprovalWaiting();
+        startApprovalPolling(studentSession.getSession().sessionId);
+    } catch (error) {
+        alert(`Failed to start session: ${error.message}`);
+        studentSession.clearSession();
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Start Practice Session';
+    }
+}
+
+async function sendApprovalRequest(studentName, sessionId) {
+    if (!telegramSender) return;
+
+    try {
+        const message = `📚 <b>New Practice Session Request</b>\n\n` +
+            `<b>Student:</b> ${studentName}\n` +
+            `<b>Module:</b> Module 2 - Finding Ideas Fast\n` +
+            `<b>Time:</b> ${new Date().toLocaleString()}\n\n` +
+            `Please approve or reject this student's practice session.`;
+
+        const keyboard = [[
+            { text: '✅ Accept', callback_data: `approve_${sessionId}` },
+            { text: '❌ Reject', callback_data: `reject_${sessionId}` }
+        ]];
+
+        const result = await telegramSender.sendMessageWithKeyboard(message, keyboard);
+        studentSession.setTelegramMessageId(result.message_id);
+    } catch (error) {
+        console.error('Failed to send approval request:', error);
+        throw error;
+    }
+}
+
+function showApprovalWaiting() {
+    const modalBody = document.querySelector('#identificationModal .modal-body');
+    if (!modalBody) return;
+
+    modalBody.innerHTML = `
+        <div class="approval-waiting">
+            <div class="approval-spinner"></div>
+            <h3>Waiting for teacher approval</h3>
+            <p class="approval-dots">Please wait<span class="dots-anim">...</span></p>
+            <p class="approval-hint">Your teacher will review your session request.</p>
+        </div>
+    `;
+}
+
+function showApprovalRejected() {
+    const modalBody = document.querySelector('#identificationModal .modal-body');
+    if (!modalBody) return;
+
+    modalBody.innerHTML = `
+        <div class="approval-result">
+            <div class="approval-icon rejected">❌</div>
+            <h3>Session Not Approved</h3>
+            <p>Your session was not approved. Please contact your teacher.</p>
+            <button class="btn-primary" onclick="retryIdentification()">Try Again</button>
+        </div>
+    `;
+}
+
+function showApprovalTimeout() {
+    const modalBody = document.querySelector('#identificationModal .modal-body');
+    if (!modalBody) return;
+
+    modalBody.innerHTML = `
+        <div class="approval-result">
+            <div class="approval-icon timeout">⏰</div>
+            <h3>Teacher Unavailable</h3>
+            <p>Please try again later.</p>
+            <button class="btn-primary" onclick="retryIdentification()">Try Again</button>
+        </div>
+    `;
+}
+
+function retryIdentification() {
+    studentSession.clearSession();
+    capturedPhotoData = null;
+    location.reload();
+}
+
+async function startApprovalPolling(sessionId) {
+    if (!telegramSender) {
+        onApprovalComplete({ approved: true });
+        return;
+    }
+
+    try {
+        const result = await telegramSender.pollForApproval(sessionId);
+        onApprovalComplete(result);
+    } catch (error) {
+        console.error('Approval polling error:', error);
+        showApprovalTimeout();
+    }
+}
+
+function onApprovalComplete(result) {
+    if (result.approved) {
+        studentSession.setApprovalStatus('approved');
         hideIdentificationModal();
         displayStudentInfo();
         loadProgress();
@@ -1117,10 +1225,13 @@ async function submitIdentification() {
         checkURLParameters();
         setupEventListeners();
         renderCurrentQuestion();
-    } catch (error) {
-        alert(`Failed to start session: ${error.message}`);
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Start Practice Session';
+    } else if (result.timeout) {
+        studentSession.clearSession();
+        showApprovalTimeout();
+    } else {
+        studentSession.setApprovalStatus('rejected');
+        studentSession.clearSession();
+        showApprovalRejected();
     }
 }
 

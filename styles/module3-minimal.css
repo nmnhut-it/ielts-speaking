@@ -877,6 +877,216 @@ body {
     }
 }
 
+/* Identification Modal */
+.identification-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 999;
+}
+
+.identification-overlay.active {
+    display: block;
+}
+
+.identification-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    z-index: 1000;
+    width: 90%;
+    max-width: 440px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.identification-modal.active {
+    display: block;
+}
+
+.identification-modal .modal-header h3 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.identification-intro {
+    color: #666;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.identification-modal .form-field {
+    margin-bottom: 1rem;
+}
+
+.identification-modal .form-field label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.identification-modal .form-field input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.camera-section {
+    margin-bottom: 1rem;
+}
+
+.camera-preview {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: #f0f0f0;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.camera-preview video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.camera-placeholder {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #999;
+}
+
+.camera-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.photo-preview img {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+.camera-controls {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.btn-camera, .btn-camera-secondary {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.btn-camera {
+    background: #4a90d9;
+    color: #fff;
+}
+
+.btn-camera-secondary {
+    background: #e0e0e0;
+    color: #333;
+}
+
+.btn-submit-identification {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+}
+
+.identification-note {
+    color: #999;
+    font-size: 0.8rem;
+    margin-top: 0.75rem;
+    text-align: center;
+}
+
+/* Approval Waiting State */
+.approval-waiting {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.approval-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #e0e0e0;
+    border-top-color: #4a90d9;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+    animation: approval-spin 1s linear infinite;
+}
+
+@keyframes approval-spin {
+    to { transform: rotate(360deg); }
+}
+
+.approval-waiting h3 {
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.approval-dots {
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.dots-anim {
+    animation: approval-dots-pulse 1.5s infinite;
+}
+
+@keyframes approval-dots-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.approval-hint {
+    color: #999;
+    font-size: 0.85rem;
+}
+
+.approval-result {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.approval-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.approval-result h3 {
+    margin-bottom: 0.75rem;
+    color: #333;
+}
+
+.approval-result p {
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
 /* Utilities */
 .hidden {
     display: none !important;
