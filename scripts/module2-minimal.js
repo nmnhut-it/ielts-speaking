@@ -1328,6 +1328,24 @@ async function startRecording() {
         audioRecorder.startRecording();
         updateRecordingUI(true);
         startRecordingTimer();
+
+        // Start live transcription
+        const liveArea = document.getElementById('liveTranscriptArea');
+        const liveText = document.getElementById('liveTranscriptText');
+        liveText.textContent = '';
+        document.getElementById('manualAnswerArea').classList.add('hidden');
+
+        try {
+            liveArea.classList.remove('hidden');
+            window.liveSTT = window.sttService.startLiveTranscription(
+                (interim) => { liveText.textContent = interim; },
+                (final) => { liveText.textContent = final; }
+            );
+        } catch (e) {
+            console.warn('Live transcription not available:', e.message);
+            liveArea.classList.add('hidden');
+            window.liveSTT = null;
+        }
     } catch (error) {
         alert(`Recording error: ${error.message}`);
         audioRecorder = null;
@@ -1335,6 +1353,14 @@ async function startRecording() {
 }
 
 async function stopRecording() {
+    // Stop live transcription and get result
+    let liveTranscript = '';
+    if (window.liveSTT) {
+        liveTranscript = window.liveSTT.stop();
+        window.liveSTT = null;
+    }
+    document.getElementById('liveTranscriptArea').classList.add('hidden');
+
     const recording = await audioRecorder.stopRecording();
 
     if (recording) {
@@ -1346,6 +1372,11 @@ async function stopRecording() {
     updateRecordingUI(false);
     audioRecorder.cleanup();
     audioRecorder = null;
+
+    // If live transcription produced content, use it directly
+    if (liveTranscript) {
+        showM2LiveTranscriptResult(liveTranscript);
+    }
 }
 
 function updateRecordingUI(isRecording) {
@@ -1803,40 +1834,43 @@ function stopSampleAudio() {
 
 // ========== TRANSCRIPTION ==========
 
+// Display live transcript result and auto-score for module 2
+function showM2LiveTranscriptResult(transcript) {
+    const area = document.getElementById('m2Transcription');
+    const textDiv = document.getElementById('m2TranscriptionText');
+    const wordsDiv = document.getElementById('m2TranscriptionWords');
+
+    area.classList.remove('hidden');
+    textDiv.textContent = transcript;
+    const wc = transcript.split(/\s+/).filter(w => w).length;
+    wordsDiv.textContent = wc + ' words';
+
+    localStorage.setItem('m2_last_transcript_' + currentIndex, transcript);
+    runM2BandScoring(transcript, currentIndex);
+    showM2TryAgainButton();
+}
+
+// Fallback: show manual input area for typing answer
 async function transcribeM2Recording() {
     if (!currentRecording) {
         alert('No recording available');
         return;
     }
 
-    const area = document.getElementById('m2Transcription');
-    const textDiv = document.getElementById('m2TranscriptionText');
-    const wordsDiv = document.getElementById('m2TranscriptionWords');
+    document.getElementById('manualAnswerArea').classList.remove('hidden');
+}
 
-    area.classList.remove('hidden');
-    textDiv.textContent = 'Transcribing...';
-
-    try {
-        let transcript;
-        transcript = await window.sttService.transcribe(
-            currentRecording.blob, { mode: 'browser' }
-        );
-
-        textDiv.textContent = transcript;
-        const wc = transcript.split(/\s+/).filter(w => w).length;
-        wordsDiv.textContent = wc + ' words';
-
-        // Store transcript for improvement comparison
-        localStorage.setItem('m2_last_transcript_' + currentIndex, transcript);
-
-        // Auto-run band scoring
-        runM2BandScoring(transcript, currentIndex);
-
-        // Show Try Again button
-        showM2TryAgainButton();
-    } catch (error) {
-        textDiv.textContent = 'Transcription failed: ' + error.message;
+// Submit manually typed answer for module 2
+function submitM2ManualAnswer() {
+    const textarea = document.getElementById('manualAnswerInput');
+    const transcript = (textarea.value || '').trim();
+    if (!transcript) {
+        alert('Please type your answer first.');
+        return;
     }
+
+    document.getElementById('manualAnswerArea').classList.add('hidden');
+    showM2LiveTranscriptResult(transcript);
 }
 
 // ========== PHASE 4: TRY AGAIN & ATTEMPT TRACKING (Module 2) ==========

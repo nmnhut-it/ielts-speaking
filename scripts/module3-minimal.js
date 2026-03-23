@@ -1956,6 +1956,24 @@ async function startAnswerRecording() {
         document.getElementById('stopRecordingBtn').classList.remove('hidden');
         document.getElementById('recordingTimer').classList.remove('hidden');
         document.getElementById('recordingResult').classList.add('hidden');
+        document.getElementById('manualAnswerArea').classList.add('hidden');
+
+        // Start live transcription
+        const liveArea = document.getElementById('liveTranscriptArea');
+        const liveText = document.getElementById('liveTranscriptText');
+        liveText.textContent = '';
+
+        try {
+            liveArea.classList.remove('hidden');
+            window.liveSTT = window.sttService.startLiveTranscription(
+                (interim) => { liveText.textContent = interim; },
+                (final) => { liveText.textContent = final; }
+            );
+        } catch (e) {
+            console.warn('Live transcription not available:', e.message);
+            liveArea.classList.add('hidden');
+            window.liveSTT = null;
+        }
 
         startAnswerRecordingTimer();
     } catch (error) {
@@ -1966,6 +1984,14 @@ async function startAnswerRecording() {
 
 async function stopAnswerRecording() {
     if (!answerRecorder) return;
+
+    // Stop live transcription and get result
+    let liveTranscript = '';
+    if (window.liveSTT) {
+        liveTranscript = window.liveSTT.stop();
+        window.liveSTT = null;
+    }
+    document.getElementById('liveTranscriptArea').classList.add('hidden');
 
     const recording = await answerRecorder.stopRecording();
     stopAnswerRecordingTimer();
@@ -1982,6 +2008,11 @@ async function stopAnswerRecording() {
     document.getElementById('recordAnswerBtn').classList.remove('hidden');
     document.getElementById('stopRecordingBtn').classList.add('hidden');
     document.getElementById('recordingTimer').classList.add('hidden');
+
+    // If live transcription produced content, use it directly
+    if (liveTranscript) {
+        showLiveTranscriptResult(liveTranscript);
+    }
 }
 
 function startAnswerRecordingTimer() {
@@ -2076,40 +2107,46 @@ async function sendRecordingToTelegram() {
     }
 }
 
+// Display live transcript result and auto-score
+function showLiveTranscriptResult(transcript) {
+    const area = document.getElementById('transcriptionArea');
+    const textDiv = document.getElementById('transcriptionText');
+    const wordcountDiv = document.getElementById('transcriptionWordcount');
+
+    area.classList.remove('hidden');
+    textDiv.textContent = transcript;
+    const wordCount = transcript.split(/\s+/).filter(w => w).length;
+    wordcountDiv.textContent = wordCount + ' words';
+
+    const cardIdx = currentIndex;
+    localStorage.setItem('m3_last_transcript_' + cardIdx, transcript);
+
+    showAnswerComparison(transcript);
+    runBandScoring(transcript, cardIdx);
+}
+
+// Fallback: show manual input area for typing answer
 async function transcribeRecording() {
     if (!answerRecordingBlob) {
         alert('No recording available');
         return;
     }
 
-    const area = document.getElementById('transcriptionArea');
-    const textDiv = document.getElementById('transcriptionText');
-    const wordcountDiv = document.getElementById('transcriptionWordcount');
+    // Show manual textarea as fallback
+    document.getElementById('manualAnswerArea').classList.remove('hidden');
+}
 
-    area.classList.remove('hidden');
-    textDiv.textContent = 'Transcribing...';
-
-    try {
-        let transcript;
-        transcript = await window.sttService.transcribe(
-            answerRecordingBlob, { mode: 'browser' }
-        );
-
-        textDiv.textContent = transcript;
-        const wordCount = transcript.split(/\s+/).filter(w => w).length;
-        wordcountDiv.textContent = wordCount + ' words';
-
-        // Store transcript for improvement comparison
-        const cardIdx = currentIndex;
-        localStorage.setItem('m3_last_transcript_' + cardIdx, transcript);
-
-        showAnswerComparison(transcript);
-
-        // Auto-run band scoring
-        runBandScoring(transcript, cardIdx);
-    } catch (error) {
-        textDiv.textContent = 'Transcription failed: ' + error.message;
+// Submit manually typed answer
+function submitManualAnswer() {
+    const textarea = document.getElementById('manualAnswerInput');
+    const transcript = (textarea.value || '').trim();
+    if (!transcript) {
+        alert('Please type your answer first.');
+        return;
     }
+
+    document.getElementById('manualAnswerArea').classList.add('hidden');
+    showLiveTranscriptResult(transcript);
 }
 
 function showAnswerComparison(transcript) {
