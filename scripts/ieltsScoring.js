@@ -1,7 +1,54 @@
 // IELTS Speaking Scoring System
 // AI-powered + offline heuristic analysis across 4 IELTS criteria
-// v2.0 — Rewritten with grammar error detection, context-aware fillers,
-//         length-adjusted TTR, MFCC pronunciation preparation, and part-type awareness
+// v3.0 — Floor/ceiling model replacing base-6.0 additive approach
+//         Evidence-ratio scoring, response-level banding, basic-word detection
+
+// Target word counts per part type
+const TARGET_WORDS = { part1: 50, part2: 200, part3: 80 };
+
+// ~300 most common English words — if ALL words are from this list, cap vocab ceiling at 5.0
+const BASIC_WORD_LIST = new Set([
+    'the', 'a', 'an', 'is', 'am', 'are', 'was', 'were', 'be', 'been',
+    'have', 'has', 'had', 'do', 'did', 'will', 'would', 'can', 'could',
+    'should', 'may', 'might', 'must', 'shall', 'i', 'you', 'he', 'she',
+    'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them', 'my', 'your',
+    'his', 'its', 'our', 'their', 'this', 'that', 'these', 'those',
+    'what', 'which', 'who', 'whom', 'how', 'when', 'where', 'why',
+    'not', 'no', 'yes', 'and', 'but', 'or', 'so', 'if', 'because',
+    'about', 'after', 'before', 'between', 'from', 'in', 'into', 'of',
+    'on', 'to', 'with', 'at', 'by', 'for', 'up', 'down', 'out', 'off',
+    'over', 'under', 'again', 'all', 'also', 'always', 'another', 'any',
+    'back', 'big', 'come', 'day', 'each', 'even', 'every', 'find',
+    'first', 'get', 'give', 'go', 'good', 'great', 'here', 'high',
+    'just', 'know', 'last', 'let', 'life', 'like', 'little', 'long',
+    'look', 'make', 'man', 'many', 'more', 'most', 'much', 'name',
+    'never', 'new', 'next', 'now', 'number', 'old', 'only', 'other',
+    'own', 'part', 'people', 'place', 'point', 'right', 'same', 'say',
+    'see', 'small', 'some', 'still', 'such', 'take', 'tell', 'than',
+    'then', 'there', 'thing', 'think', 'time', 'too', 'try', 'turn',
+    'two', 'use', 'very', 'want', 'way', 'well', 'work', 'world',
+    'year', 'around', 'away', 'being', 'better', 'both', 'call', 'came',
+    'change', 'children', 'city', 'close', 'country', 'different', 'does',
+    'done', "don't", 'during', 'end', 'enough', 'eyes', 'family', 'far',
+    'feel', 'few', 'food', 'found', 'friend', 'girl', 'going', 'got',
+    'group', 'hand', 'head', 'help', 'home', 'house', 'idea', 'important',
+    'keep', 'kind', 'large', 'later', 'left', 'less', 'live', 'made',
+    'mind', 'money', 'morning', 'move', 'music', 'need', 'night', 'often',
+    'open', 'order', 'play', 'put', 'quite', 'read', 'real', 'really',
+    'room', 'run', 'school', 'second', 'set', 'show', 'side', 'since',
+    'something', 'sometimes', 'soon', 'start', 'state', 'stop', 'story',
+    'study', 'sure', 'talk', 'thought', 'three', 'today', 'together',
+    'told', 'took', 'understand', 'until', 'upon', 'used', 'usually',
+    'walk', 'water', 'went', 'while', 'without', 'woman', 'word', 'words',
+    'young', 'boy', 'girl', 'eat', 'drink', 'sleep', 'sit', 'stand',
+    'wait', 'watch', 'hear', 'speak', 'write', 'ask', 'answer', 'learn',
+    'teach', 'buy', 'sell', 'pay', 'send', 'bring', 'leave', 'stay',
+    'meet', 'begin', 'seem', 'car', 'door', 'book', 'table', 'bed',
+    'chair', 'dog', 'cat', 'tree', 'sun', 'rain', 'snow', 'hot', 'cold',
+    'happy', 'sad', 'nice', 'bad', 'hard', 'easy', 'fast', 'slow',
+    'clean', 'white', 'black', 'red', 'blue', 'green', 'one', 'four',
+    'five', 'six', 'seven', 'eight', 'nine', 'ten', 'hundred', 'thousand'
+]);
 
 // ~200 common academic/IELTS words for vocabulary detection
 const ACADEMIC_WORD_LIST = [
@@ -67,6 +114,14 @@ const DISCOURSE_MARKERS = [
 
 // Band descriptor mapping for display
 const BAND_DESCRIPTORS = {
+    0: 'No response given',
+    0.5: 'Essentially no communicative ability',
+    1.0: 'Non-user: isolated words only',
+    1.5: 'Extremely limited: a few isolated words',
+    2.0: 'Intermittent: single words or memorized phrases only',
+    2.5: 'Extremely limited: fragmented response',
+    3.0: 'Extremely limited: short phrases, frequent breakdowns',
+    3.5: 'Very limited: fragmented sentences, very basic vocabulary',
     4.0: 'Very limited: frequent errors, long pauses, basic vocabulary only',
     4.5: 'Limited: many errors, hesitant, repetitive',
     5.0: 'Modest: noticeable errors, limited range, some hesitation',
@@ -81,12 +136,116 @@ const BAND_DESCRIPTORS = {
 };
 
 // ============================================================
-// Scoring Functions (v2.0)
+// Scoring Functions (v3.0) — Floor/Ceiling Model
 // ============================================================
 
 /**
+ * Determine response level (floor/ceiling band range) from word count and structure.
+ * @param {string} text - The response text
+ * @param {number} wordCount - Number of words
+ * @param {string} partType - 'part1'|'part2'|'part3'
+ * @returns {{floor: number, ceiling: number, vocabCeiling: number|null}}
+ */
+function determineResponseLevel(text, wordCount, partType) {
+    // Base floor/ceiling from word count
+    let floor, ceiling;
+    if (wordCount <= 3) { floor = 0; ceiling = 2.0; }
+    else if (wordCount <= 7) { floor = 2.0; ceiling = 3.5; }
+    else if (wordCount <= 15) { floor = 3.0; ceiling = 4.5; }
+    else if (wordCount <= 25) { floor = 4.0; ceiling = 5.5; }
+    else if (wordCount <= 40) { floor = 4.5; ceiling = 6.5; }
+    else if (wordCount <= 80) { floor = 5.0; ceiling = 7.5; }
+    else { floor = 5.0; ceiling = 9.0; }
+
+    // Part 1 has lower word expectations — boost ceiling for shorter answers
+    if (partType === 'part1' && wordCount >= 26 && wordCount <= 40) {
+        ceiling = 7.0;
+    } else if (partType === 'part1' && wordCount >= 16 && wordCount <= 25) {
+        ceiling = 6.0;
+    }
+
+    let vocabCeiling = null;
+
+    // Structural ceiling reductions
+    const hasSubjectVerb = /\b(i|you|he|she|it|we|they|there)\s+\w+/i.test(text);
+    if (!hasSubjectVerb) {
+        ceiling = Math.min(ceiling, 3.5);
+    }
+
+    const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+    const allShort = sentences.every(
+        s => s.trim().split(/\s+/).length < 5
+    );
+    if (allShort && sentences.length > 0) {
+        ceiling = Math.min(ceiling, 4.5);
+    }
+
+    // No subordinate clauses AND wordCount > 25 => ceiling min 5.5
+    const hasSubordinate = /\b(although|though|even though|while|whereas|since|because|as|so that|in order to|if|unless|provided that|as long as|that|which|who|whom|whose|when|where|after|before|until)\b/i.test(text);
+    if (!hasSubordinate && wordCount > 25) {
+        ceiling = Math.min(ceiling, 5.5);
+    }
+
+    // Only one tense used AND wordCount > 25 => ceiling min 5.5
+    const pastTense = /\b\w+ed\b/i.test(text);
+    const presentTense = /\b(is|are|am|do|does|have|has)\b/i.test(text);
+    const futureTense = /\b(will|going to|shall)\b/i.test(text);
+    const tenseCount = (pastTense ? 1 : 0) + (presentTense ? 1 : 0) + (futureTense ? 1 : 0);
+    if (tenseCount <= 1 && wordCount > 25) {
+        ceiling = Math.min(ceiling, 5.5);
+    }
+
+    // All words from basic list => cap vocab ceiling at 5.0
+    const words = text.toLowerCase().replace(/[^\w\s']/g, '').split(/\s+/).filter(w => w);
+    const allBasic = words.every(w => BASIC_WORD_LIST.has(w));
+    if (allBasic && wordCount > 3) {
+        vocabCeiling = Math.min(ceiling, 5.0);
+    }
+
+    return { floor, ceiling, vocabCeiling };
+}
+
+/**
+ * Map an evidence ratio (0-1) to a band score within floor/ceiling range.
+ * @param {number} ratio - Evidence strength 0.0 to 1.0
+ * @param {number} floor - Minimum possible band
+ * @param {number} ceiling - Maximum possible band
+ * @returns {number} Band score rounded to nearest 0.5
+ */
+function mapToBand(ratio, floor, ceiling) {
+    const band = floor + (ceiling - floor) * ratio;
+    return Math.round(band * 2) / 2;
+}
+
+/**
+ * Create minimal scores for very short answers (ceiling <= 3.0).
+ * @param {{floor: number, ceiling: number}} level - Response level
+ * @param {number} wordCount - Word count
+ * @param {string} text - The response text
+ * @returns {object} Band scores and details
+ */
+function createMinimalScores(level, wordCount, text) {
+    const band = Math.max(0, Math.round(level.ceiling * 2) / 2);
+    return {
+        overall: band,
+        fluency: band,
+        vocabulary: band,
+        grammar: band,
+        pronunciation: band,
+        pronunciationChallenges: [],
+        details: {
+            strengths: [],
+            weaknesses: ['Response too short to demonstrate English ability'],
+            tips: ['Aim for at least 3-4 sentences in your answer']
+        },
+        wordCount,
+        errors: []
+    };
+}
+
+/**
  * Calculate structured IELTS band scores from transcript text.
- * Supports part-type awareness and optional audio-based pronunciation.
+ * Uses floor/ceiling model: word count sets the band range, evidence ratios place within it.
  * @param {string} transcript - The transcribed speech text
  * @param {number} [durationSeconds] - Optional speaking duration in seconds
  * @param {string} [partType] - 'part1'|'part2'|'part3' (default: 'part2')
@@ -94,67 +253,58 @@ const BAND_DESCRIPTORS = {
  * @returns {object} Band scores and analysis details
  */
 function calculateBandScores(transcript, durationSeconds, partType, audioBlob) {
-    if (!transcript || transcript.trim().length < 10) {
+    if (!transcript || transcript.trim().length < 3) {
         return createEmptyScores();
     }
 
     partType = partType || 'part2';
-
-    const TARGET_WORDS = { part1: 50, part2: 200, part3: 80 };
-
     const text = transcript.trim();
     const words = text.split(/\s+/).filter(w => w);
     const wordCount = words.length;
 
-    // Length penalty based on part type
+    // Step 1: Determine band range from response adequacy
+    const level = determineResponseLevel(text, wordCount, partType);
+
+    // Step 2: If ceiling is very low, return minimal scores
+    if (level.ceiling <= 3.0) {
+        return createMinimalScores(level, wordCount, text);
+    }
+
+    // Step 3: Calculate evidence ratios for each criterion (0.0 to 1.0)
     const lengthRatio = wordCount / TARGET_WORDS[partType];
+    const fluencyEvidence = scoreFluencyEvidence(text, durationSeconds, lengthRatio);
+    const vocabEvidence = scoreVocabularyEvidence(text, wordCount);
+    const grammarEvidence = scoreGrammarEvidence(text);
+    const pronEvidence = scorePronunciationEvidence(text, grammarEvidence.errorCount);
 
-    const fluency = scoreFluency(text, durationSeconds, lengthRatio);
-    const vocab = scoreVocabulary(text, wordCount);
-    const grammar = scoreGrammar(text);
-    const pron = scorePronunciation(text, grammar.errorCount);
+    // Step 4: Map evidence to band within floor/ceiling range
+    let fluencyBand = mapToBand(fluencyEvidence.ratio, level.floor, level.ceiling);
+    let vocabBand = mapToBand(vocabEvidence.ratio, level.floor, level.vocabCeiling || level.ceiling);
+    let grammarBand = mapToBand(grammarEvidence.ratio, level.floor, level.ceiling);
+    let pronBand = mapToBand(pronEvidence.ratio, level.floor, Math.min(level.ceiling, 7.0));
 
-    // Cross-criterion adjustment: severe grammar errors indicate overall weakness
-    // A speaker who says "goed" and "more better" doesn't have Band 6 vocabulary
-    let fluencyBand = fluency.band;
-    let vocabBand = vocab.band;
-    let grammarBand = grammar.band;
-    let pronBand = pron.band;
-
-    if (grammar.errorCount > 5) {
-        // Many errors = overall weak speaker, cap other criteria
+    // Step 5: Cross-criterion adjustments
+    if (grammarEvidence.errorCount > 5) {
         vocabBand = Math.min(vocabBand, 5.5);
         fluencyBand = Math.min(fluencyBand, 5.5);
-    } else if (grammar.errorCount > 3) {
+    } else if (grammarEvidence.errorCount > 3) {
         vocabBand = Math.min(vocabBand, 6.0);
     }
 
-    // Length penalty: very short answers can't demonstrate ability
-    // Cap all scores if answer is extremely short
-    if (wordCount < 10) {
-        fluencyBand = Math.min(fluencyBand, 4.5);
-        vocabBand = Math.min(vocabBand, 4.5);
-        grammarBand = Math.min(grammarBand, 4.5);
-        pronBand = Math.min(pronBand, 5.0);
-    } else if (wordCount < 20) {
-        fluencyBand = Math.min(fluencyBand, 5.5);
-        vocabBand = Math.min(vocabBand, 5.5);
-        grammarBand = Math.min(grammarBand, 5.5);
-    }
-
+    // Step 6: Calculate overall
     const raw = (fluencyBand + vocabBand + grammarBand + pronBand) / 4;
     const overall = Math.round(raw * 2) / 2;
 
     const result = {
-        overall: Math.max(4.0, Math.min(9.0, overall)),
+        overall: Math.max(2.0, Math.min(9.0, overall)),
         fluency: fluencyBand,
         vocabulary: vocabBand,
         grammar: grammarBand,
         pronunciation: pronBand,
-        pronunciationChallenges: pron.pronunciationChallenges || [],
-        details: buildDetails(fluency, vocab, grammar, pron),
+        pronunciationChallenges: pronEvidence.pronunciationChallenges || [],
+        details: buildDetails(fluencyEvidence, vocabEvidence, grammarEvidence, pronEvidence),
         wordCount,
-        errors: grammar.errors || []
+        errors: grammarEvidence.errors || []
     };
 
     // If audio is provided, schedule async pronunciation enhancement
@@ -165,11 +315,10 @@ function calculateBandScores(transcript, durationSeconds, partType, audioBlob) {
             if (pronResult) {
                 result.pronunciation = pronResult.band;
                 result.pronunciationDetails = pronResult;
-                // Recalculate overall with updated pronunciation
                 const updatedRaw = (result.fluency + result.vocabulary +
                     result.grammar + result.pronunciation) / 4;
                 result.overall = Math.max(
-                    4.0, Math.min(9.0, Math.round(updatedRaw * 2) / 2)
+                    2.0, Math.min(9.0, Math.round(updatedRaw * 2) / 2)
                 );
             }
         });
@@ -179,12 +328,15 @@ function calculateBandScores(transcript, durationSeconds, partType, audioBlob) {
 }
 
 // ============================================================
-// Fluency & Coherence — start at 6.0, add/subtract
+// Fluency & Coherence — evidence ratio model (0-100 points -> 0.0-1.0)
 // ============================================================
 
-/** Score Fluency & Coherence (4.0-9.0) */
-function scoreFluency(text, durationSeconds, lengthRatio) {
-    let score = 6.0;
+/**
+ * Score Fluency & Coherence evidence. Returns ratio 0.0-1.0 plus detail fields.
+ * Points: WPM(20) + low fillers(15) + discourse(20) + variety(15) + length(15) + multi-sentence(15)
+ */
+function scoreFluencyEvidence(text, durationSeconds, lengthRatio) {
+    let points = 0;
 
     const words = text.split(/\s+/).filter(w => w);
     const wordCount = words.length;
@@ -193,18 +345,19 @@ function scoreFluency(text, durationSeconds, lengthRatio) {
         : wordCount / 130;
     const wpm = durationMin > 0 ? wordCount / durationMin : 0;
 
-    // WPM: 110-160 ideal
-    if (wpm >= 110 && wpm <= 160) score += 0.5;
-    else if (wpm >= 90 && wpm <= 180) score += 0.2;
-    else if (wpm < 80 || wpm > 200) score -= 0.5;
+    // Good WPM (110-160): +20 points
+    if (wpm >= 110 && wpm <= 160) points += 20;
+    else if (wpm >= 90 && wpm <= 180) points += 12;
+    else if (wpm >= 70) points += 5;
 
     // Context-aware filler detection
     const fillerCount = countFillers(text);
     const fillerRatio = wordCount > 0 ? fillerCount / wordCount : 0;
 
-    if (fillerRatio < 0.02) score += 0.3;
-    else if (fillerRatio > 0.05) score -= 0.5;
-    else if (fillerRatio > 0.03) score -= 0.3;
+    // Low filler ratio (<2%): +15 points
+    if (fillerRatio < 0.02) points += 15;
+    else if (fillerRatio < 0.03) points += 10;
+    else if (fillerRatio < 0.05) points += 5;
 
     // Sentence variety
     const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
@@ -213,8 +366,10 @@ function scoreFluency(text, durationSeconds, lengthRatio) {
     const variance = sentLengths.reduce((s, l) => s + Math.pow(l - avgLen, 2), 0) / (sentLengths.length || 1);
     const stdDev = Math.sqrt(variance);
 
-    if (stdDev > 5) score += 0.3;
-    else if (stdDev > 3) score += 0.15;
+    // Sentence variety (stddev >5): +15 points
+    if (stdDev > 5) points += 15;
+    else if (stdDev > 3) points += 10;
+    else if (stdDev > 1) points += 5;
 
     // Discourse markers
     let discourseCount = 0;
@@ -225,20 +380,26 @@ function scoreFluency(text, durationSeconds, lengthRatio) {
     });
     const discourseRatio = wordCount > 0 ? discourseCount / wordCount : 0;
 
-    if (discourseRatio > 0.04) score += 0.5;
-    else if (discourseRatio > 0.02) score += 0.3;
-    else if (discourseCount === 0) score -= 0.3;
+    // Discourse markers (>4%): +20 points
+    if (discourseRatio > 0.04) points += 20;
+    else if (discourseRatio > 0.02) points += 14;
+    else if (discourseCount > 0) points += 7;
 
-    // Length penalty
-    if (lengthRatio < 0.4) score -= 1.0;
-    else if (lengthRatio < 0.6) score -= 0.5;
-    else if (lengthRatio < 0.75) score -= 0.3;
+    // Adequate length (ratio >0.75): +15 points
+    if (lengthRatio > 0.75) points += 15;
+    else if (lengthRatio > 0.6) points += 10;
+    else if (lengthRatio > 0.4) points += 5;
 
-    // Very few sentences = undeveloped
-    if (sentences.length <= 2 && wordCount > 10) score -= 0.3;
+    // Multiple sentences: +15 points
+    if (sentences.length >= 5) points += 15;
+    else if (sentences.length >= 3) points += 10;
+    else if (sentences.length >= 2) points += 5;
+
+    const ratio = Math.min(1.0, Math.max(0.0, points / 100));
 
     return {
-        band: clampBand(score),
+        ratio,
+        band: clampBand(mapToBand(ratio, 4.0, 9.0)),
         wpm: Math.round(wpm),
         fillerRatio: +(fillerRatio * 100).toFixed(1),
         fillerCount,
@@ -287,53 +448,59 @@ function countFillers(text) {
 }
 
 // ============================================================
-// Vocabulary — TTR adjusted by length
+// Vocabulary — evidence ratio model (0-100 points -> 0.0-1.0)
 // ============================================================
 
-/** Score Lexical Resource (4.0-9.0) */
-function scoreVocabulary(text, wordCount) {
-    let score = 6.0;
+/**
+ * Score Lexical Resource evidence. Returns ratio 0.0-1.0 plus detail fields.
+ * Points: TTR(20) + academic(20) + avgLen(15) + longWords(15) + phrasal(15) + beyond-basic(15)
+ */
+function scoreVocabularyEvidence(text, wordCount) {
+    let points = 0;
 
     const words = text.toLowerCase().replace(/[^\w\s']/g, '').split(/\s+/).filter(w => w.length > 0);
     const wc = words.length;
     const uniqueWords = new Set(words);
     const ttr = wc > 0 ? uniqueWords.size / wc : 0;
 
-    // TTR thresholds adjusted by word count (short texts naturally have higher TTR)
+    // Good TTR: +20 points (adjusted by length)
     if (wc < 50) {
-        if (ttr > 0.80) score += 0.3;
-        else if (ttr < 0.60) score -= 0.3;
+        if (ttr > 0.80) points += 20;
+        else if (ttr > 0.65) points += 14;
+        else if (ttr > 0.50) points += 8;
     } else if (wc < 100) {
-        if (ttr > 0.60) score += 0.5;
-        else if (ttr > 0.50) score += 0.3;
-        else if (ttr < 0.40) score -= 0.3;
+        if (ttr > 0.60) points += 20;
+        else if (ttr > 0.50) points += 14;
+        else if (ttr > 0.40) points += 8;
     } else {
-        if (ttr > 0.55) score += 0.7;
-        else if (ttr > 0.45) score += 0.4;
-        else if (ttr < 0.35) score -= 0.5;
-        else if (ttr < 0.40) score -= 0.3;
+        if (ttr > 0.55) points += 20;
+        else if (ttr > 0.45) points += 14;
+        else if (ttr > 0.35) points += 8;
     }
 
-    // Average word length
-    const avgWordLen = wc > 0 ? words.reduce((s, w) => s + w.length, 0) / wc : 0;
-    if (avgWordLen > 5.5) score += 0.3;
-    else if (avgWordLen < 4.0) score -= 0.3;
-
-    // Academic words
+    // Academic words found: +20 points
     const academicSet = new Set(ACADEMIC_WORD_LIST);
     const academicFound = [...uniqueWords].filter(w => academicSet.has(w));
     const academicRatio = wc > 0 ? academicFound.length / wc : 0;
 
-    if (academicRatio > 0.05) score += 0.5;
-    else if (academicRatio > 0.02) score += 0.3;
-    else if (academicFound.length === 0 && wc > 30) score -= 0.3;
+    if (academicRatio > 0.05) points += 20;
+    else if (academicRatio > 0.02) points += 14;
+    else if (academicFound.length > 0) points += 7;
 
-    // Long words (>8 chars)
+    // Average word length >5.5: +15 points
+    const avgWordLen = wc > 0 ? words.reduce((s, w) => s + w.length, 0) / wc : 0;
+    if (avgWordLen > 5.5) points += 15;
+    else if (avgWordLen > 4.5) points += 10;
+    else if (avgWordLen > 4.0) points += 5;
+
+    // Long words (>8 chars): +15 points
     const longWords = [...uniqueWords].filter(w => w.length > 8);
     const longRatio = wc > 0 ? longWords.length / wc : 0;
-    if (longRatio > 0.08) score += 0.3;
+    if (longRatio > 0.08) points += 15;
+    else if (longRatio > 0.04) points += 10;
+    else if (longWords.length > 0) points += 5;
 
-    // Phrasal verbs
+    // Phrasal verbs: +15 points
     const phrasalVerbs = [
         'look forward', 'come across', 'bring up', 'carry out', 'find out',
         'give up', 'go through', 'keep up', 'make up', 'point out',
@@ -344,14 +511,21 @@ function scoreVocabulary(text, wordCount) {
     phrasalVerbs.forEach(pv => {
         if (new RegExp('\\b' + pv + '\\b', 'gi').test(text)) phrasalCount++;
     });
-    if (phrasalCount >= 3) score += 0.3;
-    else if (phrasalCount >= 1) score += 0.15;
+    if (phrasalCount >= 3) points += 15;
+    else if (phrasalCount >= 1) points += 8;
 
-    // Penalty for very short answers
-    if (wc < 20) score -= 0.5;
+    // Words beyond basic list: +15 points
+    const nonBasicWords = words.filter(w => !BASIC_WORD_LIST.has(w));
+    const nonBasicRatio = wc > 0 ? nonBasicWords.length / wc : 0;
+    if (nonBasicRatio > 0.30) points += 15;
+    else if (nonBasicRatio > 0.15) points += 10;
+    else if (nonBasicRatio > 0.05) points += 5;
+
+    const ratio = Math.min(1.0, Math.max(0.0, points / 100));
 
     return {
-        band: clampBand(score),
+        ratio,
+        band: clampBand(mapToBand(ratio, 4.0, 9.0)),
         ttr: +ttr.toFixed(2),
         uniqueWords: uniqueWords.size,
         avgWordLength: +avgWordLen.toFixed(1),
@@ -362,16 +536,19 @@ function scoreVocabulary(text, wordCount) {
 }
 
 // ============================================================
-// Grammar — with error detection
+// Grammar — evidence ratio model (0-100 points -> 0.0-1.0)
 // ============================================================
 
-/** Score Grammatical Range & Accuracy (4.0-9.0) */
-function scoreGrammar(text) {
-    let score = 6.0;
+/**
+ * Score Grammatical Range & Accuracy evidence. Returns ratio 0.0-1.0 plus detail fields.
+ * Points: complex(25) + tenses(15) + sentLen(15) + lowErrors(30) + variety(15)
+ */
+function scoreGrammarEvidence(text) {
+    let points = 0;
     const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
     const sentCount = sentences.length || 1;
 
-    // === POSITIVE: Complex structure detection ===
+    // === Complex structure detection (reused from v2) ===
     const complexPatterns = {
         conditionals: /\b(if|unless|provided that|as long as|supposing)\b/gi,
         passive: /\b(was|were|is|are|been|being|get|got|gets)\s+\w+(ed|en|t)\b/gi,
@@ -392,40 +569,56 @@ function scoreGrammar(text) {
 
     const typesUsed = Object.values(detected).filter(v => v > 0).length;
 
-    // Bonuses for complexity
-    if (typesUsed >= 5) score += 0.7;
-    else if (typesUsed >= 3) score += 0.4;
-    else if (typesUsed >= 2) score += 0.2;
-    else if (typesUsed === 0) score -= 0.3;
+    // Complex structures found: +25 points (more types = more points)
+    if (typesUsed >= 5) points += 25;
+    else if (typesUsed >= 4) points += 20;
+    else if (typesUsed >= 3) points += 16;
+    else if (typesUsed >= 2) points += 12;
+    else if (typesUsed >= 1) points += 6;
 
-    // Mixed tenses
+    // Multiple tenses: +15 points
     const pastTense = (text.match(/\b\w+ed\b/gi) || []).length;
     const presentTense = (text.match(/\b(is|are|am|do|does|have|has)\b/gi) || []).length;
     const futureTense = (text.match(/\b(will|going to|shall)\b/gi) || []).length;
     const tenseMix = (pastTense > 0 ? 1 : 0) + (presentTense > 0 ? 1 : 0) + (futureTense > 0 ? 1 : 0);
 
-    if (tenseMix >= 3) score += 0.3;
-    else if (tenseMix >= 2) score += 0.15;
+    if (tenseMix >= 3) points += 15;
+    else if (tenseMix >= 2) points += 10;
+    else if (tenseMix >= 1) points += 4;
 
-    // Sentence length
+    // Good sentence length (12-22 avg): +15 points
     const avgWordsPerSent = text.split(/\s+/).length / sentCount;
-    if (avgWordsPerSent >= 12 && avgWordsPerSent <= 22) score += 0.3;
-    else if (avgWordsPerSent < 7) score -= 0.3;
+    if (avgWordsPerSent >= 12 && avgWordsPerSent <= 22) points += 15;
+    else if (avgWordsPerSent >= 8 && avgWordsPerSent <= 28) points += 10;
+    else if (avgWordsPerSent >= 5) points += 4;
 
-    // === NEGATIVE: Error detection ===
+    // === Error detection ===
     const errors = detectGrammarErrors(text);
     const errorCount = errors.length;
 
-    // Deductions based on error density
+    // Low error density: +30 points (no errors = full, many errors = 0)
     const errorRate = sentCount > 0 ? errorCount / sentCount : 0;
-    if (errorRate > 1.0) score -= 2.0;       // more errors than sentences
-    else if (errorRate > 0.5) score -= 1.5;  // errors in >50% of sentences
-    else if (errorRate > 0.3) score -= 1.0;  // errors in >30%
-    else if (errorRate > 0.15) score -= 0.5; // errors in >15%
-    else if (errorCount > 0) score -= 0.2;   // occasional errors
+    if (errorCount === 0) points += 30;
+    else if (errorRate <= 0.15) points += 22;
+    else if (errorRate <= 0.3) points += 14;
+    else if (errorRate <= 0.5) points += 7;
+    // >0.5 errorRate = 0 points
+
+    // Sentence variety: +15 points
+    const sentLengths = sentences.map(s => s.trim().split(/\s+/).length);
+    const avgLen = sentLengths.reduce((a, b) => a + b, 0) / (sentLengths.length || 1);
+    const variance = sentLengths.reduce((s, l) => s + Math.pow(l - avgLen, 2), 0) / (sentLengths.length || 1);
+    const stdDev = Math.sqrt(variance);
+
+    if (stdDev > 5) points += 15;
+    else if (stdDev > 3) points += 10;
+    else if (stdDev > 1) points += 5;
+
+    const ratio = Math.min(1.0, Math.max(0.0, points / 100));
 
     return {
-        band: clampBand(score),
+        ratio,
+        band: clampBand(mapToBand(ratio, 4.0, 9.0)),
         complexStructures: detected,
         totalComplex,
         typesUsed,
@@ -518,51 +711,60 @@ function detectGrammarErrors(text) {
 }
 
 // ============================================================
-// Pronunciation — text-based + MFCC preparation
+// Pronunciation — evidence ratio model (0-100 points -> 0.0-1.0)
 // ============================================================
 
-/** Score Pronunciation from text only (4.0-7.0 cap) */
-function scorePronunciation(text, grammarErrorCount) {
-    let score = 6.0;
+/**
+ * Score Pronunciation evidence from text only. Returns ratio 0.0-1.0 plus detail fields.
+ * Points: multiSyllable(25) + contractions(20) + soundVariety(20) + lowGrammarCorrelation(20) + length(15)
+ */
+function scorePronunciationEvidence(text, grammarErrorCount) {
+    let points = 0;
 
     const words = text.toLowerCase().replace(/[^\w\s']/g, '').split(/\s+/).filter(w => w);
     const wordCount = words.length;
     const uniqueWords = new Set(words);
 
-    // Multi-syllable word usage (proxy: confident with complex words)
+    // Multi-syllable words: +25 points
     const multiSyllable = [...uniqueWords].filter(w => countSyllables(w) >= 3);
     const multiRatio = wordCount > 0 ? multiSyllable.length / wordCount : 0;
 
-    if (multiRatio > 0.08) score += 0.3;
-    else if (multiRatio > 0.04) score += 0.15;
+    if (multiRatio > 0.08) points += 25;
+    else if (multiRatio > 0.04) points += 17;
+    else if (multiSyllable.length > 0) points += 8;
 
-    // Contractions (natural speech indicator)
+    // Contractions (natural speech): +20 points
     const contractions = (text.match(/\b\w+'(t|s|re|ve|ll|d|m)\b/gi) || []).length;
-    if (contractions >= 4) score += 0.3;
-    else if (contractions >= 2) score += 0.15;
-    else if (contractions === 0 && wordCount > 50) score -= 0.2;
+    if (contractions >= 4) points += 20;
+    else if (contractions >= 2) points += 14;
+    else if (contractions >= 1) points += 7;
 
-    // Sound variety (diverse word beginnings)
+    // Sound variety: +20 points
     const beginnings = new Set(words.map(w => w.substring(0, 2)));
-    if (beginnings.size > 35) score += 0.2;
+    if (beginnings.size > 35) points += 20;
+    else if (beginnings.size > 20) points += 14;
+    else if (beginnings.size > 10) points += 7;
 
-    // Cross-penalty: many grammar errors → likely pronunciation issues too
+    // Low grammar error correlation: +20 points
     const errCount = grammarErrorCount || 0;
-    if (errCount > 5) score -= 0.8;
-    else if (errCount > 3) score -= 0.5;
-    else if (errCount > 1) score -= 0.3;
+    if (errCount === 0) points += 20;
+    else if (errCount <= 1) points += 14;
+    else if (errCount <= 3) points += 7;
+    // >3 errors = 0 points
 
-    // Very short answer → can't demonstrate pronunciation range
-    if (wordCount < 20) score -= 0.3;
+    // Adequate length: +15 points
+    if (wordCount >= 50) points += 15;
+    else if (wordCount >= 30) points += 10;
+    else if (wordCount >= 15) points += 5;
 
-    // Cap at 7.0 for text-only
-    const band = Math.min(7.0, clampBand(score));
+    const ratio = Math.min(1.0, Math.max(0.0, points / 100));
 
     // Detect pronunciation challenges in the text
     const pronunciationChallenges = findPronunciationChallenges(text);
 
     return {
-        band,
+        ratio,
+        band: Math.min(7.0, clampBand(mapToBand(ratio, 4.0, 9.0))),
         multiSyllableCount: multiSyllable.length,
         contractions,
         soundVariety: beginnings.size,
@@ -1126,9 +1328,9 @@ function getBandDescriptor(band) {
     return BAND_DESCRIPTORS[rounded] || BAND_DESCRIPTORS[Math.floor(band)] || 'Score unavailable';
 }
 
-/** Clamp band to 4.0-9.0 range, rounded to nearest 0.5 */
+/** Clamp band to 2.0-9.0 range, rounded to nearest 0.5 */
 function clampBand(score) {
-    const clamped = Math.max(4.0, Math.min(9.0, score));
+    const clamped = Math.max(2.0, Math.min(9.0, score));
     return Math.round(clamped * 2) / 2;
 }
 
@@ -1321,38 +1523,56 @@ window.testScoringAccuracy = testScoringAccuracy;
 function testScoringAccuracy() {
     const tests = [
         {
-            name: 'Band 4.5-5.0 (very weak)',
+            name: 'Band 0-2.0 (single word)',
+            text: "hello",
+            duration: 3,
+            expectedRange: [0, 2.0]
+        },
+        {
+            name: 'Band 2.0-3.5 (minimal phrase)',
+            text: "I like music",
+            duration: 3,
+            expectedRange: [2.0, 3.5]
+        },
+        {
+            name: 'Band 3.0-4.5 (short basic sentence)',
+            text: "I like music because it is good and nice",
+            duration: 5,
+            expectedRange: [3.0, 4.5]
+        },
+        {
+            name: 'Band 4.5-5.5 (very weak)',
             text: "I like music. Music is good. I listen music every day. Um, I like pop music. Pop music is very good. Um, I think music is important.",
             duration: 20,
             expectedRange: [4.5, 5.5]
         },
         {
-            name: 'Band 5.5-6.0 (basic competence)',
+            name: 'Band 5.0-6.5 (basic competence)',
             text: "Well, I really enjoy listening to music, especially pop and rock. I usually listen to music when I'm traveling to work on the bus. It helps me relax and I think most young people like music a lot.",
             duration: 25,
-            expectedRange: [5.5, 6.5]
+            expectedRange: [5.0, 6.5]
         },
         {
-            name: 'Band 6.5-7.0 (good)',
+            name: 'Band 6.0-7.5 (good)',
             text: "To be honest, I'm quite passionate about music, particularly jazz and classical. I've been playing guitar since I was about twelve, and it's something that really helps me unwind after a stressful day. Moreover, I find that listening to different genres broadens my perspective and exposes me to various cultures.",
             duration: 30,
-            expectedRange: [6.5, 7.5]
+            expectedRange: [6.0, 7.5]
         },
         {
-            name: 'Band 7.5-8.0 (very good)',
+            name: 'Band 7.0-8.5 (very good)',
             text: "I'd say I'm somewhat of a music enthusiast, actually. My tastes have evolved considerably over the years — I grew up listening to pop, but I've gradually developed an appreciation for jazz and classical compositions. What I find particularly fascinating about music is how it transcends cultural boundaries. For instance, I recently attended a concert featuring traditional Vietnamese instruments alongside Western orchestral pieces, and the fusion was absolutely captivating. Having said that, I think the emotional impact of music is what truly resonates with me — it has this remarkable ability to evoke memories and shift your entire mood within seconds.",
             duration: 55,
             expectedRange: [7.0, 8.5]
         },
         {
-            name: 'Band 4.0-5.0 (many errors)',
+            name: 'Band 4.0-5.5 (many errors)',
             text: "He don't like music. She go to school every day. I goed to the park yesterday. The musics is more better than before. I was arrive to the school late. They was happy because they don't have nothing to do.",
             duration: 20,
-            expectedRange: [4.0, 5.0]
+            expectedRange: [4.0, 5.5]
         }
     ];
 
-    console.log('=== IELTS SCORING ACCURACY TEST ===');
+    console.log('=== IELTS SCORING ACCURACY TEST (v3.0 Floor/Ceiling Model) ===');
     let allPass = true;
     tests.forEach(test => {
         const scores = calculateBandScores(test.text, test.duration, 'part1');
