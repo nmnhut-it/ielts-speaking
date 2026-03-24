@@ -1381,9 +1381,9 @@ async function enterReview() {
 
     feedbackEl.innerHTML = fbHtml;
 
-    // Show audio preview if we have a recording
+    // Show audio preview if we have a recording (prefer main answer)
     if (mainRecording || currentRecording) {
-        const blob = currentRecording?.blob || mainRecording?.blob;
+        const blob = mainRecording?.blob || currentRecording?.blob;
         if (blob) displayAudioPreview(blob);
     }
 
@@ -2208,7 +2208,8 @@ async function sendAudioToTelegram() {
         return;
     }
 
-    const recording = currentRecording || mainRecording;
+    // mainRecording = first answer, currentRecording = follow-up answer
+    const recording = mainRecording || currentRecording;
 
     const sendBtn = document.getElementById('sendTelegramBtn');
     const originalText = sendBtn.textContent;
@@ -2347,11 +2348,11 @@ async function sendAudioToTelegram() {
                 `${studentName}_q${currentIndex + 1}.ogg`
             );
 
-            // Send follow-up recording separately if available
-            if (followUpText && currentRecording && mainRecording && currentRecording !== mainRecording) {
+            // Send follow-up recording separately if we have both recordings
+            if (followUpText && currentRecording && mainRecording) {
                 await telegramSender.sendAudio(
                     currentRecording.blob,
-                    '<b>🔄 Follow-up recording — Q' + (currentIndex + 1) + '</b>',
+                    '<b>🔄 Follow-up answer — Q' + (currentIndex + 1) + '</b>\n' + followUpText,
                     `${studentName}_q${currentIndex + 1}_followup.ogg`
                 );
             }
