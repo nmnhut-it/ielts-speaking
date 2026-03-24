@@ -463,6 +463,80 @@ Be thorough but encouraging. Reference specific things they said.`;
         };
     }
 
+    // Validate band scores using Gemini as IELTS examiner (Tier 3 scoring)
+    async validateScores(transcript, partType, question, ruleScores) {
+        if (!this.hasApiKey()) return null;
+
+        const partLabel = { part1: 'Part 1 (Interview)', part2: 'Part 2 (Long Turn)', part3: 'Part 3 (Discussion)' }[partType] || 'Part 1';
+
+        const prompt = `You are an experienced IELTS examiner. Score this Speaking ${partLabel} response using official IELTS band descriptors.
+
+QUESTION: "${question || 'Unknown'}"
+
+STUDENT'S RESPONSE:
+"${transcript}"
+
+Our automated system scored: Fluency ${ruleScores.fluency}, Vocabulary ${ruleScores.vocabulary}, Grammar ${ruleScores.grammar}, Pronunciation ${ruleScores.pronunciation}, Overall ${ruleScores.overall}
+
+INSTRUCTIONS:
+1. Score each criterion independently using official IELTS band descriptors (0-9, half bands allowed)
+2. Consider: response length, vocabulary range, grammar accuracy/complexity, coherence, naturalness
+3. Very short answers (under 10 words) cannot score above Band 4 in any criterion
+4. Be strict but fair — match real IELTS examiner standards
+
+Respond with ONLY valid JSON, no other text:
+{"fluency":0,"vocabulary":0,"grammar":0,"pronunciation":0,"overall":0,"comment":"one sentence summary"}`;
+
+        try {
+            const response = await this.callGemini(prompt, {
+                temperature: 0.3,
+                maxTokens: 200
+            });
+
+            // Parse JSON from response (handle markdown code blocks)
+            const jsonStr = response.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
+            const parsed = JSON.parse(jsonStr);
+
+            // Validate structure
+            if (typeof parsed.overall !== 'number') return null;
+
+            return {
+                fluency: Math.round(parsed.fluency * 2) / 2,
+                vocabulary: Math.round(parsed.vocabulary * 2) / 2,
+                grammar: Math.round(parsed.grammar * 2) / 2,
+                pronunciation: Math.round(parsed.pronunciation * 2) / 2,
+                overall: Math.round(parsed.overall * 2) / 2,
+                comment: parsed.comment || '',
+                source: 'gemini'
+            };
+        } catch (error) {
+            console.warn('Gemini scoring validation failed:', error.message);
+            return null;
+        }
+    }
+
+    // Blend rule-based scores with Gemini scores
+    static blendScores(ruleScores, geminiScores) {
+        if (!geminiScores) return ruleScores;
+
+        const blend = (rule, gemini) => {
+            const diff = Math.abs(rule - gemini);
+            if (diff <= 0.5) return rule; // agree — trust local
+            if (diff <= 1.0) return Math.round(((rule + gemini) / 2) * 2) / 2; // average
+            return gemini; // large diff — trust Gemini
+        };
+
+        return {
+            fluency: blend(ruleScores.fluency, geminiScores.fluency),
+            vocabulary: blend(ruleScores.vocabulary, geminiScores.vocabulary),
+            grammar: blend(ruleScores.grammar, geminiScores.grammar),
+            pronunciation: blend(ruleScores.pronunciation, geminiScores.pronunciation),
+            overall: blend(ruleScores.overall, geminiScores.overall),
+            geminiComment: geminiScores.comment,
+            scoringSource: 'ai-validated'
+        };
+    }
+
     // Clear conversation history
     clearConversation() {
         this.conversationHistory = [];

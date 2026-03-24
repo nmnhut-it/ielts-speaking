@@ -1283,7 +1283,43 @@ async function enterReview() {
         }
     }
 
-    // --- Render score ---
+    // --- Gemini AI validation (Tier 3, async) ---
+    const questionText = typeof question === 'string' ? question : question.question;
+    if (scores && window.ieltsCoachAI && window.ieltsCoachAI.hasApiKey()) {
+        // Fire and forget — update UI when response arrives
+        window.ieltsCoachAI.validateScores(combinedTranscript, 'part1', questionText, scores)
+            .then(geminiScores => {
+                if (!geminiScores) return;
+                const blended = IELTSCoachAI.blendScores(scores, geminiScores);
+                scores.fluency = blended.fluency;
+                scores.vocabulary = blended.vocabulary;
+                scores.grammar = blended.grammar;
+                scores.pronunciation = blended.pronunciation;
+                scores.overall = blended.overall;
+                scores.geminiComment = blended.geminiComment;
+                // Re-render score section with AI-validated scores
+                renderReviewScore(scores, combinedWords);
+            })
+            .catch(() => {});
+    }
+
+    // --- Render score + feedback + finalize ---
+    renderReviewScore(scores, combinedWords);
+    renderReviewFeedback(scores, combinedTranscript, question);
+    finalizeReview(scores, question, combinedWords);
+
+    // Update action button
+    const actionBtn = document.getElementById('actionBtn');
+    actionBtn.className = 'btn-action btn-next-q';
+    actionBtn.textContent = 'Next Question →';
+    interviewState = 'review';
+
+    // Scroll review into view
+    reviewPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/** Render score section in review panel (called initially and again after Gemini validation) */
+function renderReviewScore(scores, combinedWords) {
     const scoreEl = document.getElementById('reviewScore');
     if (scores) {
         const overall = parseFloat(scores.overall);
@@ -1312,11 +1348,24 @@ async function enterReview() {
             </div>`;
         });
         scoreHtml += '</div>';
+
+        // AI validation badge
+        if (scores.geminiComment) {
+            scoreHtml += `<div style="margin-top:10px;padding:8px 12px;background:#eff6ff;border-radius:8px;font-size:0.8rem;color:#1e40af;">
+                <strong>AI Examiner:</strong> ${escapeHtml(scores.geminiComment)}
+            </div>`;
+        } else if (window.ieltsCoachAI && window.ieltsCoachAI.hasApiKey()) {
+            scoreHtml += `<div style="margin-top:8px;font-size:0.7rem;color:var(--color-text-muted);">AI validation in progress...</div>`;
+        }
+
         scoreEl.innerHTML = scoreHtml;
     } else {
         scoreEl.innerHTML = '<div style="color:var(--color-text-muted);font-size:0.875rem;">No score available</div>';
     }
+}
 
+/** Render feedback section in review panel */
+function renderReviewFeedback(scores, combinedTranscript, question) {
     // --- Render feedback ---
     const feedbackEl = document.getElementById('reviewFeedback');
     let fbHtml = '';
@@ -1382,7 +1431,10 @@ async function enterReview() {
     }
 
     feedbackEl.innerHTML = fbHtml;
+}
 
+/** Enter review continued: audio, history, navigation */
+function finalizeReview(scores, question, combinedWords) {
     // Show audio previews for both recordings
     if (mainRecording) {
         const el = document.getElementById('mainAudioPreview');
@@ -1411,15 +1463,6 @@ async function enterReview() {
     const questionId = getQuestionId(question, currentIndex);
     completed.add(questionId);
     saveProgress();
-
-    // Update action button
-    const actionBtn = document.getElementById('actionBtn');
-    actionBtn.className = 'btn-action btn-next-q';
-    actionBtn.textContent = 'Next Question →';
-    interviewState = 'review';
-
-    // Scroll review into view
-    reviewPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /** Escape HTML for safe rendering */
