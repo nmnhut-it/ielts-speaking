@@ -2223,6 +2223,7 @@ async function sendAudioToTelegram() {
             ? question.category
             : getCategoryFromIndex(currentIndex);
         const hasFollowUp = typeof question === 'object' && question.followUp;
+        const sampleText = typeof question === 'object' ? question.sampleAnswer : null;
 
         const session = studentSession.getSession();
         const studentName = session ? session.name : 'Unknown Student';
@@ -2235,45 +2236,114 @@ async function sendAudioToTelegram() {
         const fuWords = followUpText ? followUpText.trim().split(/\s+/).length : 0;
         const totalWords = mainWords + fuWords;
 
+        // Score
+        let scores = null;
         let scoreText = 'Not scored';
         if (combinedTranscript && window.calculateBandScores) {
-            const scores = calculateBandScores(combinedTranscript, interviewSeconds);
+            scores = calculateBandScores(combinedTranscript, interviewSeconds, 'part1');
             scoreText = scores.overall + ' (F:' + scores.fluency +
                 ' V:' + scores.vocabulary + ' G:' + scores.grammar +
                 ' P:' + scores.pronunciation + ')';
         }
 
-        let caption = '<b>📚 IELTS Part 1 Recording</b>\n\n' +
+        // --- Message 1: Question + Answers + Score (short, fits in audio caption) ---
+        let msg1 = '<b>📚 IELTS Part 1 — Q' + (currentIndex + 1) + '</b>\n' +
             '<b>Student:</b> ' + studentName + '\n' +
-            '<b>Question #' + (currentIndex + 1) + ':</b> ' + questionText + '\n' +
             '<b>Category:</b> ' + category + '\n\n' +
-            '<b>📝 Answer:</b>\n' +
-            (mainText || 'No transcription available') +
-            ' (' + mainWords + ' words)\n';
+            '<b>Q:</b> ' + questionText + '\n\n' +
+            '<b>📝 Answer</b> (' + mainWords + ' words):\n' +
+            (mainText || 'No transcription') + '\n';
 
         if (hasFollowUp && followUpText) {
-            caption += '\n<b>🔄 Follow-up:</b> ' + question.followUp + '\n' +
-                '<b>📝 Answer:</b>\n' + followUpText +
-                ' (' + fuWords + ' words)\n';
+            msg1 += '\n<b>🔄 Follow-up:</b> ' + question.followUp + '\n' +
+                '<b>📝 Answer</b> (' + fuWords + ' words):\n' +
+                followUpText + '\n';
         }
 
-        caption += '\n<b>📊 Band Score:</b> ' + scoreText + '\n' +
-            '<b>Total Words:</b> ' + totalWords;
+        msg1 += '\n<b>📊 Band ' + (scores ? scores.overall : '—') + '</b>' +
+            (scores ? '  F:' + scores.fluency + ' V:' + scores.vocabulary +
+                ' G:' + scores.grammar + ' P:' + scores.pronunciation : '') +
+            '\n<b>Total:</b> ' + totalWords + ' words';
 
-        if (recording) {
-            // Send audio with caption
-            if (session?.photoDataUrl) {
-                const photoBlob = dataURLtoBlob(session.photoDataUrl);
-                await telegramSender.sendPhoto(
-                    photoBlob,
-                    caption,
-                    `${studentName}_q${currentIndex + 1}.jpg`
-                );
+        // --- Message 2: Detailed feedback ---
+        let msg2 = '';
+        if (scores) {
+            msg2 = '<b>📋 Feedback — Q' + (currentIndex + 1) + ' (' + studentName + ')</b>\n\n';
+
+            if (scores.details) {
+                if (scores.details.strengths.length) {
+                    msg2 += '<b>✅ Strengths:</b>\n';
+                    scores.details.strengths.forEach(s => msg2 += '• ' + s + '\n');
+                    msg2 += '\n';
+                }
+                if (scores.details.weaknesses.length) {
+                    msg2 += '<b>⚠️ Areas to Improve:</b>\n';
+                    scores.details.weaknesses.forEach(w => msg2 += '• ' + w + '\n');
+                    msg2 += '\n';
+                }
+                if (scores.details.tips.length) {
+                    msg2 += '<b>💡 Tips:</b>\n';
+                    scores.details.tips.forEach(t => msg2 += '• ' + t + '\n');
+                    msg2 += '\n';
+                }
             }
 
+            // Pronunciation mismatches
+            if (sampleText && window.detectPronunciationMismatches) {
+                const pronMismatches = detectPronunciationMismatches(combinedTranscript, sampleText);
+                if (pronMismatches.length > 0) {
+                    msg2 += '<b>🔊 Pronunciation Errors:</b>\n';
+                    pronMismatches.forEach(m => {
+                        msg2 += '• "' + m.heard + '" → should be "' + m.expected + '"';
+                        if (m.feedback) msg2 += ' — ' + m.feedback;
+                        msg2 += '\n';
+                    });
+                    msg2 += '\n';
+                }
+            }
+
+            // Pronunciation challenges
+            if (scores.pronunciationChallenges && scores.pronunciationChallenges.length > 0) {
+                msg2 += '<b>🗣 Practice These Words:</b>\n';
+                const shown = new Set();
+                scores.pronunciationChallenges.forEach(c => {
+                    if (!shown.has(c.category)) {
+                        shown.add(c.category);
+                        msg2 += '• <b>' + c.word + '</b> — ' + c.tip + '\n';
+                    }
+                });
+                msg2 += '\n';
+            }
+
+            // Sample answer
+            if (sampleText) {
+                msg2 += '<b>📖 Sample Answer:</b>\n' +
+                    '<i>' + sampleText + '</i>';
+            }
+        }
+
+        // --- Send messages ---
+        // Telegram caption limit: 1024 chars. Text message limit: 4096 chars.
+        // Strategy: audio with short caption (msg1 truncated), then full text messages.
+
+        if (session?.photoDataUrl) {
+            const photoBlob = dataURLtoBlob(session.photoDataUrl);
+            const photoCaption = '<b>📚 IELTS Part 1 — Q' + (currentIndex + 1) + '</b>\n' +
+                '<b>Student:</b> ' + studentName;
+            await telegramSender.sendPhoto(
+                photoBlob,
+                photoCaption,
+                `${studentName}_q${currentIndex + 1}.jpg`
+            );
+        }
+
+        if (recording) {
+            // Audio caption: truncate to 1024 if needed
+            const audioCaption = msg1.length <= 1024 ? msg1 :
+                msg1.substring(0, 1020) + '...';
             await telegramSender.sendAudio(
                 recording.blob,
-                caption,
+                audioCaption,
                 `${studentName}_q${currentIndex + 1}.ogg`
             );
 
@@ -2281,13 +2351,30 @@ async function sendAudioToTelegram() {
             if (followUpText && currentRecording && mainRecording && currentRecording !== mainRecording) {
                 await telegramSender.sendAudio(
                     currentRecording.blob,
-                    '<b>🔄 Follow-up recording for Q' + (currentIndex + 1) + '</b>',
+                    '<b>🔄 Follow-up recording — Q' + (currentIndex + 1) + '</b>',
                     `${studentName}_q${currentIndex + 1}_followup.ogg`
                 );
             }
+
+            // If msg1 was truncated, send full version as text
+            if (msg1.length > 1024) {
+                await telegramSender.sendTextMessage(msg1);
+            }
         } else {
-            // No recording — send transcript as text message
-            await telegramSender.sendTextMessage(caption);
+            // No recording — send transcript as text
+            await telegramSender.sendTextMessage(msg1);
+        }
+
+        // Send detailed feedback as second message (if it has content)
+        if (msg2.length > 0) {
+            // Split if over 4096 chars
+            if (msg2.length <= 4096) {
+                await telegramSender.sendTextMessage(msg2);
+            } else {
+                const mid = msg2.lastIndexOf('\n', 4000);
+                await telegramSender.sendTextMessage(msg2.substring(0, mid));
+                await telegramSender.sendTextMessage(msg2.substring(mid + 1));
+            }
         }
 
         alert('Sent to nmnhut-it successfully!');
