@@ -401,6 +401,8 @@ function resetInterviewUI() {
     document.getElementById('transcriptZone').style.display = 'none';
     document.getElementById('followupZone').style.display = 'none';
     document.getElementById('audioPreview').style.display = 'none';
+    document.getElementById('mainAudioPreview').style.display = 'none';
+    document.getElementById('followupAudioPreview').style.display = 'none';
     document.getElementById('mainAnswerSummary').style.display = 'none';
     document.getElementById('reviewPanel').style.display = 'none';
     document.getElementById('reviewAnswers').innerHTML = '';
@@ -1381,10 +1383,16 @@ async function enterReview() {
 
     feedbackEl.innerHTML = fbHtml;
 
-    // Show audio preview if we have a recording (prefer main answer)
-    if (mainRecording || currentRecording) {
-        const blob = mainRecording?.blob || currentRecording?.blob;
-        if (blob) displayAudioPreview(blob);
+    // Show audio previews for both recordings
+    if (mainRecording) {
+        const el = document.getElementById('mainAudioPreview');
+        document.getElementById('mainAudioPlayer').src = URL.createObjectURL(mainRecording.blob);
+        el.style.display = 'block';
+    }
+    if (currentRecording && currentRecording !== mainRecording) {
+        const el = document.getElementById('followupAudioPreview');
+        document.getElementById('followupAudioPlayer').src = URL.createObjectURL(currentRecording.blob);
+        el.style.display = 'block';
     }
 
     // Save to score history
@@ -2338,32 +2346,25 @@ async function sendAudioToTelegram() {
             );
         }
 
-        if (recording) {
-            // Audio caption: truncate to 1024 if needed
-            const audioCaption = msg1.length <= 1024 ? msg1 :
-                msg1.substring(0, 1020) + '...';
+        // Always send the transcript as text first
+        await telegramSender.sendTextMessage(msg1);
+
+        // Send main answer recording if available
+        if (mainRecording) {
             await telegramSender.sendAudio(
-                recording.blob,
-                audioCaption,
+                mainRecording.blob,
+                '<b>🎤 Main answer — Q' + (currentIndex + 1) + '</b>',
                 `${studentName}_q${currentIndex + 1}.ogg`
             );
+        }
 
-            // Send follow-up recording separately if we have both recordings
-            if (followUpText && currentRecording && mainRecording) {
-                await telegramSender.sendAudio(
-                    currentRecording.blob,
-                    '<b>🔄 Follow-up answer — Q' + (currentIndex + 1) + '</b>\n' + followUpText,
-                    `${studentName}_q${currentIndex + 1}_followup.ogg`
-                );
-            }
-
-            // If msg1 was truncated, send full version as text
-            if (msg1.length > 1024) {
-                await telegramSender.sendTextMessage(msg1);
-            }
-        } else {
-            // No recording — send transcript as text
-            await telegramSender.sendTextMessage(msg1);
+        // Send follow-up recording if available
+        if (currentRecording && currentRecording !== mainRecording) {
+            await telegramSender.sendAudio(
+                currentRecording.blob,
+                '<b>🔄 Follow-up answer — Q' + (currentIndex + 1) + '</b>',
+                `${studentName}_q${currentIndex + 1}_followup.ogg`
+            );
         }
 
         // Send detailed feedback as second message (if it has content)

@@ -197,13 +197,19 @@
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                     Send to nmnhut-it
                 </button>
-                <!-- Audio controls (shown if recording exists) -->
-                <div class="audio-preview review-audio" id="audioPreview" style="display:none">
-                    <audio controls id="audioPlayer"></audio>
-                    <div class="audio-actions">
-                        <button class="btn-download-audio" id="downloadAudioBtn" onclick="downloadRecording()">Download</button>
-                        <button class="btn-delete-audio" onclick="deleteRecording()">Delete</button>
-                    </div>
+                <!-- Audio: main answer -->
+                <div class="review-audio" id="mainAudioPreview" style="display:none">
+                    <div class="audio-label">Main answer recording</div>
+                    <audio controls id="mainAudioPlayer"></audio>
+                </div>
+                <!-- Audio: follow-up answer -->
+                <div class="review-audio" id="followupAudioPreview" style="display:none">
+                    <div class="audio-label">Follow-up recording</div>
+                    <audio controls id="followupAudioPlayer"></audio>
+                </div>
+                <!-- Legacy element kept for JS compat -->
+                <div id="audioPreview" style="display:none">
+                    <audio id="audioPlayer"></audio>
                 </div>
             </div>
 
