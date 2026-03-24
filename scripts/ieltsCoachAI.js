@@ -4,7 +4,7 @@
 class IELTSCoachAI {
     constructor() {
         this.apiKey = null;
-        this.apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+        this.apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
         this.conversationHistory = [];
         this.currentLessonContext = null;
         this.studentProfile = {
