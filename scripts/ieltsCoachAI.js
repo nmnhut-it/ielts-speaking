@@ -506,7 +506,7 @@ Respond with ONLY valid JSON, no other text:
         try {
             const response = await this.callGemini(prompt, {
                 temperature: 0.3,
-                maxTokens: 300,
+                maxTokens: 1024,
                 json: true,
                 extraParts: [{
                     inline_data: { mime_type: mimeType, data: base64Audio }
@@ -566,7 +566,7 @@ Respond with ONLY valid JSON, no other text:
 
             const response = await this.callGemini(prompt, {
                 temperature: 0.3,
-                maxTokens: hasAudio ? 400 : 200,
+                maxTokens: hasAudio ? 2048 : 1024,
                 json: true,
                 extraParts: extraParts.length > 0 ? extraParts : undefined
             });
