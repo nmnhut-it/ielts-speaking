@@ -1,10 +1,13 @@
 // IELTS Coach AI - Gemini-powered personalized practice and feedback
 // Provides adaptive feedback based on what the teacher taught in lessons
 
+const GEMINI_MODEL = 'gemini-2.5-flash';
+const GENAI_CDN = 'https://cdn.jsdelivr.net/npm/@google/genai@latest/+esm';
+
 class IELTSCoachAI {
     constructor() {
         this.apiKey = null;
-        this.apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+        this.genai = null; // GoogleGenAI instance (lazy loaded)
         this.conversationHistory = [];
         this.currentLessonContext = null;
         this.studentProfile = {
@@ -56,51 +59,55 @@ class IELTSCoachAI {
         });
     }
 
-    // Make API call to Gemini (gracefully degrades without API key)
-    // options.extraParts: additional parts (e.g. inline_data) to include in the request
+    // Lazy-load GoogleGenAI SDK from CDN
+    async getGenAI() {
+        if (this.genai) return this.genai;
+        if (!this.hasApiKey()) throw new Error('No Gemini API key configured');
+        const { GoogleGenAI } = await import(GENAI_CDN);
+        this.genai = new GoogleGenAI({ apiKey: this.apiKey });
+        return this.genai;
+    }
+
+    // Make API call to Gemini via SDK
+    // options: temperature, maxTokens, json (boolean), extraParts (inline_data array)
     async callGemini(prompt, options = {}) {
-        if (!this.hasApiKey()) {
-            throw new Error('AI feedback requires a local ONNX model. Please use the offline scoring feature instead.');
-        }
+        const ai = await this.getGenAI();
 
-        const parts = [{ text: prompt }];
+        // Build contents array: text + optional inline data (audio, images)
+        const contents = [];
         if (options.extraParts && Array.isArray(options.extraParts)) {
-            parts.push(...options.extraParts);
+            options.extraParts.forEach(part => {
+                if (part.inline_data) {
+                    contents.push({
+                        inlineData: {
+                            data: part.inline_data.data,
+                            mimeType: part.inline_data.mime_type
+                        }
+                    });
+                }
+            });
         }
+        contents.push(prompt);
 
-        const requestBody = {
-            contents: [{
-                parts
-            }],
-            generationConfig: {
-                temperature: options.temperature || 0.7,
-                maxOutputTokens: options.maxTokens || 1000,
-                topP: options.topP || 0.95,
-                topK: options.topK || 40
-            }
+        const config = {
+            temperature: options.temperature || 0.7,
+            maxOutputTokens: options.maxTokens || 1000,
         };
 
+        // Use JSON response mode when requested
+        if (options.json) {
+            config.responseMimeType = 'application/json';
+        }
+
         try {
-            const response = await fetch(`${this.apiUrl}?key=${this.apiKey}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestBody)
+            const response = await ai.models.generateContent({
+                model: GEMINI_MODEL,
+                contents,
+                config
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error?.message || 'API request failed');
-            }
-
-            const data = await response.json();
-            const text = data.candidates[0]?.content?.parts[0]?.text;
-
-            if (!text) {
-                throw new Error('No response generated');
-            }
-
+            const text = response.text;
+            if (!text) throw new Error('No response generated');
             return text;
 
         } catch (error) {
@@ -500,13 +507,13 @@ Respond with ONLY valid JSON, no other text:
             const response = await this.callGemini(prompt, {
                 temperature: 0.3,
                 maxTokens: 300,
+                json: true,
                 extraParts: [{
                     inline_data: { mime_type: mimeType, data: base64Audio }
                 }]
             });
 
-            const jsonStr = response.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
-            return JSON.parse(jsonStr);
+            return JSON.parse(response);
         } catch (error) {
             console.warn('Audio pronunciation assessment failed:', error.message);
             return null;
@@ -560,12 +567,11 @@ Respond with ONLY valid JSON, no other text:
             const response = await this.callGemini(prompt, {
                 temperature: 0.3,
                 maxTokens: hasAudio ? 400 : 200,
+                json: true,
                 extraParts: extraParts.length > 0 ? extraParts : undefined
             });
 
-            // Parse JSON from response (handle markdown code blocks)
-            const jsonStr = response.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
-            const parsed = JSON.parse(jsonStr);
+            const parsed = JSON.parse(response);
 
             // Validate structure
             if (typeof parsed.overall !== 'number') return null;
