@@ -107,7 +107,47 @@ class IELTSCoachAI {
 
         } catch (error) {
             console.error('Gemini API error:', error);
+            // Detect quota exceeded (429)
+            const is429 = error?.message?.includes('429') ||
+                error?.message?.toLowerCase().includes('quota') ||
+                error?.message?.toLowerCase().includes('rate limit') ||
+                error?.status === 429;
+            if (is429) {
+                this.handleQuotaExceeded();
+            }
             throw error;
+        }
+    }
+
+    // Show UI warning and notify Telegram when Gemini quota is exceeded
+    handleQuotaExceeded() {
+        // Only fire once per session
+        if (this._quotaWarned) return;
+        this._quotaWarned = true;
+
+        // UI banner
+        let banner = document.getElementById('quotaBanner');
+        if (!banner) {
+            banner = document.createElement('div');
+            banner.id = 'quotaBanner';
+            banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#dc2626;color:white;padding:10px 16px;font-size:0.875rem;font-weight:600;text-align:center;';
+            banner.textContent = 'Gemini AI quota exceeded — feedback will use offline scoring until quota resets (midnight PT)';
+            document.body.prepend(banner);
+            // Auto-dismiss after 15s
+            setTimeout(() => banner.remove(), 15000);
+        }
+
+        // Telegram notification
+        if (typeof telegramSender !== 'undefined' && telegramSender) {
+            const session = typeof studentSession !== 'undefined' && studentSession
+                ? studentSession.getSession() : null;
+            const name = session ? session.name : 'Unknown';
+            telegramSender.sendTextMessage(
+                '<b>⚠️ Gemini Quota Exceeded</b>\n\n' +
+                '<b>Student:</b> ' + name + '\n' +
+                '<b>Time:</b> ' + new Date().toLocaleString() + '\n' +
+                'AI feedback will fall back to offline scoring until quota resets at midnight PT.'
+            ).catch(() => {});
         }
     }
 
