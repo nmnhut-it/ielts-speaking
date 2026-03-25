@@ -1286,8 +1286,12 @@ async function enterReview() {
     // --- Gemini AI validation (Tier 3, async) ---
     const questionText = typeof question === 'string' ? question : question.question;
     if (scores && window.ieltsCoachAI && window.ieltsCoachAI.hasApiKey()) {
+        // Include audio blob for pronunciation assessment when available
+        const audioBlob = (typeof mainRecording !== 'undefined' && mainRecording?.blob)
+            || (typeof currentRecording !== 'undefined' && currentRecording?.blob)
+            || null;
         // Fire and forget — update UI when response arrives
-        window.ieltsCoachAI.validateScores(combinedTranscript, 'part1', questionText, scores)
+        window.ieltsCoachAI.validateScores(combinedTranscript, 'part1', questionText, scores, audioBlob)
             .then(geminiScores => {
                 if (!geminiScores) return;
                 const blended = IELTSCoachAI.blendScores(scores, geminiScores);

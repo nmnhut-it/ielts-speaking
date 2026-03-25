@@ -46,15 +46,31 @@ class IELTSCoachAI {
         };
     }
 
+    // Convert a Blob to base64 string (without data URI prefix)
+    async blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    }
+
     // Make API call to Gemini (gracefully degrades without API key)
+    // options.extraParts: additional parts (e.g. inline_data) to include in the request
     async callGemini(prompt, options = {}) {
         if (!this.hasApiKey()) {
             throw new Error('AI feedback requires a local ONNX model. Please use the offline scoring feature instead.');
         }
 
+        const parts = [{ text: prompt }];
+        if (options.extraParts && Array.isArray(options.extraParts)) {
+            parts.push(...options.extraParts);
+        }
+
         const requestBody = {
             contents: [{
-                parts: [{ text: prompt }]
+                parts
             }],
             generationConfig: {
                 temperature: options.temperature || 0.7,
@@ -463,11 +479,55 @@ Be thorough but encouraging. Reference specific things they said.`;
         };
     }
 
+    // Assess pronunciation from audio using Gemini multimodal input
+    async assessPronunciationWithGemini(audioBlob, transcript, question) {
+        if (!this.hasApiKey() || !audioBlob) return null;
+
+        const base64Audio = await this.blobToBase64(audioBlob);
+        const mimeType = audioBlob.type || 'audio/webm';
+
+        const prompt = `You are an IELTS pronunciation expert. Listen to this audio recording and assess pronunciation quality.
+
+QUESTION: "${question || 'Unknown'}"
+TRANSCRIPT: "${transcript}"
+
+Assess: clarity, word stress, intonation patterns, and specific mispronunciations.
+
+Respond with ONLY valid JSON, no other text:
+{"band":0,"errors":["word1: issue","word2: issue"],"comment":"one sentence summary"}`;
+
+        try {
+            const response = await this.callGemini(prompt, {
+                temperature: 0.3,
+                maxTokens: 300,
+                extraParts: [{
+                    inline_data: { mime_type: mimeType, data: base64Audio }
+                }]
+            });
+
+            const jsonStr = response.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
+            return JSON.parse(jsonStr);
+        } catch (error) {
+            console.warn('Audio pronunciation assessment failed:', error.message);
+            return null;
+        }
+    }
+
     // Validate band scores using Gemini as IELTS examiner (Tier 3 scoring)
-    async validateScores(transcript, partType, question, ruleScores) {
+    // audioBlob: optional audio recording for pronunciation assessment
+    async validateScores(transcript, partType, question, ruleScores, audioBlob = null) {
         if (!this.hasApiKey()) return null;
 
         const partLabel = { part1: 'Part 1 (Interview)', part2: 'Part 2 (Long Turn)', part3: 'Part 3 (Discussion)' }[partType] || 'Part 1';
+        const hasAudio = audioBlob && audioBlob.size > 0;
+
+        const audioPronunciationInstructions = hasAudio
+            ? `\n5. AUDIO PROVIDED: Listen to the audio recording and assess pronunciation directly — evaluate clarity, word stress, intonation, and identify specific mispronunciations`
+            : '';
+
+        const audioJsonFields = hasAudio
+            ? ',"pronunciationErrors":["word: issue"],"pronunciationComment":"brief audio-based pronunciation note"'
+            : '';
 
         const prompt = `You are an experienced IELTS examiner. Score this Speaking ${partLabel} response using official IELTS band descriptors.
 
@@ -482,15 +542,25 @@ INSTRUCTIONS:
 1. Score each criterion independently using official IELTS band descriptors (0-9, half bands allowed)
 2. Consider: response length, vocabulary range, grammar accuracy/complexity, coherence, naturalness
 3. Very short answers (under 10 words) cannot score above Band 4 in any criterion
-4. Be strict but fair — match real IELTS examiner standards
+4. Be strict but fair — match real IELTS examiner standards${audioPronunciationInstructions}
 
 Respond with ONLY valid JSON, no other text:
-{"fluency":0,"vocabulary":0,"grammar":0,"pronunciation":0,"overall":0,"comment":"one sentence summary"}`;
+{"fluency":0,"vocabulary":0,"grammar":0,"pronunciation":0,"overall":0,"comment":"one sentence summary"${audioJsonFields}}`;
 
         try {
+            const extraParts = [];
+            if (hasAudio) {
+                const base64Audio = await this.blobToBase64(audioBlob);
+                const mimeType = audioBlob.type || 'audio/webm';
+                extraParts.push({
+                    inline_data: { mime_type: mimeType, data: base64Audio }
+                });
+            }
+
             const response = await this.callGemini(prompt, {
                 temperature: 0.3,
-                maxTokens: 200
+                maxTokens: hasAudio ? 400 : 200,
+                extraParts: extraParts.length > 0 ? extraParts : undefined
             });
 
             // Parse JSON from response (handle markdown code blocks)
@@ -500,17 +570,31 @@ Respond with ONLY valid JSON, no other text:
             // Validate structure
             if (typeof parsed.overall !== 'number') return null;
 
-            return {
+            const result = {
                 fluency: Math.round(parsed.fluency * 2) / 2,
                 vocabulary: Math.round(parsed.vocabulary * 2) / 2,
                 grammar: Math.round(parsed.grammar * 2) / 2,
                 pronunciation: Math.round(parsed.pronunciation * 2) / 2,
                 overall: Math.round(parsed.overall * 2) / 2,
                 comment: parsed.comment || '',
-                source: 'gemini'
+                source: hasAudio ? 'gemini-audio' : 'gemini'
             };
+
+            if (parsed.pronunciationErrors) {
+                result.pronunciationErrors = parsed.pronunciationErrors;
+            }
+            if (parsed.pronunciationComment) {
+                result.pronunciationComment = parsed.pronunciationComment;
+            }
+
+            return result;
         } catch (error) {
             console.warn('Gemini scoring validation failed:', error.message);
+            // Fall back to text-only if audio caused the failure
+            if (hasAudio) {
+                console.warn('Retrying without audio...');
+                return this.validateScores(transcript, partType, question, ruleScores, null);
+            }
             return null;
         }
     }
