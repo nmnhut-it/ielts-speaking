@@ -1051,8 +1051,7 @@ async function startSpeaking() {
         followUpAnswered = true;
     }
 
-    // Timer zone is always visible; just ensure transcript shows
-    document.getElementById('transcriptZone').style.display = 'block';
+    // Keep transcript zone hidden — STT runs in background, shown in review
     document.getElementById('liveTranscriptText').textContent = '';
 
     // Update action button to stop
@@ -1135,9 +1134,7 @@ async function stopSpeaking() {
     );
     window.liveSTT = null;
 
-    // Keep transcript zone visible after stopping
-    document.getElementById('transcriptZone').classList.remove('hidden');
-    document.getElementById('transcriptZone').style.display = 'block';
+    // Transcript stays hidden — shown in review panel instead
 
     // Stop recording
     if (audioRecorder) {
