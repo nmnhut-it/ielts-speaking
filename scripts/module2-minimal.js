@@ -1236,27 +1236,7 @@ async function enterReview() {
     const reviewPanel = document.getElementById('reviewPanel');
     reviewPanel.style.display = 'flex';
 
-    // --- Build review answers ---
-    const answersEl = document.getElementById('reviewAnswers');
-    let answersHtml = '';
-    const mainWords = mainTranscript.trim().split(/\s+/).filter(Boolean).length;
-    answersHtml += `<div class="review-answer-block main">
-        <div class="review-answer-label">Your answer</div>
-        <div class="review-answer-text">${escapeHtml(mainTranscript)}</div>
-        <div class="review-answer-meta">${mainWords} words</div>
-    </div>`;
-
-    if (hasFollowUp) {
-        const fuWords = followUpTranscript.trim().split(/\s+/).filter(Boolean).length;
-        answersHtml += `<div class="review-answer-block followup">
-            <div class="review-answer-label">Follow-up answer</div>
-            <div class="review-answer-text">${escapeHtml(followUpTranscript)}</div>
-            <div class="review-answer-meta">${fuWords} words</div>
-        </div>`;
-    }
-    answersEl.innerHTML = answersHtml;
-
-    // --- Score ---
+    // --- Score (rule-based, instant) ---
     const mainDuration = interviewSeconds;
     const combinedTranscript = hasFollowUp
         ? mainTranscript + ' ' + followUpTranscript
@@ -1266,29 +1246,20 @@ async function enterReview() {
     let scores = null;
     if (combinedTranscript.length > 0 && window.calculateBandScores) {
         scores = calculateBandScores(combinedTranscript, mainDuration, 'part1');
-
-        // Try audio pronunciation assessment
-        const audioBlob = currentRecording?.blob || mainRecording?.blob || null;
-        const sampleText = typeof question === 'object' ? question.sampleAnswer : null;
-        if (audioBlob && window.assessPronunciation) {
-            const audioPronResult = await assessPronunciation(audioBlob, combinedTranscript, sampleText).catch(() => null);
-            if (audioPronResult && audioPronResult.band) {
-                scores.pronunciation = audioPronResult.band;
-                const raw = (scores.fluency + scores.vocabulary + scores.grammar + scores.pronunciation) / 4;
-                scores.overall = Math.max(4.0, Math.min(9.0, Math.round(raw * 2) / 2));
-            }
-        }
     }
 
-    // --- Render rule-based score + feedback ---
+    // --- Render band score bar ---
     renderReviewScore(scores, combinedWords);
 
-    // --- Gemini AI examiner feedback (replaces rule feedback if available) ---
+    // --- Feedback: Gemini (primary) or rule-based (fallback) ---
     const questionText = typeof question === 'string' ? question : question.question;
     const feedbackEl = document.getElementById('reviewFeedback');
-    if (scores && window.ieltsCoachAI && window.ieltsCoachAI.hasApiKey()) {
+    const audioBlob = mainRecording?.blob || currentRecording?.blob || null;
+    const hasGemini = window.ieltsCoachAI && window.ieltsCoachAI.hasApiKey();
+
+    if (hasGemini) {
+        // Gemini handles everything: transcription from audio, scoring, feedback
         feedbackEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--color-text-muted);"><div class="gemini-loading"></div>AI Examiner is reviewing your answer...</div>';
-        const audioBlob = mainRecording?.blob || currentRecording?.blob || null;
         window.ieltsCoachAI.getExaminerFeedback(combinedTranscript, 'part1', questionText, scores, audioBlob)
             .then(markdown => {
                 if (markdown) {
