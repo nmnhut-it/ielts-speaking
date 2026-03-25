@@ -91,13 +91,8 @@ class IELTSCoachAI {
 
         const config = {
             temperature: options.temperature || 0.7,
-            maxOutputTokens: options.maxTokens || 1000,
+            maxOutputTokens: options.maxTokens || 8192,
         };
-
-        // Use JSON response mode when requested
-        if (options.json) {
-            config.responseMimeType = 'application/json';
-        }
 
         try {
             const response = await ai.models.generateContent({
@@ -486,73 +481,39 @@ Be thorough but encouraging. Reference specific things they said.`;
         };
     }
 
-    // Assess pronunciation from audio using Gemini multimodal input
-    async assessPronunciationWithGemini(audioBlob, transcript, question) {
-        if (!this.hasApiKey() || !audioBlob) return null;
-
-        const base64Audio = await this.blobToBase64(audioBlob);
-        const mimeType = audioBlob.type || 'audio/webm';
-
-        const prompt = `You are an IELTS pronunciation expert. Listen to this audio recording and assess pronunciation quality.
-
-QUESTION: "${question || 'Unknown'}"
-TRANSCRIPT: "${transcript}"
-
-Assess: clarity, word stress, intonation patterns, and specific mispronunciations.
-
-Respond with ONLY valid JSON, no other text:
-{"band":0,"errors":["word1: issue","word2: issue"],"comment":"one sentence summary"}`;
-
-        try {
-            const response = await this.callGemini(prompt, {
-                temperature: 0.3,
-                maxTokens: 1024,
-                json: true,
-                extraParts: [{
-                    inline_data: { mime_type: mimeType, data: base64Audio }
-                }]
-            });
-
-            return JSON.parse(response);
-        } catch (error) {
-            console.warn('Audio pronunciation assessment failed:', error.message);
-            return null;
-        }
-    }
-
-    // Validate band scores using Gemini as IELTS examiner (Tier 3 scoring)
-    // audioBlob: optional audio recording for pronunciation assessment
-    async validateScores(transcript, partType, question, ruleScores, audioBlob = null) {
+    // Get rich IELTS examiner feedback from Gemini (rendered directly as HTML)
+    // Returns HTML string to display, or null if unavailable
+    async getExaminerFeedback(transcript, partType, question, ruleScores, audioBlob = null) {
         if (!this.hasApiKey()) return null;
 
         const partLabel = { part1: 'Part 1 (Interview)', part2: 'Part 2 (Long Turn)', part3: 'Part 3 (Discussion)' }[partType] || 'Part 1';
         const hasAudio = audioBlob && audioBlob.size > 0;
 
-        const audioPronunciationInstructions = hasAudio
-            ? `\n5. AUDIO PROVIDED: Listen to the audio recording and assess pronunciation directly — evaluate clarity, word stress, intonation, and identify specific mispronunciations`
-            : '';
-
-        const audioJsonFields = hasAudio
-            ? ',"pronunciationErrors":["word: issue"],"pronunciationComment":"brief audio-based pronunciation note"'
-            : '';
-
-        const prompt = `You are an experienced IELTS examiner. Score this Speaking ${partLabel} response using official IELTS band descriptors.
+        let prompt = `You are an experienced IELTS examiner giving feedback on a Speaking ${partLabel} response.
 
 QUESTION: "${question || 'Unknown'}"
 
 STUDENT'S RESPONSE:
 "${transcript}"
 
-Our automated system scored: Fluency ${ruleScores.fluency}, Vocabulary ${ruleScores.vocabulary}, Grammar ${ruleScores.grammar}, Pronunciation ${ruleScores.pronunciation}, Overall ${ruleScores.overall}
+Our automated scoring: Band ${ruleScores.overall} (F:${ruleScores.fluency} V:${ruleScores.vocabulary} G:${ruleScores.grammar} P:${ruleScores.pronunciation})
+`;
 
-INSTRUCTIONS:
-1. Score each criterion independently using official IELTS band descriptors (0-9, half bands allowed)
-2. Consider: response length, vocabulary range, grammar accuracy/complexity, coherence, naturalness
-3. Very short answers (under 10 words) cannot score above Band 4 in any criterion
-4. Be strict but fair — match real IELTS examiner standards${audioPronunciationInstructions}
+        if (hasAudio) {
+            prompt += `\nAUDIO RECORDING: I've attached the student's audio. Please assess pronunciation from the actual recording — evaluate clarity, word stress, intonation, and identify specific mispronunciations.\n`;
+        }
 
-Respond with ONLY valid JSON, no other text:
-{"fluency":0,"vocabulary":0,"grammar":0,"pronunciation":0,"overall":0,"comment":"one sentence summary"${audioJsonFields}}`;
+        prompt += `
+Give detailed, actionable IELTS examiner feedback. Include:
+
+1. **Your Band Score** — give your overall band and per-criterion scores (Fluency, Vocabulary, Grammar, Pronunciation). Explain briefly why.
+2. **Strengths** — what the student did well (be specific, quote their words)
+3. **Areas to Improve** — specific issues with examples from their answer
+4. **Pronunciation Feedback** — ${hasAudio ? 'based on the audio: specific words mispronounced, stress/intonation issues' : 'based on the text: likely pronunciation challenges'}
+5. **Corrected Version** — rewrite their answer at Band 7-8 level, keeping their ideas
+6. **One Key Tip** — the single most impactful thing to practice
+
+Use markdown formatting. Be encouraging but honest. Keep it concise.`;
 
         try {
             const extraParts = [];
@@ -565,66 +526,20 @@ Respond with ONLY valid JSON, no other text:
             }
 
             const response = await this.callGemini(prompt, {
-                temperature: 0.3,
-                maxTokens: hasAudio ? 2048 : 1024,
-                json: true,
+                temperature: 0.4,
+                maxTokens: 4096,
                 extraParts: extraParts.length > 0 ? extraParts : undefined
             });
 
-            const parsed = JSON.parse(response);
-
-            // Validate structure
-            if (typeof parsed.overall !== 'number') return null;
-
-            const result = {
-                fluency: Math.round(parsed.fluency * 2) / 2,
-                vocabulary: Math.round(parsed.vocabulary * 2) / 2,
-                grammar: Math.round(parsed.grammar * 2) / 2,
-                pronunciation: Math.round(parsed.pronunciation * 2) / 2,
-                overall: Math.round(parsed.overall * 2) / 2,
-                comment: parsed.comment || '',
-                source: hasAudio ? 'gemini-audio' : 'gemini'
-            };
-
-            if (parsed.pronunciationErrors) {
-                result.pronunciationErrors = parsed.pronunciationErrors;
-            }
-            if (parsed.pronunciationComment) {
-                result.pronunciationComment = parsed.pronunciationComment;
-            }
-
-            return result;
+            return response;
         } catch (error) {
-            console.warn('Gemini scoring validation failed:', error.message);
-            // Fall back to text-only if audio caused the failure
+            console.warn('Gemini examiner feedback failed:', error.message);
             if (hasAudio) {
-                console.warn('Retrying without audio...');
-                return this.validateScores(transcript, partType, question, ruleScores, null);
+                // Retry without audio
+                return this.getExaminerFeedback(transcript, partType, question, ruleScores, null);
             }
             return null;
         }
-    }
-
-    // Blend rule-based scores with Gemini scores
-    static blendScores(ruleScores, geminiScores) {
-        if (!geminiScores) return ruleScores;
-
-        const blend = (rule, gemini) => {
-            const diff = Math.abs(rule - gemini);
-            if (diff <= 0.5) return rule; // agree — trust local
-            if (diff <= 1.0) return Math.round(((rule + gemini) / 2) * 2) / 2; // average
-            return gemini; // large diff — trust Gemini
-        };
-
-        return {
-            fluency: blend(ruleScores.fluency, geminiScores.fluency),
-            vocabulary: blend(ruleScores.vocabulary, geminiScores.vocabulary),
-            grammar: blend(ruleScores.grammar, geminiScores.grammar),
-            pronunciation: blend(ruleScores.pronunciation, geminiScores.pronunciation),
-            overall: blend(ruleScores.overall, geminiScores.overall),
-            geminiComment: geminiScores.comment,
-            scoringSource: 'ai-validated'
-        };
     }
 
     // Clear conversation history

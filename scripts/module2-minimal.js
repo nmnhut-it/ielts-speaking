@@ -1283,33 +1283,29 @@ async function enterReview() {
         }
     }
 
-    // --- Gemini AI validation (Tier 3, async) ---
-    const questionText = typeof question === 'string' ? question : question.question;
-    if (scores && window.ieltsCoachAI && window.ieltsCoachAI.hasApiKey()) {
-        // Include audio blob for pronunciation assessment when available
-        const audioBlob = (typeof mainRecording !== 'undefined' && mainRecording?.blob)
-            || (typeof currentRecording !== 'undefined' && currentRecording?.blob)
-            || null;
-        // Fire and forget — update UI when response arrives
-        window.ieltsCoachAI.validateScores(combinedTranscript, 'part1', questionText, scores, audioBlob)
-            .then(geminiScores => {
-                if (!geminiScores) return;
-                const blended = IELTSCoachAI.blendScores(scores, geminiScores);
-                scores.fluency = blended.fluency;
-                scores.vocabulary = blended.vocabulary;
-                scores.grammar = blended.grammar;
-                scores.pronunciation = blended.pronunciation;
-                scores.overall = blended.overall;
-                scores.geminiComment = blended.geminiComment;
-                // Re-render score section with AI-validated scores
-                renderReviewScore(scores, combinedWords);
-            })
-            .catch(() => {});
-    }
-
-    // --- Render score + feedback + finalize ---
+    // --- Render rule-based score + feedback ---
     renderReviewScore(scores, combinedWords);
-    renderReviewFeedback(scores, combinedTranscript, question);
+
+    // --- Gemini AI examiner feedback (replaces rule feedback if available) ---
+    const questionText = typeof question === 'string' ? question : question.question;
+    const feedbackEl = document.getElementById('reviewFeedback');
+    if (scores && window.ieltsCoachAI && window.ieltsCoachAI.hasApiKey()) {
+        feedbackEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--color-text-muted);"><div class="gemini-loading"></div>AI Examiner is reviewing your answer...</div>';
+        const audioBlob = mainRecording?.blob || currentRecording?.blob || null;
+        window.ieltsCoachAI.getExaminerFeedback(combinedTranscript, 'part1', questionText, scores, audioBlob)
+            .then(markdown => {
+                if (markdown) {
+                    feedbackEl.innerHTML = '<div class="gemini-feedback">' + markdownToHtml(markdown) + '</div>';
+                } else {
+                    renderReviewFeedback(scores, combinedTranscript, question);
+                }
+            })
+            .catch(() => {
+                renderReviewFeedback(scores, combinedTranscript, question);
+            });
+    } else {
+        renderReviewFeedback(scores, combinedTranscript, question);
+    }
     finalizeReview(scores, question, combinedWords);
 
     // Update action button
@@ -1353,14 +1349,6 @@ function renderReviewScore(scores, combinedWords) {
         });
         scoreHtml += '</div>';
 
-        // AI validation badge
-        if (scores.geminiComment) {
-            scoreHtml += `<div style="margin-top:10px;padding:8px 12px;background:#eff6ff;border-radius:8px;font-size:0.8rem;color:#1e40af;">
-                <strong>AI Examiner:</strong> ${escapeHtml(scores.geminiComment)}
-            </div>`;
-        } else if (window.ieltsCoachAI && window.ieltsCoachAI.hasApiKey()) {
-            scoreHtml += `<div style="margin-top:8px;font-size:0.7rem;color:var(--color-text-muted);">AI validation in progress...</div>`;
-        }
 
         scoreEl.innerHTML = scoreHtml;
     } else {
@@ -1474,6 +1462,27 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+/** Simple markdown to HTML converter */
+function markdownToHtml(md) {
+    return md
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/^### (.+)$/gm, '<h4>$1</h4>')
+        .replace(/^## (.+)$/gm, '<h3>$1</h3>')
+        .replace(/^# (.+)$/gm, '<h2>$1</h2>')
+        .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
+        .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+        .replace(/<\/ul>\s*<ul>/g, '')
+        .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+        .replace(/\n{2,}/g, '</p><p>')
+        .replace(/\n/g, '<br>')
+        .replace(/^/, '<p>').replace(/$/, '</p>')
+        .replace(/<p><h/g, '<h').replace(/<\/h(\d)><\/p>/g, '</h$1>')
+        .replace(/<p><ul>/g, '<ul>').replace(/<\/ul><\/p>/g, '</ul>');
 }
 
 /** Force stop speaking without scoring (used on question change) */
