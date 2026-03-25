@@ -1248,8 +1248,7 @@ async function enterReview() {
         scores = calculateBandScores(combinedTranscript, mainDuration, 'part1');
     }
 
-    // --- Render band score bar ---
-    renderReviewScore(scores, combinedWords);
+    // Band score bar skipped — Gemini provides its own scoring
 
     // --- Feedback: Gemini (primary) or rule-based (fallback) ---
     const questionText = typeof question === 'string' ? question : question.question;
