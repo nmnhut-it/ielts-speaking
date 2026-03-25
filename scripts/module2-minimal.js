@@ -1262,7 +1262,11 @@ async function enterReview() {
         window.ieltsCoachAI.getExaminerFeedback(combinedTranscript, 'part1', questionText, scores, audioBlob)
             .then(markdown => {
                 if (markdown) {
-                    feedbackEl.innerHTML = '<div class="gemini-feedback">' + markdownToHtml(markdown) + '</div>';
+                    const feedbackHtml = '<div class="gemini-feedback">' + markdownToHtml(markdown) + '</div>';
+                    feedbackEl.innerHTML = feedbackHtml;
+                    if (window.workHistory) {
+                        window.workHistory.updateFeedback(currentIndex, feedbackHtml);
+                    }
                 } else {
                     renderReviewFeedback(scores, combinedTranscript, question);
                 }
@@ -1415,6 +1419,23 @@ function finalizeReview(scores, question, combinedWords) {
             scores: scores,
             wordCount: combinedWords,
             duration: interviewSeconds
+        });
+    }
+
+    // Save to work history (IndexedDB)
+    if (window.workHistory) {
+        const questionText = typeof question === 'string' ? question : question.question;
+        window.workHistory.saveWork({
+            questionIndex: currentIndex,
+            questionText,
+            mainTranscript,
+            followUpTranscript,
+            mainAudioBlob: mainRecording?.blob || null,
+            followUpAudioBlob: (currentRecording && currentRecording !== mainRecording) ? currentRecording.blob : null,
+            geminiFeedback: '',
+            scores: scores,
+            timestamp: Date.now(),
+            studentName: window.studentSession?.getSession()?.name || 'Unknown'
         });
     }
 
