@@ -127,6 +127,46 @@
         footer { padding: 32px 0; border-top: 1px solid var(--border); text-align: center; }
         .footer-text { font-size: 0.78rem; color: var(--muted); line-height: 1.8; }
 
+        /* Learning Path */
+        .lp-section { margin: 0 0 40px; }
+        .lp-header { margin-bottom: 16px; }
+        .lp-header h2 { font-family: var(--font-display); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 10px; }
+        .lp-progress-bar { height: 6px; background: var(--cream); border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+        .lp-progress-fill { height: 100%; background: var(--forest); border-radius: 3px; transition: width 0.4s; }
+        .lp-progress-text { font-size: 0.78rem; color: var(--muted); font-weight: 500; }
+        .lp-steps { display: flex; flex-direction: column; gap: 4px; }
+        .lp-step {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 16px; border-radius: 8px;
+            font-size: 0.88rem; text-decoration: none; color: var(--ink);
+            transition: all 0.2s; border: 1px solid transparent;
+        }
+        .lp-step:hover { background: var(--card); border-color: var(--border); }
+        .lp-step-icon {
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; font-weight: 700; flex-shrink: 0;
+            background: var(--cream); color: var(--muted);
+        }
+        .lp-step--completed .lp-step-icon { background: var(--forest); color: white; }
+        .lp-step--current .lp-step-icon { background: var(--ocean); color: white; animation: pulse-lp 2s infinite; }
+        .lp-step--in_progress .lp-step-icon { background: var(--amber); color: white; }
+        .lp-step--locked { opacity: 0.4; pointer-events: none; }
+        .lp-step-label { flex: 1; font-weight: 500; }
+        .lp-step-badge { font-size: 0.7rem; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: #dcfce7; color: var(--forest); }
+        .lp-step-badge--progress { background: #fef3c7; color: var(--amber); }
+        @keyframes pulse-lp { 0%, 100% { box-shadow: 0 0 0 0 rgba(37,99,235,0.3); } 50% { box-shadow: 0 0 0 6px rgba(37,99,235,0); } }
+
+        /* Review badges */
+        .review-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 2px 8px; border-radius: 10px;
+            font-size: 0.7rem; font-weight: 700;
+            background: var(--accent); color: white;
+            margin-left: 6px; vertical-align: middle;
+        }
+        .review-badge:empty { display: none; }
+
         @media (max-width: 500px) {
             .practice-item { flex-wrap: wrap; }
             .practice-go { width: 100%; text-align: center; justify-content: center; }
@@ -151,12 +191,14 @@
     </section>
 
     <div class="container">
+        <div class="lp-section" id="learningPathSection"></div>
+
         <div class="practice-list">
             <h2>Practice Sections</h2>
 
             <div class="practice-item">
                 <div class="practice-info">
-                    <div class="practice-title">Part 1: Interview Practice</div>
+                    <div class="practice-title">Part 1: Interview Practice <span class="review-badge" id="reviewBadge1"></span></div>
                     <div class="practice-meta">100 questions, 7 techniques</div>
                 </div>
                 <a href="ielts-module2-minimal.html" class="practice-go go-blue">Go &rarr;</a>
@@ -164,7 +206,7 @@
 
             <div class="practice-item">
                 <div class="practice-info">
-                    <div class="practice-title">Part 2: Long Turn</div>
+                    <div class="practice-title">Part 2: Long Turn <span class="review-badge" id="reviewBadge2"></span></div>
                     <div class="practice-meta">50 cue cards, 5 strategies</div>
                 </div>
                 <a href="ielts-module3-minimal.html" class="practice-go go-green">Go &rarr;</a>
@@ -172,7 +214,7 @@
 
             <div class="practice-item">
                 <div class="practice-info">
-                    <div class="practice-title">Part 3: Discussion</div>
+                    <div class="practice-title">Part 3: Discussion <span class="review-badge" id="reviewBadge3"></span></div>
                     <div class="practice-meta">40 questions, 3 strategies</div>
                 </div>
                 <a href="ielts-part3-practice.html" class="practice-go go-blue">Go &rarr;</a>
@@ -192,6 +234,14 @@
                     <div class="practice-meta">5 strategy modules</div>
                 </div>
                 <a href="ielts-speaking-lessons.html" class="practice-go go-amber">Go &rarr;</a>
+            </div>
+
+            <div class="practice-item">
+                <div class="practice-info">
+                    <div class="practice-title">👅 Pronunciation Drills</div>
+                    <div class="practice-meta">5 categories, minimal pairs quizzes</div>
+                </div>
+                <a href="pronunciation-drills.html" class="practice-go go-amber">Go &rarr;</a>
             </div>
         </div>
 
@@ -273,8 +323,31 @@
             }
         }
 
+        function updateReviewBadges() {
+            if (!window.SpacedRepetition) return;
+            var modules = [
+                { prefix: 'module2', badgeId: 'reviewBadge1' },
+                { prefix: 'module3', badgeId: 'reviewBadge2' },
+                { prefix: 'part3', badgeId: 'reviewBadge3' }
+            ];
+            modules.forEach(function(m) {
+                var count = SpacedRepetition.getDueCount(m.prefix);
+                var badge = document.getElementById(m.badgeId);
+                if (badge) badge.textContent = count > 0 ? count + ' due' : '';
+            });
+        }
+
         init();
         updateTelegramStatus();
+    </script>
+    <script src="scripts/spacedRepetition.js"></script>
+    <script src="scripts/learningPath.js"></script>
+    <script>
+        updateReviewBadges();
+        var lpEl = document.getElementById('learningPathSection');
+        if (lpEl && window.LearningPath) {
+            lpEl.innerHTML = LearningPath.renderProgressMap();
+        }
     </script>
 </body>
 </html>

@@ -288,7 +288,7 @@ const STRATEGY_CONFIG = {
     }
 };
 
-// 50 Authentic IELTS Part 2 Cue Cards
+// 75 Authentic IELTS Part 2 Cue Cards
 const CUE_CARDS = [
     // Experience & Events (0-9)
     {
@@ -1297,6 +1297,15 @@ function loadCards() {
         allCards = shuffleArray([...allCards]);
     } else if (currentMode === 'favorites') {
         allCards = CUE_CARDS.filter((card, i) => favorites.has(getCardId(card, i)));
+    } else if (currentMode === 'review') {
+        if (window.SpacedRepetition) {
+            var dueIndices = SpacedRepetition.getDueIndices('module3');
+            allCards = dueIndices.map(i => CUE_CARDS[i]).filter(Boolean);
+        }
+        if (allCards.length === 0) {
+            allCards = [...CUE_CARDS];
+            alert('No cards due for review. Showing all cards.');
+        }
     }
 
     updateProgress();
@@ -1741,6 +1750,10 @@ function transitionToReview(transcript) {
         completed.add(cardId);
         saveProgress();
         incrementAttempt(currentIndex);
+
+        if (window.SpacedRepetition) {
+            SpacedRepetition.recordScore('module3_' + currentIndex, scores.overall);
+        }
 
         if (window.ScoreHistory) {
             ScoreHistory.save({

@@ -871,6 +871,15 @@ function loadQuestions() {
         allQuestions = DISCUSSION_QUESTIONS.filter(
             (q, i) => favorites.has(getQuestionId(q, i))
         );
+    } else if (currentMode === 'review') {
+        if (window.SpacedRepetition) {
+            var dueIndices = SpacedRepetition.getDueIndices('part3');
+            allQuestions = dueIndices.map(function(i) { return DISCUSSION_QUESTIONS[i]; }).filter(Boolean);
+        }
+        if (allQuestions.length === 0) {
+            allQuestions = [...DISCUSSION_QUESTIONS];
+            alert('No questions due for review. Showing all questions.');
+        }
     }
     updateProgress();
 }
@@ -1340,6 +1349,9 @@ function saveTranscriptAndAttempt(transcript, index) {
             transcript: transcript,
             wordCount: countWords(transcript)
         });
+        if (window.SpacedRepetition) {
+            SpacedRepetition.recordScore('part3_' + index, scores.overall);
+        }
     }
 }
 

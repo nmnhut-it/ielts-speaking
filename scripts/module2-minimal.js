@@ -1420,6 +1420,9 @@ function finalizeReview(scores, question, combinedWords) {
             wordCount: combinedWords,
             duration: interviewSeconds
         });
+        if (window.SpacedRepetition) {
+            SpacedRepetition.recordScore('module2_' + currentIndex, scores.overall);
+        }
     }
 
     // Save to work history (IndexedDB)
@@ -1664,6 +1667,9 @@ async function autoScoreTranscript(transcript) {
             wordCount: wordCount,
             duration: duration
         });
+        if (window.SpacedRepetition) {
+            SpacedRepetition.recordScore('module2_' + currentIndex, scores.overall);
+        }
     }
 }
 
