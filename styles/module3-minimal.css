@@ -836,7 +836,6 @@ body {
     z-index: 301;
     opacity: 0;
     transition: opacity 0.2s;
-    display: flex;
     flex-direction: column;
 }
 
