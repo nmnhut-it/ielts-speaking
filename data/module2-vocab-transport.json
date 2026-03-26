@@ -76,5 +76,35 @@
     "type": "(n phrase)",
     "vietnamese": "phương tiện giao thông",
     "pronunciation": "/məʊd ɒv ˈtrænspɔːt/"
+  },
+  {
+    "english": "congestion",
+    "type": "(n)",
+    "vietnamese": "sự tắc nghẽn giao thông",
+    "pronunciation": "/kənˈdʒestʃən/"
+  },
+  {
+    "english": "carbon emissions",
+    "type": "(n phrase)",
+    "vietnamese": "khí thải carbon",
+    "pronunciation": "/ˈkɑːbən ɪˈmɪʃnz/"
+  },
+  {
+    "english": "infrastructure",
+    "type": "(n)",
+    "vietnamese": "cơ sở hạ tầng",
+    "pronunciation": "/ˈɪnfrəstrʌktʃə/"
+  },
+  {
+    "english": "pedestrian-friendly",
+    "type": "(adj)",
+    "vietnamese": "thân thiện với người đi bộ",
+    "pronunciation": "/pəˈdestriən ˈfrendli/"
+  },
+  {
+    "english": "autonomous vehicle",
+    "type": "(n phrase)",
+    "vietnamese": "xe tự lái",
+    "pronunciation": "/ɔːˈtɒnəməs ˈviːɪkl/"
   }
 ]

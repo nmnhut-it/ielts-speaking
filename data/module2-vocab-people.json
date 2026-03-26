@@ -88,5 +88,35 @@
     "type": "(adj)",
     "vietnamese": "cùng chí hướng, có cùng suy nghĩ",
     "pronunciation": "/laɪk ˈmaɪndɪd/"
+  },
+  {
+    "english": "charismatic",
+    "type": "(adj)",
+    "vietnamese": "có sức cuốn hút, lôi cuốn",
+    "pronunciation": "/ˌkærɪzˈmætɪk/"
+  },
+  {
+    "english": "empathetic",
+    "type": "(adj)",
+    "vietnamese": "có sự đồng cảm",
+    "pronunciation": "/ˌempəˈθetɪk/"
+  },
+  {
+    "english": "down-to-earth",
+    "type": "(adj)",
+    "vietnamese": "thực tế, bình dị",
+    "pronunciation": "/ˌdaʊn tʊ ˈɜːθ/"
+  },
+  {
+    "english": "role model",
+    "type": "(n phrase)",
+    "vietnamese": "tấm gương, hình mẫu",
+    "pronunciation": "/rəʊl ˈmɒdl/"
+  },
+  {
+    "english": "well-rounded",
+    "type": "(adj)",
+    "vietnamese": "phát triển toàn diện",
+    "pronunciation": "/ˌwel ˈraʊndɪd/"
   }
 ]

@@ -94,5 +94,35 @@
     "type": "(adj)",
     "vietnamese": "cân bằng dinh dưỡng",
     "pronunciation": "/wel ˈbælənst/"
+  },
+  {
+    "english": "savoury",
+    "type": "(adj)",
+    "vietnamese": "mặn, có vị đậm đà",
+    "pronunciation": "/ˈseɪvəri/"
+  },
+  {
+    "english": "culinary tradition",
+    "type": "(n phrase)",
+    "vietnamese": "truyền thống ẩm thực",
+    "pronunciation": "/ˈkʌlɪnəri trəˈdɪʃn/"
+  },
+  {
+    "english": "from scratch",
+    "type": "(phrase)",
+    "vietnamese": "từ đầu, tự làm hoàn toàn",
+    "pronunciation": "/frɒm skrætʃ/"
+  },
+  {
+    "english": "portion",
+    "type": "(n)",
+    "vietnamese": "phần ăn, suất ăn",
+    "pronunciation": "/ˈpɔːʃn/"
+  },
+  {
+    "english": "acquired taste",
+    "type": "(n phrase)",
+    "vietnamese": "sở thích phải tập quen mới thích",
+    "pronunciation": "/əˈkwaɪəd teɪst/"
   }
 ]

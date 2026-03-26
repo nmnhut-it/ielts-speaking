@@ -106,5 +106,35 @@
     "type": "(adj)",
     "vietnamese": "cảm thấy hoàn thành",
     "pronunciation": "/əˈkʌmplɪʃt/"
+  },
+  {
+    "english": "hectic schedule",
+    "type": "(n phrase)",
+    "vietnamese": "lịch trình bận rộn",
+    "pronunciation": "/ˈhektɪk ˈʃedjuːl/"
+  },
+  {
+    "english": "mundane",
+    "type": "(adj)",
+    "vietnamese": "tầm thường, nhàm chán",
+    "pronunciation": "/mʌnˈdeɪn/"
+  },
+  {
+    "english": "multitask",
+    "type": "(v)",
+    "vietnamese": "làm nhiều việc cùng lúc",
+    "pronunciation": "/ˌmʌltiˈtɑːsk/"
+  },
+  {
+    "english": "wind down",
+    "type": "(v phrase)",
+    "vietnamese": "thư giãn cuối ngày",
+    "pronunciation": "/waɪnd daʊn/"
+  },
+  {
+    "english": "creature of habit",
+    "type": "(idiom)",
+    "vietnamese": "người thích theo thói quen",
+    "pronunciation": "/ˈkriːtʃər ɒv ˈhæbɪt/"
   }
 ]

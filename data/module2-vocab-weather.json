@@ -94,5 +94,35 @@
     "type": "(n phrase)",
     "vietnamese": "ánh sáng tự nhiên",
     "pronunciation": "/ˈnætʃrəl laɪt/"
+  },
+  {
+    "english": "torrential rain",
+    "type": "(n phrase)",
+    "vietnamese": "mưa xối xả",
+    "pronunciation": "/tɒˈrenʃl reɪn/"
+  },
+  {
+    "english": "heatwave",
+    "type": "(n)",
+    "vietnamese": "đợt nắng nóng",
+    "pronunciation": "/ˈhiːtweɪv/"
+  },
+  {
+    "english": "overcast",
+    "type": "(adj)",
+    "vietnamese": "u ám, nhiều mây",
+    "pronunciation": "/ˈəʊvəkɑːst/"
+  },
+  {
+    "english": "weather forecast",
+    "type": "(n phrase)",
+    "vietnamese": "dự báo thời tiết",
+    "pronunciation": "/ˈweðə ˈfɔːkɑːst/"
+  },
+  {
+    "english": "climate change",
+    "type": "(n phrase)",
+    "vietnamese": "biến đổi khí hậu",
+    "pronunciation": "/ˈklaɪmət tʃeɪndʒ/"
   }
 ]

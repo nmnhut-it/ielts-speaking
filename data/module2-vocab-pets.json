@@ -82,5 +82,35 @@
     "type": "(v phrase)",
     "vietnamese": "chăm sóc",
     "pronunciation": "/keə fɔː/"
+  },
+  {
+    "english": "domesticated",
+    "type": "(adj)",
+    "vietnamese": "đã được thuần hóa",
+    "pronunciation": "/dəˈmestɪkeɪtɪd/"
+  },
+  {
+    "english": "unconditional love",
+    "type": "(n phrase)",
+    "vietnamese": "tình yêu vô điều kiện",
+    "pronunciation": "/ˌʌnkənˈdɪʃənl lʌv/"
+  },
+  {
+    "english": "veterinarian",
+    "type": "(n)",
+    "vietnamese": "bác sĩ thú y",
+    "pronunciation": "/ˌvetərɪˈneəriən/"
+  },
+  {
+    "english": "temperament",
+    "type": "(n)",
+    "vietnamese": "tính khí, tính tình",
+    "pronunciation": "/ˈtemprəmənt/"
+  },
+  {
+    "english": "well-trained",
+    "type": "(adj)",
+    "vietnamese": "được huấn luyện tốt",
+    "pronunciation": "/ˌwel ˈtreɪnd/"
   }
 ]

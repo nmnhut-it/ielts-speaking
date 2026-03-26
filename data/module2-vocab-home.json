@@ -94,5 +94,35 @@
     "type": "(n)",
     "vietnamese": "môi trường xung quanh",
     "pronunciation": "/səˈraʊndɪŋz/"
+  },
+  {
+    "english": "cluttered",
+    "type": "(adj)",
+    "vietnamese": "bừa bộn, lộn xộn",
+    "pronunciation": "/ˈklʌtəd/"
+  },
+  {
+    "english": "minimalist",
+    "type": "(adj)",
+    "vietnamese": "tối giản",
+    "pronunciation": "/ˈmɪnɪməlɪst/"
+  },
+  {
+    "english": "renovation",
+    "type": "(n)",
+    "vietnamese": "sự tu sửa, cải tạo",
+    "pronunciation": "/ˌrenəˈveɪʃn/"
+  },
+  {
+    "english": "household chores",
+    "type": "(n phrase)",
+    "vietnamese": "việc nhà",
+    "pronunciation": "/ˈhaʊshəʊld tʃɔːz/"
+  },
+  {
+    "english": "homely",
+    "type": "(adj)",
+    "vietnamese": "ấm cúng, giản dị",
+    "pronunciation": "/ˈhəʊmli/"
   }
 ]

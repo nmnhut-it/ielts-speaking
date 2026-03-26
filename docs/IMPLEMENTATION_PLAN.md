@@ -198,13 +198,13 @@ ready → recording → scored → (follow-up or next question)
    - `loadQuestion(index)` — renders question in card (not as chat message)
    - `showScore(result)` — renders score in card's review area (not as chat bubble)
    - Keep navigation logic (next, previous, jump, favorites)
-   - Keep all data (40 questions, strategies, connectors)
+   - Keep all data (60 questions, strategies, connectors)
    - Keep recording/STT/scoring/Telegram integration
    - Follow-up flow: after scoring main question, if follow-ups exist, advance dot indicator and show next follow-up in same card
 
 ### Important: Do NOT change
 - Script tag list or load order
-- Question data (40 questions, categories, follow-ups, sample answers)
+- Question data (60 questions, categories, follow-ups, sample answers)
 - Strategy data structures
 - Scoring logic
 - Telegram integration
@@ -249,7 +249,7 @@ ready → recording → scored → (follow-up or next question)
 - renderCurrentQuestion() updates card content instead of appending chat messages
 - showScore() renders score, transcript, and sample in card sections
 - Follow-up flow: after scoring, card resets to ready with follow-up question, dot advances
-- All 40 questions, strategies, connectors, scoring, Telegram, STT preserved
+- All 60 questions, strategies, connectors, scoring, Telegram, STT preserved
 
 ### Step 7: Cross-part consistency check
 - Verify all 3 parts share: DM Sans, consistent top bar, settings panel pattern, identification modal
@@ -276,3 +276,16 @@ For each part after redesign:
 - [ ] Mobile viewport looks correct (375px width)
 - [ ] Telegram integration still sends recordings
 - [ ] Score history is saved to localStorage
+
+---
+
+## Pronunciation Drills — New Feature ✅ DONE
+
+Standalone pronunciation practice page with amber/orange theme (#d97706).
+
+### Files Created
+- `scripts/pronunciationData.js` — 5 drill categories (TH sounds, R vs L, Word Stress, Final Consonants, Vowel Pairs) with minimal pairs and practice words with IPA
+- `scripts/pronunciationDrills.js` — UI logic: category selector, word card display, browser TTS playback, Web Speech API recording/STT, match/mismatch comparison, minimal pairs quiz, localStorage score tracking
+- `styles/pronunciationDrills.css` — Amber theme CSS tokens, category cards grid, word card, record button with pulse animation, result indicators, quiz section, mobile-first responsive
+- `pronunciation-drills.html` — Page following same structure as other practice pages (sticky top bar, DM Sans/Mono fonts, shared script loading)
+- `index.html` — Added Pronunciation Drills link card in practice sections list

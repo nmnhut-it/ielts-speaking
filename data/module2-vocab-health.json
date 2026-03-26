@@ -82,5 +82,35 @@
     "type": "(v phrase)",
     "vietnamese": "tăng năng lượng",
     "pronunciation": "/buːst ˈenədʒi/"
+  },
+  {
+    "english": "sedentary lifestyle",
+    "type": "(n phrase)",
+    "vietnamese": "lối sống ít vận động",
+    "pronunciation": "/ˈsedntri ˈlaɪfstaɪl/"
+  },
+  {
+    "english": "mental wellbeing",
+    "type": "(n phrase)",
+    "vietnamese": "sức khỏe tinh thần",
+    "pronunciation": "/ˈmentl welˈbiːɪŋ/"
+  },
+  {
+    "english": "preventive care",
+    "type": "(n phrase)",
+    "vietnamese": "chăm sóc phòng ngừa",
+    "pronunciation": "/prɪˈventɪv keə/"
+  },
+  {
+    "english": "resilient",
+    "type": "(adj)",
+    "vietnamese": "kiên cường, có sức chống chịu",
+    "pronunciation": "/rɪˈzɪliənt/"
+  },
+  {
+    "english": "holistic approach",
+    "type": "(n phrase)",
+    "vietnamese": "phương pháp toàn diện",
+    "pronunciation": "/həˈlɪstɪk əˈprəʊtʃ/"
   }
 ]

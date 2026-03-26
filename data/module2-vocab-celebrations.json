@@ -70,5 +70,35 @@
     "type": "(n phrase)",
     "vietnamese": "tinh thần cộng đồng",
     "pronunciation": "/kəˈmjuːnəti ˈspɪrɪt/"
+  },
+  {
+    "english": "commemorate",
+    "type": "(v)",
+    "vietnamese": "kỷ niệm, tưởng nhớ",
+    "pronunciation": "/kəˈmeməreɪt/"
+  },
+  {
+    "english": "reunion",
+    "type": "(n)",
+    "vietnamese": "sự đoàn tụ",
+    "pronunciation": "/riːˈjuːniən/"
+  },
+  {
+    "english": "elaborate decorations",
+    "type": "(n phrase)",
+    "vietnamese": "trang trí công phu",
+    "pronunciation": "/ɪˈlæbərət ˌdekəˈreɪʃnz/"
+  },
+  {
+    "english": "symbolic",
+    "type": "(adj)",
+    "vietnamese": "mang tính biểu tượng",
+    "pronunciation": "/sɪmˈbɒlɪk/"
+  },
+  {
+    "english": "solemn",
+    "type": "(adj)",
+    "vietnamese": "trang nghiêm",
+    "pronunciation": "/ˈsɒləm/"
   }
 ]

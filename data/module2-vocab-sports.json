@@ -106,5 +106,35 @@
     "type": "(n phrase)",
     "vietnamese": "sự minh mẫn",
     "pronunciation": "/ˈmentl ˈklærəti/"
+  },
+  {
+    "english": "endurance",
+    "type": "(n)",
+    "vietnamese": "sức bền, sự chịu đựng",
+    "pronunciation": "/ɪnˈdjʊərəns/"
+  },
+  {
+    "english": "sportsmanship",
+    "type": "(n)",
+    "vietnamese": "tinh thần thể thao",
+    "pronunciation": "/ˈspɔːtsmənʃɪp/"
+  },
+  {
+    "english": "personal best",
+    "type": "(n phrase)",
+    "vietnamese": "thành tích cá nhân tốt nhất",
+    "pronunciation": "/ˈpɜːsənl best/"
+  },
+  {
+    "english": "sedentary",
+    "type": "(adj)",
+    "vietnamese": "ít vận động",
+    "pronunciation": "/ˈsedntri/"
+  },
+  {
+    "english": "discipline",
+    "type": "(n)",
+    "vietnamese": "kỷ luật, tính kỷ luật",
+    "pronunciation": "/ˈdɪsəplɪn/"
   }
 ]

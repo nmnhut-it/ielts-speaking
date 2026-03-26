@@ -1,6 +1,6 @@
 /**
  * Part 3 Discussion Practice - Card-based UI
- * 40 discussion questions across 5 categories with 3 answer strategies.
+ * 60 discussion questions across 5 categories with 3 answer strategies.
  * Renders one question at a time in a card with state transitions:
  *   ready -> recording -> scored
  */
@@ -8,7 +8,7 @@
 // --- Constants ---
 
 const WORDS_PER_SECOND = 2.5;
-const TOTAL_QUESTIONS = 40;
+const TOTAL_QUESTIONS = 60;
 const STORAGE_PREFIX_FAV = 'p3_fav_';
 const STORAGE_PREFIX_ATTEMPTS = 'p3_attempts_';
 const STORAGE_PREFIX_TRANSCRIPT = 'p3_transcript_';
@@ -792,6 +792,356 @@ const DISCUSSION_QUESTIONS = [
                 sideB: "Excessive competition creates toxic environments: sabotage, stress, reluctance to collaborate, unethical behaviour",
                 myView: "Competition is healthy when accompanied by collaborative culture and fair rules",
                 justification: "Successful organisations encourage rivalry while ensuring individual competition never undermines teamwork or company mission"
+            }
+        }
+    },
+
+    // === Society & Culture (40-43) ===
+    {
+        topic: "Society & Culture",
+        relatedPart2: "Describe a tradition in your country that you enjoy",
+        question: "Do you think globalisation is causing cultures to become too similar?",
+        category: "cause-effect",
+        bestStrategy: "two-sides",
+        followUp: "Can you think of a tradition that has been strengthened by globalisation rather than weakened?",
+        sampleAnswer: {
+            text: "This is a nuanced question that deserves careful consideration. On the one hand, there is compelling evidence that globalisation is homogenising cultures to a concerning degree. The same fast-food chains, clothing brands, and streaming platforms dominate high streets and screens from Tokyo to Toronto, and younger generations worldwide increasingly consume the same media, listen to the same music, and adopt similar lifestyles. This cultural convergence can erode local traditions, languages, and artistic expressions that have developed over centuries. On the other hand, globalisation has also created opportunities for cultural exchange and revitalisation that were previously impossible. Social media platforms allow indigenous communities to share their traditions with global audiences, generating both awareness and economic support. For example, traditional Vietnamese ao dai fashion has gained international recognition partly through global platforms, leading to renewed domestic pride and investment in the craft. Personally, I believe globalisation is a double-edged sword, and the outcome depends largely on how communities respond. Those that actively preserve and promote their unique cultural identity while engaging with the wider world tend to thrive, while those that passively absorb dominant cultures risk losing what makes them distinctive.",
+            breakdown: {
+                sideA: "Same chains, brands, and platforms dominate globally; younger generations consume identical media, eroding local traditions and languages",
+                sideB: "Globalisation enables cultural exchange and revitalisation; social media helps indigenous communities share traditions globally, generating awareness and economic support",
+                myView: "Globalisation is a double-edged sword; outcome depends on how communities respond",
+                justification: "Communities that actively preserve unique identity while engaging globally tend to thrive; passive absorption risks losing distinctiveness (e.g., Vietnamese ao dai gaining international recognition)"
+            }
+        }
+    },
+    {
+        topic: "Society & Culture",
+        relatedPart2: "Describe a cultural event you attended",
+        question: "How important is it for a country to invest in the arts?",
+        category: "opinion",
+        bestStrategy: "direct-plus",
+        followUp: "Should governments fund art that most people do not understand or appreciate?",
+        sampleAnswer: {
+            text: "I firmly believe that investing in the arts is not a luxury but a fundamental necessity for any society that values creativity, critical thinking, and cultural identity. The primary reason is that the arts serve functions that extend far beyond entertainment. They preserve cultural memory, challenge societal assumptions, foster empathy by exposing people to perspectives different from their own, and drive innovation in ways that purely technical education cannot. For instance, cities that have invested heavily in arts infrastructure, such as Melbourne with its street art scene or Bilbao with the Guggenheim Museum, have experienced remarkable economic revitalisation, attracting tourism, creative industries, and skilled workers who value cultural vibrancy. Having said that, I recognise that arts funding must be balanced against other pressing needs like healthcare and education. The most effective approach, in my view, is to integrate arts funding into broader economic and educational strategies rather than treating it as a separate, dispensable budget line. When the arts are woven into the fabric of education and community life, they generate returns that far exceed the initial investment, both economically and in terms of social cohesion and national identity.",
+            breakdown: {
+                opinion: "Investing in the arts is a fundamental necessity, not a luxury, for any society valuing creativity and cultural identity",
+                reason: "Arts preserve cultural memory, challenge assumptions, foster empathy, and drive innovation beyond what technical education achieves",
+                example: "Melbourne's street art and Bilbao's Guggenheim demonstrate how arts investment drives economic revitalisation, tourism, and creative industries",
+                extension: "Arts funding should be integrated into broader economic and educational strategies rather than treated as a dispensable budget line; returns far exceed investment"
+            }
+        }
+    },
+    {
+        topic: "Society & Culture",
+        relatedPart2: "Describe a famous person from history you admire",
+        question: "Should we judge historical figures by today's moral standards?",
+        category: "opinion",
+        bestStrategy: "two-sides",
+        followUp: "Is it possible to admire someone's achievements while condemning their personal behaviour?",
+        sampleAnswer: {
+            text: "This is a question that generates passionate debate, and I think both perspectives have considerable merit. On the one hand, applying modern moral standards to historical figures can seem anachronistic and unfair. People are products of their time, shaped by the social norms, knowledge, and belief systems available to them. Judging a fifteenth-century explorer by twenty-first-century standards of human rights ignores the vast differences in worldview and available moral frameworks. On the other hand, there is a strong argument that certain moral principles, such as the wrongness of slavery, genocide, and oppression, are not merely modern inventions but universal truths that some people in every era recognised, even if they were in the minority. Dismissing historical atrocities as merely the norms of the time risks excusing genuine moral failures. On balance, I believe we should adopt a nuanced approach: we can acknowledge the achievements of historical figures while honestly examining their failings, understanding the context without using it as a blanket excuse. This balanced view allows us to learn from history rather than either idealising or demonising the people who shaped it.",
+            breakdown: {
+                sideA: "People are products of their time; judging by modern standards ignores vast differences in worldview and available moral frameworks",
+                sideB: "Certain moral principles like opposing slavery are universal truths recognised by minorities in every era; dismissing atrocities as norms risks excusing genuine moral failures",
+                myView: "We should adopt a nuanced approach: acknowledge achievements while honestly examining failings",
+                justification: "Understanding context without using it as a blanket excuse allows learning from history rather than idealising or demonising historical figures"
+            }
+        }
+    },
+    {
+        topic: "Society & Culture",
+        relatedPart2: "Describe a piece of art you find interesting",
+        question: "Has social media changed the way people appreciate art and culture?",
+        category: "cause-effect",
+        bestStrategy: "past-present-future",
+        followUp: "Do you think photographing art in museums enhances or diminishes the experience?",
+        sampleAnswer: {
+            text: "Social media has undeniably transformed cultural consumption in ways that are both exciting and concerning. In the past, appreciating art typically required physical presence — visiting galleries, attending performances, or purchasing books and records. This created a slower, more deliberate relationship with cultural works, where people would spend extended periods with a single piece, allowing it to unfold gradually. Nowadays, platforms like Instagram and TikTok have democratised access to art and culture in unprecedented ways. A street artist in Vietnam can gain a global following overnight, and museum collections that were once accessible only to those who could afford to travel are now viewable by anyone with a smartphone. However, this accessibility comes with a significant trade-off: the depth of engagement has often been replaced by breadth. People scroll past masterpieces in seconds, reducing complex works to their most photogenic angles. The phenomenon of people visiting exhibitions primarily to take selfies rather than to engage with the art itself exemplifies this shift. Looking ahead, I anticipate a bifurcation where some consumers will increasingly seek shallow, shareable content while others will deliberately pursue deeper, more immersive cultural experiences as a reaction against digital superficiality. The significance of this shift is that it challenges artists and cultural institutions to find ways of leveraging social media's reach without sacrificing the depth that gives art its transformative power.",
+            breakdown: {
+                past: "Appreciating art required physical presence — galleries, performances, books; created slower, deliberate relationships where people spent extended periods with single works",
+                present: "Social media democratised access (global reach for any artist) but replaced depth with breadth; people scroll past masterpieces in seconds, visit exhibitions for selfies",
+                future: "A bifurcation: some seeking shallow shareable content, others deliberately pursuing deeper immersive experiences as a reaction against digital superficiality",
+                significance: "Challenges artists and institutions to leverage social media's reach without sacrificing the depth that gives art its transformative power"
+            }
+        }
+    },
+
+    // === Education (44-47) ===
+    {
+        topic: "Education",
+        relatedPart2: "Describe an online course you have taken",
+        question: "Will online learning eventually replace traditional classrooms?",
+        category: "prediction",
+        bestStrategy: "past-present-future",
+        followUp: "What are the biggest disadvantages of learning entirely online?",
+        sampleAnswer: {
+            text: "The relationship between online and traditional learning has evolved dramatically and will continue to do so. Historically, education was almost exclusively a face-to-face endeavour, with students physically gathered in classrooms, lecture halls, and libraries. The teacher was the primary source of knowledge, and learning was structured around fixed schedules and locations. In the present day, particularly accelerated by the pandemic, online learning has proven itself as a viable alternative for many types of education. Platforms like Coursera, Khan Academy, and university-run MOOCs offer high-quality instruction that rivals traditional teaching in content, if not in experience. Many professionals now upskill entirely through online courses, and some universities offer fully accredited online degrees. Looking ahead, I believe we will see a hybrid model become the dominant paradigm rather than a complete replacement of classrooms. Online learning excels at delivering content, allowing self-paced study, and reaching students in remote areas, but it struggles to replicate the social learning, mentorship, spontaneous discussion, and accountability that physical classrooms provide. The significance of this evolution is profound: education will become more personalised and accessible, but societies will need to actively protect the communal aspects of learning that build social skills, resilience, and a sense of belonging.",
+            breakdown: {
+                past: "Education was exclusively face-to-face with teachers as primary knowledge sources; structured around fixed schedules and physical locations",
+                present: "Online learning proven viable, accelerated by the pandemic; platforms offer content rivalling traditional teaching; professionals upskill entirely online",
+                future: "A hybrid model will become dominant rather than complete replacement; online excels at content delivery but struggles with social learning, mentorship, and accountability",
+                significance: "Education will become more personalised and accessible, but societies must actively protect communal aspects that build social skills, resilience, and belonging"
+            }
+        }
+    },
+    {
+        topic: "Education",
+        relatedPart2: "Describe a memorable school experience",
+        question: "Is memorisation still important in education, or should we focus on critical thinking?",
+        category: "comparison",
+        bestStrategy: "two-sides",
+        followUp: "How can teachers balance memorisation with creative thinking in their lessons?",
+        sampleAnswer: {
+            text: "This is a debate that has divided educators for decades, and I think both sides make compelling arguments. On the one hand, memorisation has traditionally been the backbone of education, and it remains genuinely important for building the foundational knowledge upon which deeper understanding depends. You cannot think critically about history if you don't know any historical facts, and you cannot solve complex mathematical problems without having memorised basic formulas and operations. Cognitive science research also shows that having a rich store of memorised knowledge actually enhances critical thinking because it provides the raw material for making connections and generating insights. On the other hand, an education system that prioritises memorisation at the expense of critical thinking produces students who can recite facts but cannot apply, analyse, or evaluate them. In an age where any factual question can be answered by a smartphone in seconds, the ability to think critically, solve novel problems, and evaluate information is far more valuable than the ability to memorise and recall. Personally, I believe the dichotomy is false — the best education systems integrate both. Students need a solid knowledge base built partly through memorisation, but they also need constant opportunities to apply that knowledge through discussion, debate, problem-solving, and creative projects.",
+            breakdown: {
+                sideA: "Memorisation builds foundational knowledge essential for deeper understanding; cognitive science shows memorised knowledge enhances critical thinking by providing raw material for connections",
+                sideB: "Prioritising memorisation over critical thinking produces students who recite facts but cannot apply them; smartphones answer factual questions instantly, making analysis more valuable",
+                myView: "The dichotomy is false — the best education integrates both approaches",
+                justification: "Students need solid knowledge built partly through memorisation plus constant opportunities to apply it through discussion, debate, problem-solving, and creative projects"
+            }
+        }
+    },
+    {
+        topic: "Education",
+        relatedPart2: "Describe an important lesson you learned as a child",
+        question: "Should schools teach life skills like financial literacy and mental health?",
+        category: "opinion",
+        bestStrategy: "direct-plus",
+        followUp: "At what age should children start learning about money management?",
+        sampleAnswer: {
+            text: "I would strongly argue that schools should absolutely teach practical life skills, and the fact that most education systems still do not is a significant failing. The fundamental reason is that schools are supposed to prepare young people for adult life, yet they currently focus almost exclusively on academic subjects while ignoring the skills that students will use every single day after graduation. Financial literacy is perhaps the most glaring omission — most young adults leave school without understanding how to budget, save, invest, manage debt, or even read a tax return, which leaves them vulnerable to poor financial decisions that can have lifelong consequences. For example, many university graduates accumulate credit card debt simply because nobody ever taught them how interest rates compound, or they fail to start saving for retirement in their twenties because they don't understand the power of compound growth. Similarly, mental health education could equip students with coping strategies, emotional regulation techniques, and the vocabulary to discuss their feelings — tools that could prevent or mitigate the mental health crisis currently affecting young people worldwide. It is worth noting, however, that these subjects should complement rather than replace traditional academics. The challenge is finding qualified teachers and developing age-appropriate curricula, but this is a practical obstacle, not a reason to abandon the idea entirely.",
+            breakdown: {
+                opinion: "Schools should absolutely teach practical life skills; the current omission is a significant failing of education systems",
+                reason: "Schools prepare for adult life but ignore skills used daily — financial literacy, mental health, emotional regulation — leaving graduates vulnerable",
+                example: "University graduates accumulate credit card debt not understanding compound interest; young people lack coping strategies amid a global mental health crisis",
+                extension: "These subjects should complement rather than replace academics; the challenge of finding qualified teachers is a practical obstacle, not a reason to abandon the idea"
+            }
+        }
+    },
+    {
+        topic: "Education",
+        relatedPart2: "Describe a skill you would like to learn in the future",
+        question: "Is it more important to be a specialist or a generalist in today's world?",
+        category: "comparison",
+        bestStrategy: "two-sides",
+        followUp: "How can someone balance depth of knowledge with breadth of skills?",
+        sampleAnswer: {
+            text: "The specialist versus generalist debate has become increasingly relevant in our rapidly changing economy. On the one hand, specialists bring deep expertise that is essential for advancing knowledge and solving complex problems within their domains. Surgeons, software engineers, and research scientists all require years of focused training that a generalist approach cannot provide. In many industries, specialists command higher salaries precisely because their rare, deep knowledge is difficult to replace. On the other hand, the modern economy increasingly rewards people who can connect ideas across disciplines, adapt to new roles, and navigate ambiguity. Generalists often make better leaders and innovators because they can see patterns and opportunities that specialists, focused narrowly on their own field, might miss. Companies like Google and Apple have historically valued employees who combine technical skills with design thinking, communication, and business acumen. On balance, I think the most valuable profile in today's world is what some call a 'T-shaped' individual — someone with deep expertise in one area combined with broad knowledge and skills across multiple domains. This allows you to contribute specialist value while collaborating effectively across disciplines and adapting as industries evolve.",
+            breakdown: {
+                sideA: "Specialists bring essential deep expertise for complex problems; surgeons, engineers, and scientists require focused training; command higher salaries for rare knowledge",
+                sideB: "Generalists connect ideas across disciplines, adapt to new roles, see patterns specialists miss; companies like Google value combined technical, design, and business skills",
+                myView: "The most valuable profile is 'T-shaped' — deep expertise in one area combined with broad knowledge across multiple domains",
+                justification: "Allows contributing specialist value while collaborating across disciplines and adapting as industries evolve"
+            }
+        }
+    },
+
+    // === Technology (48-51) ===
+    {
+        topic: "Technology",
+        relatedPart2: "Describe an app on your phone that you use frequently",
+        question: "Are smartphones making people less socially skilled?",
+        category: "cause-effect",
+        bestStrategy: "two-sides",
+        followUp: "Should there be age restrictions on smartphone ownership?",
+        sampleAnswer: {
+            text: "This is a question that concerns many parents, educators, and psychologists, and the evidence points in both directions. On the one hand, there is growing research suggesting that excessive smartphone use, particularly among young people, is indeed eroding traditional social skills. Children who spend hours on devices rather than playing face-to-face with peers may develop weaker abilities in reading body language, maintaining eye contact, navigating conflict, and sustaining conversations without the safety net of being able to edit or delete their words. The phenomenon of people sitting together in restaurants while staring at their phones rather than talking to each other has become so common that it has its own name: phubbing. On the other hand, smartphones have also created new forms of social connection that should not be dismissed. For introverted individuals, people with social anxiety, or those in geographically isolated communities, smartphones provide vital social lifelines that would otherwise not exist. Online communities can offer belonging, support, and friendship that complement face-to-face relationships. Personally, I believe smartphones are tools, and like all tools, their impact depends on how they are used. The key is teaching people, especially children, to use them intentionally rather than compulsively, and ensuring that screen-based interaction supplements rather than replaces the rich, messy, and irreplaceable experience of human face-to-face connection.",
+            breakdown: {
+                sideA: "Research suggests excessive use erodes social skills — weaker body language reading, eye contact, conflict navigation; 'phubbing' is now widespread",
+                sideB: "Smartphones provide vital social lifelines for introverts, those with social anxiety, and geographically isolated communities; online communities offer belonging",
+                myView: "Smartphones are tools whose impact depends on how they are used",
+                justification: "Key is teaching intentional rather than compulsive use, ensuring screen interaction supplements rather than replaces face-to-face connection"
+            }
+        }
+    },
+    {
+        topic: "Technology",
+        relatedPart2: "Describe a technology that has changed your life",
+        question: "Should governments regulate how technology companies use personal data?",
+        category: "opinion",
+        bestStrategy: "direct-plus",
+        followUp: "Would you sacrifice some convenience for greater data privacy?",
+        sampleAnswer: {
+            text: "I would argue that government regulation of personal data usage is not merely desirable but urgently necessary in our current digital landscape. The primary reason is that the imbalance of power between technology companies and individual users has become extreme. Most people have no meaningful understanding of how their data is collected, sold, and used, and the terms of service agreements that supposedly grant consent are deliberately designed to be impenetrable. Technology companies have access to intimate details of billions of lives — location histories, health data, private messages, financial transactions — and the potential for misuse, whether through targeted manipulation, discrimination, or security breaches, is enormous. A clear example is the Cambridge Analytica scandal, where personal data from millions of Facebook users was harvested without consent and used to influence political campaigns, demonstrating how unregulated data collection can undermine democratic processes themselves. Having said that, regulation must be carefully designed to protect privacy without stifling innovation or creating barriers that only large corporations can afford to comply with. The European Union's GDPR provides a useful model, though it is not without flaws. Effective regulation should require genuine informed consent, give individuals meaningful control over their data, and impose substantial penalties for violations while remaining practical for smaller companies to implement.",
+            breakdown: {
+                opinion: "Government regulation is urgently necessary due to the extreme power imbalance between tech companies and individual users",
+                reason: "Most people don't understand how data is collected and used; terms of service are deliberately impenetrable; potential for misuse is enormous",
+                example: "Cambridge Analytica harvested millions of Facebook users' data without consent to influence political campaigns, undermining democratic processes",
+                extension: "Regulation must protect privacy without stifling innovation; GDPR provides a useful model; should require genuine consent and meaningful individual control with substantial penalties"
+            }
+        }
+    },
+    {
+        topic: "Technology",
+        relatedPart2: "Describe a website you visit often",
+        question: "How has the internet changed the way people access news and information?",
+        category: "cause-effect",
+        bestStrategy: "past-present-future",
+        followUp: "Do you think people are better informed today than they were before the internet?",
+        sampleAnswer: {
+            text: "The transformation in how people access news and information has been nothing short of revolutionary. In the past, news consumption was a relatively structured activity. People read morning newspapers, watched evening television bulletins, or listened to radio broadcasts at set times. Information was curated by professional journalists and editors who acted as gatekeepers, determining what the public would see and read. While this system had its biases and limitations, it generally ensured a baseline of factual accuracy and editorial responsibility. In today's digital landscape, the situation is radically different. News is available instantaneously, twenty-four hours a day, from an almost infinite number of sources. Social media platforms have become primary news distributors for many people, particularly younger demographics, which means algorithms rather than journalists increasingly determine what information people see. This has created both unprecedented access to diverse perspectives and a dangerous proliferation of misinformation, conspiracy theories, and deliberately misleading content. Looking ahead, I believe we will see an increasing polarisation between those who actively seek verified, quality journalism and those who remain trapped in algorithmic echo chambers that reinforce existing beliefs. The significance of this shift is profound because an informed citizenry is the foundation of democracy, and when people cannot agree on basic facts, constructive public discourse becomes nearly impossible.",
+            breakdown: {
+                past: "News was structured — morning newspapers, evening TV bulletins, radio broadcasts; professional journalists acted as gatekeepers ensuring factual accuracy and editorial responsibility",
+                present: "News is instantaneous from infinite sources; social media algorithms rather than journalists determine what people see; both diverse perspectives and dangerous misinformation proliferate",
+                future: "Increasing polarisation between those seeking verified journalism and those trapped in algorithmic echo chambers reinforcing existing beliefs",
+                significance: "An informed citizenry is democracy's foundation; when people cannot agree on basic facts, constructive public discourse becomes nearly impossible"
+            }
+        }
+    },
+    {
+        topic: "Technology",
+        relatedPart2: "Describe a gadget or piece of technology you own",
+        question: "Do you think technology is making people more isolated or more connected?",
+        category: "comparison",
+        bestStrategy: "two-sides",
+        followUp: "Can virtual reality solve the problem of technology-driven loneliness?",
+        sampleAnswer: {
+            text: "This is perhaps the central paradox of our digital age, and I think the honest answer is that technology is doing both simultaneously. On the one hand, technology has connected people in ways that were unimaginable a generation ago. Families separated by continents can video-call daily, diaspora communities maintain cultural ties through online groups, and people with niche interests can find like-minded individuals across the globe. For many people, particularly those with disabilities, social anxiety, or who live in remote areas, technology has dramatically expanded their social worlds. On the other hand, there is mounting evidence that increased digital connectivity correlates with rising loneliness, particularly among younger generations. The replacement of deep, sustained face-to-face relationships with shallow, performative online interactions can leave people feeling more isolated despite having hundreds of digital connections. Studies consistently show that heavy social media users report higher rates of loneliness and depression compared to moderate users. On balance, I believe technology is a magnifier of existing tendencies. For people who use it intentionally to maintain and deepen real relationships, it enhances connection. For those who use it as a substitute for genuine human contact or who become trapped in cycles of comparison and passive consumption, it intensifies isolation.",
+            breakdown: {
+                sideA: "Technology connects families across continents, maintains diaspora communities, expands social worlds for those with disabilities or in remote areas",
+                sideB: "Mounting evidence that digital connectivity correlates with rising loneliness; shallow performative interactions replace deep face-to-face relationships; heavy social media users report more loneliness",
+                myView: "Technology is a magnifier of existing tendencies — enhances connection when used intentionally, intensifies isolation when used as a substitute",
+                justification: "Outcomes depend on whether people use technology to maintain real relationships or to replace genuine human contact with passive consumption and comparison"
+            }
+        }
+    },
+
+    // === Environment (52-55) ===
+    {
+        topic: "Environment",
+        relatedPart2: "Describe an environmental issue you care about",
+        question: "Is individual action or government policy more effective in addressing climate change?",
+        category: "comparison",
+        bestStrategy: "two-sides",
+        followUp: "What is the single most impactful action an individual can take for the environment?",
+        sampleAnswer: {
+            text: "The question of individual versus governmental responsibility for climate change is one I find both important and frequently oversimplified. On the one hand, government policy has the power to create systemic change at a scale that individual actions simply cannot match. A single carbon tax policy, renewable energy mandate, or emissions regulation can affect millions of people and entire industries overnight. The ban on CFCs through the Montreal Protocol demonstrated how effective international governmental action can be in addressing environmental threats. On the other hand, individual actions matter both practically and symbolically. When millions of people change their consumption patterns, reduce waste, and choose sustainable products, the cumulative effect is significant. Moreover, individual commitment often drives the political will that leads to policy change — politicians respond to voter priorities. Personally, I believe framing this as an either-or question is counterproductive. Both are essential and mutually reinforcing. Governments must create the frameworks and incentives for sustainable behaviour, while individuals must both adopt sustainable practices and exercise their democratic power to demand stronger environmental policies. The most dangerous outcome would be individuals waiting passively for governments to act while governments wait for public demand to justify action.",
+            breakdown: {
+                sideA: "Government policy creates systemic change at unmatched scale; a single carbon tax affects millions; the Montreal Protocol proved international governmental action's effectiveness",
+                sideB: "Individual actions matter practically and symbolically; millions changing consumption patterns creates significant cumulative effect; individual commitment drives political will for policy change",
+                myView: "Framing this as either-or is counterproductive; both are essential and mutually reinforcing",
+                justification: "Governments must create frameworks for sustainable behaviour; individuals must adopt practices and demand stronger policies; the worst outcome is mutual waiting for the other to act"
+            }
+        }
+    },
+    {
+        topic: "Environment",
+        relatedPart2: "Describe a natural place you have visited that impressed you",
+        question: "Should tourism in natural areas be restricted to protect the environment?",
+        category: "opinion",
+        bestStrategy: "direct-plus",
+        followUp: "How can technology help make tourism more sustainable?",
+        sampleAnswer: {
+            text: "I believe that some form of restriction on tourism in natural areas is absolutely necessary, though the specific approach must be carefully calibrated to balance environmental protection with public access and local livelihoods. The fundamental reason is that unrestricted tourism has already caused devastating damage to some of the world's most precious natural environments. Coral reefs are being destroyed by careless snorkelling and boat anchors, hiking trails are being eroded by excessive foot traffic, and wildlife behaviour is being disrupted by the constant presence of tourists and their vehicles. For instance, Maya Bay in Thailand, made famous by the film 'The Beach,' had to be closed to visitors for over three years because the daily influx of thousands of tourists had virtually destroyed the coral ecosystem and driven away the sharks and marine life that had once thrived there. When the bay reopened with strict visitor caps, the marine ecosystem showed remarkable recovery. Having said that, restrictions must be designed thoughtfully. Completely banning tourism can deprive local communities of vital income and remove the economic incentive to protect natural areas. The most effective approach, in my view, is managed access — implementing daily visitor limits, requiring permits, investing in infrastructure that minimises environmental impact, and using revenue from tourism fees to fund conservation efforts directly.",
+            breakdown: {
+                opinion: "Some form of tourism restriction in natural areas is absolutely necessary, though the approach must balance protection with access and livelihoods",
+                reason: "Unrestricted tourism causes devastating damage — coral reef destruction, trail erosion, wildlife disruption from constant tourist and vehicle presence",
+                example: "Maya Bay in Thailand closed for three years after thousands of daily tourists destroyed coral and drove away marine life; strict visitor caps enabled remarkable ecosystem recovery",
+                extension: "Completely banning tourism deprives communities of income; managed access is best — daily limits, permits, minimal-impact infrastructure, and tourism revenue funding conservation directly"
+            }
+        }
+    },
+    {
+        topic: "Environment",
+        relatedPart2: "Describe a season of the year you enjoy most",
+        question: "How seriously should we take the threat of climate change to seasonal patterns?",
+        category: "opinion",
+        bestStrategy: "direct-plus",
+        followUp: "Have you personally noticed any changes in weather patterns in your area?",
+        sampleAnswer: {
+            text: "From my perspective, the threat of climate change to seasonal patterns should be taken extremely seriously because it is not a hypothetical future concern but a documented reality that is already affecting ecosystems, agriculture, and human livelihoods worldwide. The primary reason for urgency is that seasonal patterns are not merely a matter of weather preferences — they are the foundation upon which entire agricultural systems, water supplies, and ecological cycles depend. When spring arrives earlier, pollinators emerge before the flowers they depend on have bloomed, disrupting food chains. When monsoon seasons become unpredictable, farmers who rely on seasonal rains for their harvests face devastating crop failures. For example, in Vietnam, the traditional wet and dry seasons have become increasingly erratic over the past decade, with unseasonal flooding and prolonged droughts affecting rice production in the Mekong Delta, which produces over half the country's rice and feeds millions of people across Southeast Asia. It is worth acknowledging, however, that climate change affects different regions differently, and solutions must be locally adapted. While global emissions reduction is essential, communities also need to develop resilience strategies, such as drought-resistant crop varieties and improved water management systems, to cope with the seasonal disruptions that are already locked in by existing greenhouse gas concentrations.",
+            breakdown: {
+                opinion: "The threat should be taken extremely seriously — it is a documented reality already affecting ecosystems, agriculture, and livelihoods worldwide",
+                reason: "Seasonal patterns underpin agricultural systems, water supplies, and ecological cycles; disrupted timing mismatches pollinators with flowers, causes crop failures from unpredictable rains",
+                example: "Vietnam's wet and dry seasons have become erratic — unseasonal flooding and prolonged droughts affect Mekong Delta rice production that feeds millions across Southeast Asia",
+                extension: "While global emissions reduction is essential, communities also need locally adapted resilience strategies like drought-resistant crops and improved water management for disruptions already locked in"
+            }
+        }
+    },
+    {
+        topic: "Environment",
+        relatedPart2: "Describe an animal you find interesting",
+        question: "What responsibility do humans have toward other species on this planet?",
+        category: "opinion",
+        bestStrategy: "direct-plus",
+        followUp: "Should endangered animals be bred in captivity even if they cannot be released into the wild?",
+        sampleAnswer: {
+            text: "I strongly believe that humans have a profound moral responsibility toward other species, and this responsibility has become more urgent than ever given the scale of the current biodiversity crisis. The core reason is both ethical and practical. Ethically, as the most powerful species on Earth with the greatest capacity to both destroy and protect, we have an obligation not to use that power recklessly. Every species represents millions of years of evolutionary development, and extinction is irreversible — when we lose a species, we lose something that can never be recreated. Practically, biodiversity is not a luxury but the foundation of functioning ecosystems that provide essential services to humans, including clean air, water purification, pollination of crops, and climate regulation. A striking example is the near-extinction of wolves in Yellowstone National Park and their subsequent reintroduction in 1995. Without wolves, elk populations had exploded, overgrazing vegetation along riverbanks, causing erosion that changed the very course of rivers. When wolves returned, the entire ecosystem recovered in what scientists call a trophic cascade, demonstrating how the loss of a single species can destabilise entire landscapes. Having said that, I recognise that conservation must consider human needs, particularly those of communities that depend directly on natural resources for survival. The most sustainable conservation models are those that align species protection with local economic benefits, ensuring that protecting wildlife is not a burden but an advantage for the people living alongside it.",
+            breakdown: {
+                opinion: "Humans have a profound moral responsibility toward other species, more urgent than ever given the current biodiversity crisis",
+                reason: "Ethically, extinction is irreversible; practically, biodiversity provides essential ecosystem services — clean air, water purification, crop pollination, climate regulation",
+                example: "Wolf reintroduction in Yellowstone after near-extinction: elk overgrazed riverbanks causing erosion that changed river courses; wolves triggered a trophic cascade restoring the entire ecosystem",
+                extension: "Conservation must consider human needs; sustainable models align species protection with local economic benefits so protecting wildlife is an advantage, not a burden, for communities"
+            }
+        }
+    },
+
+    // === Work & Economy (56-59) ===
+    {
+        topic: "Work & Economy",
+        relatedPart2: "Describe your dream job",
+        question: "Is it more important to choose a career you are passionate about or one that pays well?",
+        category: "comparison",
+        bestStrategy: "two-sides",
+        followUp: "Can passion for a job develop over time, or does it need to exist from the start?",
+        sampleAnswer: {
+            text: "This is a dilemma that virtually every young person grapples with, and I think the answer is more nuanced than either extreme suggests. On the one hand, choosing a career based on passion offers enormous benefits for long-term wellbeing and performance. People who genuinely enjoy their work tend to be more productive, more creative, and more resilient in the face of setbacks. They are willing to invest the extra effort required for mastery, and they experience their careers as a source of meaning rather than merely a means of paying bills. There is substantial research showing that job satisfaction is a stronger predictor of overall life satisfaction than income beyond a certain threshold. On the other hand, the advice to simply follow your passion can be dangerously naive, particularly for people from disadvantaged backgrounds who cannot afford the financial risk. Passion doesn't pay rent, and financial stress can erode wellbeing just as effectively as job dissatisfaction. Furthermore, many people discover passion through competence — they grow to love work they become skilled at, rather than starting with an innate passion. Personally, I think the wisest approach is to seek the intersection of three things: something you are genuinely interested in, something you can become good at, and something that provides financial stability. The ideal career satisfies all three, and when that perfect intersection is not immediately available, it is reasonable to prioritise financial security while actively working toward a more fulfilling path.",
+            breakdown: {
+                sideA: "Passion drives productivity, creativity, resilience, and meaning; job satisfaction predicts life satisfaction more strongly than income beyond a certain threshold",
+                sideB: "Following passion can be naive for those who cannot afford financial risk; passion doesn't pay rent; many discover passion through competence rather than starting with it",
+                myView: "Seek the intersection of genuine interest, developing competence, and financial stability",
+                justification: "When the perfect intersection isn't immediately available, prioritise financial security while actively working toward a more fulfilling path"
+            }
+        }
+    },
+    {
+        topic: "Work & Economy",
+        relatedPart2: "Describe a goal you hope to achieve in the future",
+        question: "How will automation affect employment in the next twenty years?",
+        category: "prediction",
+        bestStrategy: "past-present-future",
+        followUp: "Should governments provide retraining programmes for workers displaced by automation?",
+        sampleAnswer: {
+            text: "The impact of automation on employment is one of the defining economic questions of our time, and understanding it requires examining the historical pattern and current trajectory. In the past, previous waves of automation, from the Industrial Revolution to the computerisation of offices, initially displaced workers but ultimately created more jobs than they destroyed. The introduction of ATMs, for example, was expected to eliminate bank teller jobs, but instead it reduced the cost of running branches, leading banks to open more branches and hire more tellers for customer service roles. At present, we are witnessing a new wave of automation powered by artificial intelligence that is qualitatively different from previous ones. AI can now perform cognitive tasks that were once considered exclusively human — writing, translating, analysing data, diagnosing diseases, and even creating art. This means that white-collar knowledge workers, who were previously insulated from automation, are now equally vulnerable alongside blue-collar workers. Looking ahead, I anticipate significant job displacement in areas such as routine administration, basic legal work, customer service, and entry-level data analysis over the next two decades. However, new roles will emerge in areas we cannot yet fully predict, just as social media management and data science were inconceivable careers thirty years ago. The significance of this transition is that its human impact will depend entirely on policy choices — societies that invest in education, retraining, and social safety nets will navigate the transition far more successfully than those that leave displaced workers to fend for themselves.",
+            breakdown: {
+                past: "Previous automation waves displaced workers but ultimately created more jobs; ATMs didn't eliminate tellers but led to more branches and customer service roles",
+                present: "AI automation is qualitatively different — performing cognitive tasks like writing, translating, diagnosing; white-collar workers now equally vulnerable alongside blue-collar",
+                future: "Significant displacement in routine administration, basic legal work, customer service; new unforeseeable roles will emerge as data science and social media management once did",
+                significance: "Human impact depends entirely on policy choices — societies investing in education, retraining, and safety nets will navigate far better than those leaving workers to fend for themselves"
+            }
+        }
+    },
+    {
+        topic: "Work & Economy",
+        relatedPart2: "Describe a change you would like to make in your life",
+        question: "Is the four-day working week a realistic goal for most countries?",
+        category: "opinion",
+        bestStrategy: "two-sides",
+        followUp: "How do you think a shorter working week would affect work-life balance?",
+        sampleAnswer: {
+            text: "The four-day working week has moved from a fringe idea to a serious policy discussion in many countries, and the evidence so far is encouraging though not conclusive. On the one hand, trials conducted in Iceland, the UK, and Japan have produced remarkably positive results. In Iceland's large-scale trial involving over twenty-five hundred workers, productivity remained the same or improved while worker wellbeing increased significantly, with employees reporting reduced stress, less burnout, and more time for family and personal interests. Microsoft Japan's trial of a four-day week saw a forty percent increase in productivity. These results suggest that much of the time spent in traditional five-day weeks is unproductive and could be eliminated through better focus and more efficient meeting practices. On the other hand, a four-day week is not equally feasible across all sectors and economies. Healthcare workers, emergency services, hospitality staff, and many manufacturing roles cannot simply reduce hours without either hiring additional staff or reducing output. In developing economies where many workers are already struggling to meet basic needs, reducing working hours could mean reduced income unless productivity gains are sufficient to maintain current wages. On balance, I believe the four-day week will gradually become the norm in knowledge-based industries within developed countries over the next two decades, but it will require significant adaptation in other sectors and may not be universally applicable.",
+            breakdown: {
+                sideA: "Trials in Iceland, UK, and Japan show maintained or improved productivity with significantly better wellbeing; Microsoft Japan saw 40% productivity increase; much five-day time is unproductive",
+                sideB: "Not equally feasible across all sectors — healthcare, emergency services, hospitality, manufacturing need additional staff or accept reduced output; developing economies risk reduced income",
+                myView: "The four-day week will gradually become the norm in knowledge-based industries within developed countries over the next two decades",
+                justification: "Requires significant adaptation in other sectors and may not be universally applicable; success depends on whether productivity gains can maintain current output and wages"
+            }
+        }
+    },
+    {
+        topic: "Work & Economy",
+        relatedPart2: "Describe an online course you have taken",
+        question: "Should employers value skills and experience more than formal qualifications?",
+        category: "opinion",
+        bestStrategy: "two-sides",
+        followUp: "How can someone without a degree demonstrate their competence to employers?",
+        sampleAnswer: {
+            text: "This is a question that is reshaping hiring practices across many industries. On the one hand, skills and practical experience offer a more direct indication of what a candidate can actually do in a specific role. Many of the most successful tech entrepreneurs and innovators, from Steve Jobs to self-taught programmers contributing to major open-source projects, demonstrate that formal qualifications are not always necessary for exceptional performance. The rise of online learning platforms, coding bootcamps, and portfolio-based assessment means that talented individuals can now develop and demonstrate skills outside traditional educational pathways. On the other hand, formal qualifications serve important functions that should not be dismissed. A degree represents not just knowledge but discipline, perseverance, and the ability to navigate complex systems over an extended period. In fields like medicine, law, and engineering, formal qualifications are essential safeguards ensuring that practitioners meet minimum competency standards that protect public safety. Removing qualification requirements in these areas would be reckless. Personally, I think the ideal approach depends heavily on the industry. In creative and technology sectors, skills and portfolios should carry more weight than degrees. In regulated professions, formal qualifications must remain central. For most other fields, a blended approach that considers both qualifications and demonstrated competence would produce the best hiring outcomes and expand opportunity for talented people from diverse backgrounds.",
+            breakdown: {
+                sideA: "Skills and experience directly indicate what candidates can do; successful innovators prove qualifications aren't always necessary; online platforms enable skill development outside traditional pathways",
+                sideB: "Degrees represent discipline and perseverance; in medicine, law, and engineering, qualifications are essential safeguards for public safety; removing requirements would be reckless",
+                myView: "The ideal approach depends on industry — skills matter more in creative and tech sectors, qualifications remain central in regulated professions",
+                justification: "A blended approach considering both qualifications and demonstrated competence produces the best hiring outcomes and expands opportunity for diverse backgrounds"
             }
         }
     }

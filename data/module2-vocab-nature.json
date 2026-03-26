@@ -88,5 +88,35 @@
     "type": "(n)",
     "vietnamese": "nhận thức",
     "pronunciation": "/əˈweənəs/"
+  },
+  {
+    "english": "pristine",
+    "type": "(adj)",
+    "vietnamese": "nguyên sơ, chưa bị tác động",
+    "pronunciation": "/ˈprɪstiːn/"
+  },
+  {
+    "english": "biodiversity",
+    "type": "(n)",
+    "vietnamese": "sự đa dạng sinh học",
+    "pronunciation": "/ˌbaɪəʊdaɪˈvɜːsəti/"
+  },
+  {
+    "english": "conservation",
+    "type": "(n)",
+    "vietnamese": "sự bảo tồn",
+    "pronunciation": "/ˌkɒnsəˈveɪʃn/"
+  },
+  {
+    "english": "lush vegetation",
+    "type": "(n phrase)",
+    "vietnamese": "thảm thực vật xanh tốt",
+    "pronunciation": "/lʌʃ ˌvedʒɪˈteɪʃn/"
+  },
+  {
+    "english": "awe-inspiring",
+    "type": "(adj)",
+    "vietnamese": "gây kinh ngạc, gây ấn tượng mạnh",
+    "pronunciation": "/ɔː ɪnˈspaɪərɪŋ/"
   }
 ]

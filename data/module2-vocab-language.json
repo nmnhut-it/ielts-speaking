@@ -88,5 +88,35 @@
     "type": "(n)",
     "vietnamese": "sự hiểu lầm",
     "pronunciation": "/ˌmɪsʌndəˈstændɪŋ/"
+  },
+  {
+    "english": "colloquial",
+    "type": "(adj)",
+    "vietnamese": "thông tục, dùng trong giao tiếp hàng ngày",
+    "pronunciation": "/kəˈləʊkwiəl/"
+  },
+  {
+    "english": "mother tongue",
+    "type": "(n phrase)",
+    "vietnamese": "tiếng mẹ đẻ",
+    "pronunciation": "/ˈmʌðə tʌŋ/"
+  },
+  {
+    "english": "linguistic diversity",
+    "type": "(n phrase)",
+    "vietnamese": "sự đa dạng ngôn ngữ",
+    "pronunciation": "/lɪŋˈɡwɪstɪk daɪˈvɜːsəti/"
+  },
+  {
+    "english": "articulate",
+    "type": "(adj)",
+    "vietnamese": "diễn đạt rõ ràng, mạch lạc",
+    "pronunciation": "/ɑːˈtɪkjələt/"
+  },
+  {
+    "english": "language barrier",
+    "type": "(n phrase)",
+    "vietnamese": "rào cản ngôn ngữ",
+    "pronunciation": "/ˈlæŋɡwɪdʒ ˈbæriə/"
   }
 ]

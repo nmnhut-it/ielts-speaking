@@ -88,5 +88,35 @@
     "type": "(v)",
     "vietnamese": "diễn giải, hiểu",
     "pronunciation": "/ɪnˈtɜːprɪt/"
+  },
+  {
+    "english": "abstract",
+    "type": "(adj)",
+    "vietnamese": "trừu tượng",
+    "pronunciation": "/ˈæbstrækt/"
+  },
+  {
+    "english": "curator",
+    "type": "(n)",
+    "vietnamese": "người phụ trách bảo tàng",
+    "pronunciation": "/kjʊˈreɪtə/"
+  },
+  {
+    "english": "sculpture",
+    "type": "(n)",
+    "vietnamese": "tác phẩm điêu khắc",
+    "pronunciation": "/ˈskʌlptʃə/"
+  },
+  {
+    "english": "avant-garde",
+    "type": "(adj)",
+    "vietnamese": "tiên phong, đi trước thời đại",
+    "pronunciation": "/ˌævɒ̃ˈɡɑːd/"
+  },
+  {
+    "english": "thought-provoking",
+    "type": "(adj)",
+    "vietnamese": "gợi suy nghĩ, kích thích tư duy",
+    "pronunciation": "/θɔːt prəˈvəʊkɪŋ/"
   }
 ]

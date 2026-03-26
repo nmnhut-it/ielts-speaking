@@ -94,5 +94,35 @@
     "type": "(n phrase)",
     "vietnamese": "màu trung tính",
     "pronunciation": "/ˈnjuːtrəl ˈkʌləz/"
+  },
+  {
+    "english": "impulse purchase",
+    "type": "(n phrase)",
+    "vietnamese": "mua sắm bốc đồng",
+    "pronunciation": "/ˈɪmpʌls ˈpɜːtʃəs/"
+  },
+  {
+    "english": "sustainable fashion",
+    "type": "(n phrase)",
+    "vietnamese": "thời trang bền vững",
+    "pronunciation": "/səˈsteɪnəbl ˈfæʃn/"
+  },
+  {
+    "english": "brand loyalty",
+    "type": "(n phrase)",
+    "vietnamese": "sự trung thành với thương hiệu",
+    "pronunciation": "/brænd ˈlɔɪəlti/"
+  },
+  {
+    "english": "value for money",
+    "type": "(n phrase)",
+    "vietnamese": "đáng đồng tiền",
+    "pronunciation": "/ˈvæljuː fɔː ˈmʌni/"
+  },
+  {
+    "english": "second-hand",
+    "type": "(adj)",
+    "vietnamese": "đồ cũ, đã qua sử dụng",
+    "pronunciation": "/ˌsekənd ˈhænd/"
   }
 ]

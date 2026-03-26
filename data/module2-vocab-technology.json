@@ -100,5 +100,35 @@
     "type": "(phrase)",
     "vietnamese": "theo tốc độ của riêng tôi",
     "pronunciation": "/ət maɪ əʊn peɪs/"
+  },
+  {
+    "english": "cutting-edge",
+    "type": "(adj)",
+    "vietnamese": "tiên tiến nhất, hiện đại nhất",
+    "pronunciation": "/ˌkʌtɪŋ ˈedʒ/"
+  },
+  {
+    "english": "digital literacy",
+    "type": "(n phrase)",
+    "vietnamese": "kỹ năng sử dụng công nghệ số",
+    "pronunciation": "/ˈdɪdʒɪtl ˈlɪtərəsi/"
+  },
+  {
+    "english": "obsolete",
+    "type": "(adj)",
+    "vietnamese": "lỗi thời, không còn sử dụng",
+    "pronunciation": "/ˈɒbsəliːt/"
+  },
+  {
+    "english": "data privacy",
+    "type": "(n phrase)",
+    "vietnamese": "quyền riêng tư dữ liệu",
+    "pronunciation": "/ˈdeɪtə ˈprɪvəsi/"
+  },
+  {
+    "english": "artificial intelligence",
+    "type": "(n phrase)",
+    "vietnamese": "trí tuệ nhân tạo",
+    "pronunciation": "/ˌɑːtɪˈfɪʃl ɪnˈtelɪdʒəns/"
   }
 ]
