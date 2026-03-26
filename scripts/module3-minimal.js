@@ -1359,29 +1359,50 @@ let prepSeconds = 60;
 let speakSeconds = 120;
 let lastTranscript = '';
 
-/** Transition between the 3 phases with animation */
-function setPhase(phase) {
-    currentPhase = phase;
-    document.getElementById('prepPhase').style.display = phase === 'prep' ? '' : 'none';
-    document.getElementById('speakPhase').style.display = phase === 'speaking' ? '' : 'none';
-    document.getElementById('reviewPhase').style.display = phase === 'review' ? '' : 'none';
+/** Transition between states using CSS classes on the card container */
+function setState(state) {
+    currentPhase = state;
+    var container = document.getElementById('cuecardContainer');
 
-    ['phase1', 'phase2', 'phase3'].forEach(id => {
+    // Remove all state classes
+    container.classList.remove('cuecard--idle', 'cuecard--prep', 'cuecard--speaking', 'cuecard--review');
+
+    // Map phase names to state classes
+    var stateMap = {
+        'prep': 'cuecard--prep',
+        'idle': 'cuecard--idle',
+        'speaking': 'cuecard--speaking',
+        'review': 'cuecard--review'
+    };
+    container.classList.add(stateMap[state] || 'cuecard--idle');
+
+    // Toggle section visibility (belt-and-suspenders with CSS)
+    document.getElementById('prepPhase').style.display = (state === 'prep' || state === 'idle') ? '' : 'none';
+    document.getElementById('speakPhase').style.display = state === 'speaking' ? '' : 'none';
+    document.getElementById('reviewPhase').style.display = state === 'review' ? '' : 'none';
+
+    // Update phase bar indicators
+    ['phase1', 'phase2', 'phase3'].forEach(function(id) {
         document.getElementById(id).classList.remove('active', 'done');
     });
 
-    if (phase === 'prep') {
+    if (state === 'idle' || state === 'prep') {
         document.getElementById('phase1').classList.add('active');
-    } else if (phase === 'speaking') {
+    } else if (state === 'speaking') {
         document.getElementById('phase1').classList.add('done');
         document.getElementById('phase2').classList.add('active');
-    } else if (phase === 'review') {
+    } else if (state === 'review') {
         document.getElementById('phase1').classList.add('done');
         document.getElementById('phase2').classList.add('done');
         document.getElementById('phase3').classList.add('active');
     }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/** Legacy alias for backward compatibility */
+function setPhase(phase) {
+    setState(phase);
 }
 
 // ========== RENDER CURRENT CARD ==========
@@ -1393,7 +1414,7 @@ function renderCurrentCard() {
 
     // Reset to prep phase
     clearAllTimers();
-    setPhase('prep');
+    setState('prep');
 
     // Update cue card hero
     document.getElementById('cardNumber').textContent = 'Card ' + (currentIndex + 1);
@@ -1532,7 +1553,7 @@ function transitionToSpeaking() {
     document.getElementById('liveWordCount').textContent = '0 words';
     lastTranscript = '';
 
-    setPhase('speaking');
+    setState('speaking');
     startSpeakingPhase();
 }
 
@@ -1792,7 +1813,7 @@ function transitionToReview(transcript) {
         if (audioEl) audioEl.src = URL.createObjectURL(answerRecordingBlob);
     }
 
-    setPhase('review');
+    setState('review');
     updateProgress();
 }
 

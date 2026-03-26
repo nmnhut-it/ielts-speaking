@@ -1,7 +1,8 @@
 /**
- * Part 3 Discussion Practice - Chat/Debate UI
+ * Part 3 Discussion Practice - Card-based UI
  * 40 discussion questions across 5 categories with 3 answer strategies.
- * Redesigned as a conversation engine with chat bubbles.
+ * Renders one question at a time in a card with state transitions:
+ *   ready -> recording -> scored
  */
 
 // --- Constants ---
@@ -13,6 +14,11 @@ const STORAGE_PREFIX_ATTEMPTS = 'p3_attempts_';
 const STORAGE_PREFIX_TRANSCRIPT = 'p3_transcript_';
 const FOLLOW_UP_DELAY_MS = 2000;
 const RECORDING_MAX_MS = 90000;
+
+// Card states
+const CARD_STATE_READY = 'ready';
+const CARD_STATE_RECORDING = 'recording';
+const CARD_STATE_SCORED = 'scored';
 
 // --- Discussion Strategies ---
 
@@ -791,14 +797,13 @@ const DISCUSSION_QUESTIONS = [
     }
 ];
 
-// --- Chat Conversation State ---
+// --- Card State ---
 
 let allQuestions = [];
 let currentIndex = 0;
 let currentStrategy = 'direct-plus';
 let currentMode = 'sequential';
 let favorites = new Set();
-let chatMessages = [];
 let isRecording = false;
 let followUpAsked = false;
 let examinerVoiceEnabled = true;
@@ -806,6 +811,9 @@ let answerRecordingBlob = null;
 let recordingTimerInterval = null;
 let recordingStartTime = null;
 let sttActive = false;
+let currentCardState = CARD_STATE_READY;
+let lastTranscript = '';
+let lastScore = null;
 
 // --- Initialization ---
 
@@ -907,6 +915,15 @@ function setupEventListeners() {
     });
 }
 
+// --- Card State Management ---
+
+/** Sets the card's visual state class and updates visibility. */
+function setState(state) {
+    currentCardState = state;
+    const card = document.getElementById('questionCardContainer');
+    card.className = 'question-card question-card--' + state;
+}
+
 // --- Core Rendering ---
 
 function renderCurrentQuestion() {
@@ -914,16 +931,40 @@ function renderCurrentQuestion() {
     const q = allQuestions[currentIndex];
 
     // Reset state
-    chatMessages = [];
     followUpAsked = false;
+    lastTranscript = '';
+    lastScore = null;
+    answerRecordingBlob = null;
     stopRecordingIfActive();
 
-    // Update topic header
-    updateTopicHeader(q);
+    // Set card to ready state
+    setState(CARD_STATE_READY);
 
-    // Clear chat and start conversation
-    clearChat();
-    startQuestion(q);
+    // Update badge
+    updateBadge(q);
+
+    // Update meta (counter + fav)
+    updateMeta(q);
+
+    // Update question text
+    document.getElementById('questionText').textContent = q.question;
+
+    // Update dots (main question + follow-up)
+    renderDots(q);
+
+    // Clear scored areas
+    document.getElementById('scoreArea').innerHTML = '';
+    document.getElementById('studentTranscriptText').textContent = '';
+    document.getElementById('sampleAnswerText').textContent = '';
+    document.getElementById('cardActions').innerHTML = '';
+
+    // Reset transcript area
+    document.getElementById('liveText').textContent = 'Listening...';
+    document.getElementById('liveWordCount').textContent = '0 words';
+    document.getElementById('liveTimer').textContent = '0:00';
+
+    // Hide manual input
+    document.getElementById('manualAnswerArea').classList.add('hidden');
 
     // Update strategy
     if (q.bestStrategy && q.bestStrategy !== currentStrategy) {
@@ -933,15 +974,20 @@ function renderCurrentQuestion() {
     updateStrategyHint();
     updateProgress();
 
-    // Reset input area
-    resetInputArea();
+    // Reset controls bar
+    resetControlsBar();
+
+    // Speak question
+    speakExaminerText(q.question);
 }
 
-function updateTopicHeader(q) {
+function updateBadge(q) {
     const badge = document.getElementById('topicBadge');
     badge.textContent = q.topic;
-    badge.className = 'topic-badge ' + getCategoryClass(q.topic);
+    badge.className = 'question-card__badge ' + getCategoryClass(q.topic);
+}
 
+function updateMeta(q) {
     const total = allQuestions.length || TOTAL_QUESTIONS;
     document.getElementById('qCounter').textContent =
         (currentIndex + 1) + ' / ' + total;
@@ -963,17 +1009,32 @@ function getCategoryClass(topic) {
     return map[topic] || 'society';
 }
 
-function clearChat() {
-    document.getElementById('chatContainer').innerHTML = '';
+function renderDots(q) {
+    const dotsContainer = document.getElementById('followupDots');
+    const hasFollowUp = Boolean(q.followUp);
+    const dotCount = hasFollowUp ? 2 : 1;
+
+    let html = '';
+    for (let i = 0; i < dotCount; i++) {
+        const cls = i === 0 ? 'dot active' : 'dot';
+        html += '<span class="' + cls + '"></span>';
+    }
+    dotsContainer.innerHTML = html;
 }
 
-function resetInputArea() {
-    document.getElementById('inputTranscript').style.display = 'none';
-    document.getElementById('liveText').textContent = 'Listening...';
-    document.getElementById('liveWordCount').textContent = '0 words';
-    document.getElementById('liveTimer').textContent = '0:00';
-    document.getElementById('manualAnswerArea').classList.add('hidden');
+function updateDotState(activeDotIndex) {
+    const dots = document.querySelectorAll('#followupDots .dot');
+    dots.forEach((dot, i) => {
+        dot.classList.remove('active', 'done');
+        if (i < activeDotIndex) {
+            dot.classList.add('done');
+        } else if (i === activeDotIndex) {
+            dot.classList.add('active');
+        }
+    });
+}
 
+function resetControlsBar() {
     const micBtn = document.getElementById('micBtn');
     micBtn.classList.remove('recording');
     micBtn.textContent = '\ud83c\udfa4';
@@ -984,121 +1045,111 @@ function resetInputArea() {
     skipBtn.className = 'btn-skip';
 }
 
-// --- Conversation Engine ---
+// --- Score Display ---
 
-function startQuestion(q) {
-    addMessage('examiner', q.question, null);
-    speakExaminerText(q.question);
+/** Renders score, transcript, and sample answer in the card. */
+function showScore(transcript, score, q) {
+    setState(CARD_STATE_SCORED);
+
+    // Score display
+    const scoreArea = document.getElementById('scoreArea');
+    if (score) {
+        const overall = parseFloat(score.overall);
+        let overallCls = 'mid';
+        if (overall >= 6.5) overallCls = 'high';
+        else if (overall < 5.5) overallCls = 'low';
+
+        scoreArea.innerHTML =
+            '<div class="score-display">' +
+            '<span class="score-overall">' + score.overall + '</span>' +
+            '</div>' +
+            '<div class="score-breakdown">' +
+            buildScoreChip('F', score.fluency) +
+            buildScoreChip('V', score.vocabulary) +
+            buildScoreChip('G', score.grammar) +
+            buildScoreChip('P', score.pronunciation) +
+            '</div>';
+    }
+
+    // Student transcript
+    document.getElementById('studentTranscriptText').textContent = transcript;
+
+    // Sample answer
+    if (q.sampleAnswer) {
+        document.getElementById('sampleAnswerText').textContent =
+            q.sampleAnswer.text;
+    }
+
+    // Action buttons
+    renderCardActions();
 }
 
-function addMessage(role, text, score) {
-    const container = document.getElementById('chatContainer');
-    const msg = document.createElement('div');
-    msg.className = 'chat-msg ' + role + '-msg';
-
-    const avatar = document.createElement('div');
-    avatar.className = 'msg-avatar';
-    avatar.textContent = role === 'examiner' ? 'E' : 'S';
-
-    const bubble = document.createElement('div');
-    bubble.className = 'msg-bubble';
-    bubble.innerHTML = '<div class="msg-text">' +
-        escapeHtml(text) + '</div>';
-
-    if (score && role === 'student') {
-        const wc = countWords(text);
-        bubble.innerHTML += '<div class="msg-meta">' +
-            wc + ' words \u00b7 Band ' + score.overall + '</div>';
-    }
-
-    if (role === 'student') {
-        const actions = buildStudentActions(text, score);
-        if (actions) bubble.appendChild(actions);
-    }
-
-    if (role === 'examiner') {
-        msg.append(avatar, bubble);
-    } else {
-        msg.append(bubble, avatar);
-    }
-
-    container.appendChild(msg);
-    scrollChatToBottom();
-
-    chatMessages.push({ role, text, score });
+function buildScoreChip(label, value) {
+    const v = parseFloat(value);
+    let cls = 'score-chip mid';
+    if (v >= 6.5) cls = 'score-chip high';
+    else if (v < 5.5) cls = 'score-chip low';
+    return '<span class="' + cls + '">' + label + ': ' + value + '</span>';
 }
 
-function buildStudentActions(text, score) {
-    const div = document.createElement('div');
-    div.className = 'msg-actions';
+function renderCardActions() {
+    const actions = document.getElementById('cardActions');
+    actions.innerHTML = '';
 
     if (answerRecordingBlob) {
         const dlBtn = document.createElement('button');
         dlBtn.textContent = '\u2b07 Audio';
         dlBtn.onclick = downloadAnswerRecording;
-        div.appendChild(dlBtn);
+        actions.appendChild(dlBtn);
 
         if (typeof TelegramSender !== 'undefined' &&
             typeof botToken !== 'undefined' && botToken) {
             const tgBtn = document.createElement('button');
             tgBtn.textContent = '\ud83d\udce4 Telegram';
             tgBtn.onclick = sendRecordingToTelegram;
-            div.appendChild(tgBtn);
+            actions.appendChild(tgBtn);
         }
     }
-
-    return div.children.length > 0 ? div : null;
 }
 
-function addScorePill(score) {
-    const container = document.getElementById('chatContainer');
-    const div = document.createElement('div');
-    div.className = 'chat-score';
-
-    const overall = parseFloat(score.overall);
-    let cls = 'score-mid';
-    if (overall >= 6.5) cls = 'score-high';
-    else if (overall < 5.5) cls = 'score-low';
-
-    div.innerHTML = '<span class="score-pill ' + cls + '">' +
-        'Band ' + score.overall +
-        ' (F:' + score.fluency +
-        ' V:' + score.vocabulary +
-        ' G:' + score.grammar +
-        ' P:' + score.pronunciation + ')' +
-        '</span>';
-
-    container.appendChild(div);
-    scrollChatToBottom();
-}
-
-function addSampleAnswer(q) {
-    if (!q.sampleAnswer) return;
-    const container = document.getElementById('chatContainer');
-    const div = document.createElement('div');
-    div.className = 'sample-bubble';
-    div.innerHTML = '<div class="sample-label">Band 7-8 Sample Answer</div>' +
-        '<div class="msg-text">' + escapeHtml(q.sampleAnswer.text) + '</div>';
-    container.appendChild(div);
-    scrollChatToBottom();
-}
+// --- Follow-up Flow ---
 
 function showFollowUpOrFinish() {
     const q = allQuestions[currentIndex];
 
     if (q.followUp && !followUpAsked) {
         followUpAsked = true;
-        // Show sample answer first
-        addSampleAnswer(q);
-        // Then follow-up after delay
+        // Show score for main question
+        showScore(lastTranscript, lastScore, q);
+
+        // After delay, advance to follow-up
         setTimeout(() => {
-            addMessage('examiner', q.followUp, null);
+            setState(CARD_STATE_READY);
+            document.getElementById('questionText').textContent = q.followUp;
+            updateDotState(1);
+
+            // Clear scored areas for follow-up
+            document.getElementById('scoreArea').innerHTML = '';
+            document.getElementById('studentTranscriptText').textContent = '';
+            document.getElementById('sampleAnswerText').textContent = '';
+            document.getElementById('cardActions').innerHTML = '';
+            document.getElementById('manualAnswerArea').classList.add('hidden');
+
+            // Reset transcript
+            document.getElementById('liveText').textContent = 'Listening...';
+            document.getElementById('liveWordCount').textContent = '0 words';
+            document.getElementById('liveTimer').textContent = '0:00';
+
+            lastTranscript = '';
+            lastScore = null;
+            answerRecordingBlob = null;
+
+            resetControlsBar();
             speakExaminerText(q.followUp);
-            resetInputArea();
         }, FOLLOW_UP_DELAY_MS);
     } else {
-        // Show sample for follow-up too
-        addSampleAnswer(q);
+        // Show score for follow-up (or main if no follow-up)
+        showScore(lastTranscript, lastScore, q);
         showNextQuestionPrompt();
     }
 }
@@ -1133,15 +1184,13 @@ async function startRecordingFlow() {
         isRecording = true;
         answerRecordingBlob = null;
 
+        setState(CARD_STATE_RECORDING);
+
         const micBtn = document.getElementById('micBtn');
         micBtn.classList.add('recording');
         micBtn.textContent = '\u23f9';
 
-        // Show live transcript
-        const transcriptEl = document.getElementById('inputTranscript');
-        transcriptEl.style.display = 'block';
         document.getElementById('liveText').textContent = 'Listening...';
-
         startRecordingTimer();
         startSTT();
     } catch (err) {
@@ -1169,16 +1218,15 @@ async function stopRecordingFlow() {
         const transcript = (liveText && liveText !== 'Listening...')
             ? liveText : '';
 
-        document.getElementById('inputTranscript').style.display = 'none';
-
         if (transcript) {
             processStudentAnswer(transcript);
         } else {
+            setState(CARD_STATE_READY);
             showManualInput();
         }
     } catch (err) {
         console.error('Recording stop error:', err);
-        document.getElementById('inputTranscript').style.display = 'none';
+        setState(CARD_STATE_READY);
     }
 }
 
@@ -1236,7 +1284,6 @@ function stopRecordingTimer() {
 }
 
 function showManualInput() {
-    document.getElementById('inputTranscript').style.display = 'none';
     document.getElementById('manualAnswerArea').classList.remove('hidden');
     const textarea = document.getElementById('manualAnswerInput');
     textarea.value = '';
@@ -1254,27 +1301,22 @@ function submitManualAnswer() {
 // --- Answer Processing ---
 
 function processStudentAnswer(transcript) {
+    lastTranscript = transcript;
+
     // Score the answer
     let score = null;
     if (window.calculateBandScores) {
         score = calculateBandScores(transcript);
     }
-
-    // Add student bubble
-    addMessage('student', transcript, score);
-
-    // Add score pill
-    if (score) {
-        addScorePill(score);
-    }
+    lastScore = score;
 
     // Save transcript and attempts
     saveTranscriptAndAttempt(transcript, currentIndex);
 
-    // Continue conversation
+    // Show follow-up or finish
     setTimeout(() => {
         showFollowUpOrFinish();
-    }, 500);
+    }, 300);
 }
 
 function saveTranscriptAndAttempt(transcript, index) {
@@ -1410,7 +1452,7 @@ function updateStrategyHint() {
     if (!config) return;
     const content = document.getElementById('hintContent');
     let html = '<strong>' + config.name + '</strong><br>' +
-        '<div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:8px;">' +
+        '<div style="font-size:0.8rem;color:var(--color-text-secondary);margin-bottom:8px;">' +
         config.description + '</div>';
 
     config.fields.forEach((field, i) => {
@@ -1424,7 +1466,7 @@ function updateStrategyHint() {
     // Add connectors
     const connectors = CONNECTOR_EXAMPLES[currentStrategy];
     if (connectors) {
-        html += '<hr style="border-color:rgba(255,255,255,0.08);margin:12px 0;">' +
+        html += '<hr style="border-color:var(--color-border);margin:12px 0;">' +
             connectors;
     }
 
@@ -1537,11 +1579,4 @@ function formatDuration(ms) {
     const min = Math.floor(totalSec / 60);
     const sec = totalSec % 60;
     return min + ':' + sec.toString().padStart(2, '0');
-}
-
-function scrollChatToBottom() {
-    const container = document.getElementById('chatContainer');
-    requestAnimationFrame(() => {
-        container.scrollTop = container.scrollHeight;
-    });
 }

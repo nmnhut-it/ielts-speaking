@@ -17,7 +17,7 @@ Redesign Part 2 (Long Turn) and Part 3 (Discussion) to match Part 1's quality le
 
 ---
 
-## Part 2: Long Turn — Seamless Single-Screen Card
+## Part 2: Long Turn — Seamless Single-Screen Card ✅ DONE
 
 ### Current Problems
 - 3 separate phase sections shown/hidden with `display:none` — feels like page navigation
@@ -230,18 +230,26 @@ ready → recording → scored → (follow-up or next question)
 - Refactor phase management to state classes
 - Test full flow: idle → prep → speaking → review → next
 
-### Step 4: Part 3 CSS (`styles/part3-practice.css`)
+### Step 4: Part 3 CSS (`styles/part3-practice.css`) ✅ DONE
 - Complete rewrite with purple theme, DM Sans, design tokens
-- Light background, question card styles
+- Light background (#faf5ff), white cards, backdrop blur top/bottom bars
+- Question card with state classes (ready, recording, scored)
+- Category badge colors, dot indicators, score chips, controls bar
 
-### Step 5: Part 3 HTML (`ielts-part3-practice.html`)
-- Restructure from chat to question card layout
-- Add font imports
-- Update top bar
+### Step 5: Part 3 HTML (`ielts-part3-practice.html`) ✅ DONE
+- Restructured from chat to question card layout
+- Added Google Fonts (DM Sans + DM Mono) link tags
+- Question card with badge, meta, dots, transcript, score, sample areas
+- Sticky bottom controls bar (prev, mic, skip)
+- Strategy hint as floating collapsible
 
-### Step 6: Part 3 JS (`scripts/part3-practice.js`)
-- Refactor from chat rendering to card state management
-- Test full flow: ready → recording → scored → follow-up → next
+### Step 6: Part 3 JS (`scripts/part3-practice.js`) ✅ DONE
+- Removed all chat bubble rendering (addMessage, addScorePill, addSampleAnswer, scrollChatToBottom)
+- Added setState() for card state management (ready/recording/scored)
+- renderCurrentQuestion() updates card content instead of appending chat messages
+- showScore() renders score, transcript, and sample in card sections
+- Follow-up flow: after scoring, card resets to ready with follow-up question, dot advances
+- All 40 questions, strategies, connectors, scoring, Telegram, STT preserved
 
 ### Step 7: Cross-part consistency check
 - Verify all 3 parts share: DM Sans, consistent top bar, settings panel pattern, identification modal

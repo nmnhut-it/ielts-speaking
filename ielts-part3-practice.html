@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Part 3: Discussion Practice</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/part3-practice.css">
 </head>
 <body>
@@ -107,37 +110,58 @@
         <button class="btn-close" onclick="toggleSettings()">Done</button>
     </aside>
 
-    <!-- Main Content - Chat Layout -->
+    <!-- Main Content - Card Layout -->
     <main id="mainContent">
-        <!-- Topic header -->
-        <div class="topic-header" id="topicHeader">
-            <span class="topic-badge" id="topicBadge">Society & Culture</span>
-            <span class="q-counter" id="qCounter">1 / 40</span>
-            <button class="btn-fav" id="favBtn" onclick="toggleFavorite()">☆</button>
-        </div>
+        <!-- Question Card -->
+        <div class="question-card question-card--ready" id="questionCardContainer">
+            <div class="question-card__badge" id="topicBadge">Society & Culture</div>
 
-        <!-- Chat container -->
-        <div class="chat-container" id="chatContainer">
-            <!-- Messages appended dynamically -->
-        </div>
+            <div class="question-card__meta">
+                <span class="q-counter" id="qCounter">1 / 40</span>
+                <button class="btn-fav" id="favBtn" onclick="toggleFavorite()">☆</button>
+            </div>
 
-        <!-- Speaking input (bottom, sticky) -->
-        <div class="chat-input" id="chatInput">
-            <div class="input-transcript" id="inputTranscript" style="display:none">
+            <h2 class="question-card__text" id="questionText">Question here</h2>
+
+            <div class="question-card__dots" id="followupDots">
+                <!-- dot indicators rendered by JS -->
+            </div>
+
+            <!-- Recording section (visible in recording state) -->
+            <div class="question-card__transcript" id="transcriptArea">
                 <div id="liveText">Listening...</div>
-                <div class="input-meta">
+                <div class="transcript-meta">
                     <span id="liveWordCount">0 words</span>
                     <span id="liveTimer">0:00</span>
                 </div>
             </div>
+
+            <!-- Manual answer input -->
             <div class="manual-input-area hidden" id="manualAnswerArea">
                 <textarea id="manualAnswerInput" rows="4" placeholder="Type your answer here..."></textarea>
                 <button onclick="submitManualAnswer()">Submit Answer</button>
             </div>
-            <div class="input-actions">
-                <button class="btn-prev" onclick="previousQuestion()">←</button>
-                <button class="btn-mic" id="micBtn" onclick="toggleRecording()">🎤</button>
-                <button class="btn-skip" id="skipBtn" onclick="skipToNext()">Skip →</button>
+
+            <!-- Score section (visible in scored state) -->
+            <div class="question-card__score" id="scoreArea">
+                <!-- Score display rendered by JS -->
+            </div>
+
+            <!-- Student transcript in scored state -->
+            <div class="question-card__student-transcript" id="studentTranscriptArea">
+                <div class="transcript-label">Your Answer</div>
+                <div id="studentTranscriptText"></div>
+            </div>
+
+            <!-- Sample answer -->
+            <div class="question-card__sample" id="sampleArea">
+                <div class="sample-label">Band 7-8 Sample Answer</div>
+                <div id="sampleAnswerText"></div>
+            </div>
+
+            <!-- Action buttons (download, telegram) -->
+            <div class="question-card__actions" id="cardActions">
+                <!-- Rendered by JS -->
             </div>
         </div>
 
@@ -149,6 +173,15 @@
             </div>
         </div>
     </main>
+
+    <!-- Controls Bar (sticky bottom) -->
+    <div class="controls-bar" id="controlsBar">
+        <div class="controls-bar__inner">
+            <button class="btn-prev" onclick="previousQuestion()">←</button>
+            <button class="btn-mic" id="micBtn" onclick="toggleRecording()">🎤</button>
+            <button class="btn-skip" id="skipBtn" onclick="skipToNext()">Skip →</button>
+        </div>
+    </div>
 
     <!-- Scripts -->
     <script src="shared/telegram.js"></script>

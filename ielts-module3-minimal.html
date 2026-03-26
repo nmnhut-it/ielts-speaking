@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Module 3: Part 2 Long Turn</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles/module3-minimal.css">
 </head>
 <body>
@@ -11,7 +14,7 @@
     <div class="identification-overlay" id="identificationOverlay"></div>
     <div class="identification-modal" id="identificationModal">
         <div class="modal-header">
-            <h3>👤 Student Identification</h3>
+            <h3>Student Identification</h3>
         </div>
         <div class="modal-body">
             <p class="identification-intro">Please enter your name and take a photo to start your practice session.</p>
@@ -51,14 +54,14 @@
                 Start Practice Session
             </button>
 
-            <p class="identification-note">⚠️ Your photo will be sent to your instructor via Telegram.</p>
+            <p class="identification-note">Your photo will be sent to your instructor via Telegram.</p>
         </div>
     </div>
 
     <!-- Top Bar -->
     <header class="top-bar">
         <a href="index.html" class="back-link">← Home</a>
-        <h1 class="title">Module 3: Part 2 Long Turn</h1>
+        <h1 class="title">Part 2 · Long Turn</h1>
         <div class="progress-mini">
             <span id="progressCount" onclick="openJumpModal()" style="cursor: pointer;" title="Click to jump to topic">0/50</span>
             <button class="settings-btn" onclick="toggleSettings()" aria-label="Settings">⚙</button>
@@ -134,103 +137,111 @@
             </div>
         </div>
 
-        <!-- PHASE 1: Cue Card + Prep -->
-        <section class="phase-content" id="prepPhase">
-            <div class="cuecard-hero" id="cuecardHero">
-                <div class="cuecard-meta">
-                    <span class="card-number" id="cardNumber">Card 1</span>
-                    <span class="card-category" id="cardCategory">Experience</span>
-                    <span id="attemptBadge" style="display:none"></span>
-                    <button class="btn-fav" id="favBtn" onclick="toggleFavorite()">☆</button>
-                </div>
-                <h2 class="cuecard-topic" id="cardTopic">Describe a time when you helped someone</h2>
-                <div class="cuecard-prompts" id="cardPrompts">
-                    <p>You should say:</p>
-                    <ul id="promptsList"></ul>
-                </div>
+        <!-- Single morphing cue card -->
+        <div class="cuecard cuecard--idle" id="cuecardContainer">
+            <!-- Card header: number, category, fav -->
+            <div class="cuecard__header">
+                <span class="card-number" id="cardNumber">Card 1</span>
+                <span class="card-category" id="cardCategory">Experience</span>
+                <span id="attemptBadge" style="display:none"></span>
+                <button class="btn-fav" id="favBtn" onclick="toggleFavorite()">☆</button>
             </div>
 
-            <div class="prep-area">
-                <div class="prep-timer">
-                    <svg class="timer-ring" viewBox="0 0 120 120">
-                        <circle cx="60" cy="60" r="54" fill="none" stroke="#e5e7eb" stroke-width="6"/>
-                        <circle cx="60" cy="60" r="54" fill="none" stroke="#16a34a" stroke-width="6"
-                            stroke-dasharray="339.3" stroke-dashoffset="0" stroke-linecap="round"
-                            id="prepTimerProgress"/>
-                    </svg>
-                    <div class="timer-center">
-                        <div class="timer-value" id="prepTimerValue">1:00</div>
-                        <div class="timer-label">Prep Time</div>
+            <!-- Topic + prompts (visible in idle/prep, compact in speaking/review) -->
+            <div class="cuecard__content">
+                <div class="cuecard-hero" id="cuecardHero">
+                    <h2 class="cuecard-topic" id="cardTopic">Describe a time when you helped someone</h2>
+                    <div class="cuecard-prompts" id="cardPrompts">
+                        <p>You should say:</p>
+                        <ul id="promptsList"></ul>
                     </div>
                 </div>
-                <textarea class="prep-notes" id="prepNotes" placeholder="Jot down keywords..."></textarea>
             </div>
 
-            <button class="btn-action btn-prep" id="startPrepBtn" onclick="startPrep()">
-                Start 1-Minute Preparation
-            </button>
+            <!-- Prep section: timer + notes -->
+            <div class="cuecard__prep" id="prepPhase">
+                <div class="prep-area">
+                    <div class="prep-timer">
+                        <svg class="timer-ring" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="54" fill="none" stroke-width="6"/>
+                            <circle cx="60" cy="60" r="54" fill="none" stroke-width="6"
+                                stroke-dasharray="339.3" stroke-dashoffset="0" stroke-linecap="round"
+                                id="prepTimerProgress"/>
+                        </svg>
+                        <div class="timer-center">
+                            <div class="timer-value" id="prepTimerValue">1:00</div>
+                            <div class="timer-label">Prep Time</div>
+                        </div>
+                    </div>
+                    <textarea class="prep-notes" id="prepNotes" placeholder="Jot down keywords..."></textarea>
+                </div>
 
-            <!-- Key Vocabulary -->
-            <details class="detail-section" id="vocabSection" style="display:none">
-                <summary>Key Vocabulary</summary>
-                <div id="vocabContent"></div>
-            </details>
-        </section>
+                <button class="btn-action btn-prep" id="startPrepBtn" onclick="startPrep()">
+                    Start 1-Minute Preparation
+                </button>
 
-        <!-- PHASE 2: Speaking -->
-        <section class="phase-content" id="speakPhase" style="display:none">
-            <div class="cuecard-mini" id="cuecardMini">
-                <!-- Shrunk cue card at top for reference -->
+                <!-- Key Vocabulary -->
+                <details class="detail-section" id="vocabSection" style="display:none">
+                    <summary>Key Vocabulary</summary>
+                    <div id="vocabContent"></div>
+                </details>
             </div>
 
-            <div class="speaking-center">
-                <svg class="timer-ring timer-ring-large" viewBox="0 0 200 200">
-                    <circle cx="100" cy="100" r="90" fill="none" stroke="#e5e7eb" stroke-width="8"/>
-                    <circle cx="100" cy="100" r="90" fill="none" stroke="#16a34a" stroke-width="8"
-                        stroke-dasharray="565.5" stroke-dashoffset="0" stroke-linecap="round"
-                        id="speakTimerProgress"/>
-                </svg>
-                <div class="timer-center-large">
-                    <div class="timer-value-large" id="speakTimerValue">2:00</div>
-                    <div class="timer-label">Speaking</div>
-                    <div class="word-counter" id="liveWordCount">0 words</div>
+            <!-- Speaking section: large timer + transcript -->
+            <div class="cuecard__speaking" id="speakPhase" style="display:none">
+                <div class="cuecard-mini" id="cuecardMini">
+                    <!-- Shrunk cue card at top for reference -->
+                </div>
+
+                <div class="speaking-center">
+                    <svg class="timer-ring timer-ring-large" viewBox="0 0 200 200">
+                        <circle cx="100" cy="100" r="90" fill="none" stroke-width="8"/>
+                        <circle cx="100" cy="100" r="90" fill="none" stroke-width="8"
+                            stroke-dasharray="565.5" stroke-dashoffset="0" stroke-linecap="round"
+                            id="speakTimerProgress"/>
+                    </svg>
+                    <div class="timer-center-large">
+                        <div class="timer-value-large" id="speakTimerValue">2:00</div>
+                        <div class="timer-label">Speaking</div>
+                        <div class="word-counter" id="liveWordCount">0 words</div>
+                    </div>
+                </div>
+
+                <div class="live-transcript" id="liveTranscript">
+                    Speak now — your words will appear here...
+                </div>
+
+                <button class="btn-action btn-stop" id="stopSpeakBtn" onclick="stopSpeaking()">
+                    Done Speaking
+                </button>
+            </div>
+
+            <!-- Review section: scores + comparison -->
+            <div class="cuecard__review" id="reviewPhase" style="display:none">
+                <div class="review-score" id="reviewScore">
+                    <!-- Score display inserted here -->
+                </div>
+
+                <div class="review-comparison" id="reviewComparison">
+                    <!-- Side-by-side comparison -->
+                </div>
+
+                <div class="review-followup" id="reviewFollowup" style="display:none">
+                    <h3>Examiner Follow-up Questions</h3>
+                    <div id="followupContent"></div>
+                </div>
+
+                <details class="detail-section">
+                    <summary>Band 7-8 Sample Answer</summary>
+                    <div id="sampleContent"></div>
+                </details>
+
+                <div class="review-actions">
+                    <button class="btn-action btn-retry" onclick="tryAgain()">Try Again</button>
+                    <button class="btn-action btn-next" onclick="nextCard()">Next Card</button>
                 </div>
             </div>
-
-            <div class="live-transcript" id="liveTranscript">
-                Speak now — your words will appear here...
-            </div>
-
-            <button class="btn-action btn-stop" id="stopSpeakBtn" onclick="stopSpeaking()">
-                Done Speaking
-            </button>
-        </section>
-
-        <!-- PHASE 3: Review -->
-        <section class="phase-content" id="reviewPhase" style="display:none">
-            <div class="review-score" id="reviewScore">
-                <!-- Score display inserted here -->
-            </div>
-
-            <div class="review-comparison" id="reviewComparison">
-                <!-- Side-by-side comparison -->
-            </div>
-
-            <div class="review-followup" id="reviewFollowup" style="display:none">
-                <h3>Examiner Follow-up Questions</h3>
-                <div id="followupContent"></div>
-            </div>
-
-            <details class="detail-section">
-                <summary>Band 7-8 Sample Answer</summary>
-                <div id="sampleContent"></div>
-            </details>
-
-            <div class="review-actions">
-                <button class="btn-action btn-retry" onclick="tryAgain()">Try Again</button>
-                <button class="btn-action btn-next" onclick="nextCard()">Next Card</button>
-            </div>
-        </section>
+        </div>
 
         <!-- Navigation (always visible) -->
         <nav class="card-nav">
