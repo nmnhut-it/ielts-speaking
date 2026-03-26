@@ -180,6 +180,19 @@
                     Start 1-Minute Preparation
                 </button>
 
+                <button class="btn-ai-ideas" id="aiIdeasBtn" onclick="getAIIdeas()">
+                    💡 Get AI Ideas
+                </button>
+                <div class="ai-ideas-panel" id="aiIdeasPanel" style="display:none">
+                    <div class="ai-ideas-header">
+                        <span>💡 AI Suggestions</span>
+                        <button class="ai-ideas-close" onclick="closeAIIdeas()">✕</button>
+                    </div>
+                    <div class="ai-ideas-content" id="aiIdeasContent">
+                        Loading...
+                    </div>
+                </div>
+
                 <!-- Key Vocabulary -->
                 <details class="detail-section" id="vocabSection" style="display:none">
                     <summary>Key Vocabulary</summary>
@@ -243,12 +256,13 @@
             </div>
         </div>
 
-        <!-- Navigation (always visible) -->
-        <nav class="card-nav">
-            <button class="nav-btn" onclick="previousCard()">Previous</button>
-            <button class="nav-btn nav-btn-primary" onclick="nextCard()">Next</button>
-        </nav>
     </main>
+
+    <!-- Navigation (sticky bottom) -->
+    <nav class="card-nav">
+        <button class="nav-btn" onclick="previousCard()">Previous</button>
+        <button class="nav-btn nav-btn-primary" onclick="nextCard()">Next</button>
+    </nav>
 
     <!-- Scripts -->
     <script src="shared/telegram.js"></script>

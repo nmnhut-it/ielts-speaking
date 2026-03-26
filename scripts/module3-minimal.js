@@ -2215,6 +2215,62 @@ function updateAttemptBadge(cardIndex) {
     }
 }
 
+// ========== AI IDEAS GENERATION ==========
+
+/** Ask Gemini for speaking ideas for the current cue card */
+async function getAIIdeas() {
+    var hasGemini = window.ieltsCoachAI && window.ieltsCoachAI.hasApiKey();
+    if (!hasGemini) {
+        alert('Please set your Gemini API key in settings first.');
+        return;
+    }
+
+    var card = allCards[currentIndex];
+    var btn = document.getElementById('aiIdeasBtn');
+    var panel = document.getElementById('aiIdeasPanel');
+    var content = document.getElementById('aiIdeasContent');
+
+    btn.classList.add('loading');
+    btn.textContent = '💡 Generating ideas...';
+    panel.style.display = 'block';
+    content.innerHTML = '<div style="text-align:center;color:var(--color-text-muted);">AI is thinking...</div>';
+
+    var prompt = 'You are an IELTS Speaking Part 2 coach. The student has this cue card:\n\n' +
+        'Topic: ' + card.topic + '\n' +
+        'They should say:\n' + card.prompts.map(function(p) { return '- ' + p; }).join('\n') + '\n\n' +
+        'Give concise, practical speaking ideas in this format:\n' +
+        '**Key Ideas** (3-4 bullet points of specific things to talk about)\n' +
+        '**Useful Vocabulary** (5-6 advanced words/phrases relevant to this topic)\n' +
+        '**Opening Sentence** (one strong opening line they can use)\n\n' +
+        'Keep it brief — this is for a 1-minute prep. Use simple markdown.';
+
+    try {
+        var result = await window.ieltsCoachAI.callGemini(prompt, { temperature: 0.8, maxTokens: 512 });
+        content.innerHTML = '<div class="gemini-feedback">' + markdownToHtml(result) + '</div>';
+    } catch (err) {
+        content.innerHTML = '<div style="color:var(--color-danger);">Failed to get AI ideas. ' + err.message + '</div>';
+    }
+
+    btn.classList.remove('loading');
+    btn.textContent = '💡 Get AI Ideas';
+}
+
+/** Close the AI ideas panel */
+function closeAIIdeas() {
+    document.getElementById('aiIdeasPanel').style.display = 'none';
+}
+
+/** Convert basic markdown to HTML (reuse if exists, else simple fallback) */
+function markdownToHtml(md) {
+    if (window.markdownToHtml) return window.markdownToHtml(md);
+    return md
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/^- (.+)$/gm, '<li>$1</li>')
+        .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+        .replace(/\n/g, '<br>');
+}
+
 // ========== PHASE 5: BAND SCORING INTEGRATION ==========
 
 /** Run band scoring on a transcript and display results */
