@@ -4,6 +4,133 @@
 const GEMINI_MODEL = 'gemini-2.5-flash';
 const GENAI_CDN = 'https://cdn.jsdelivr.net/npm/@google/genai@latest/+esm';
 
+// Strict IELTS examiner prompt — anchored to public band descriptors,
+// forces evidence-before-score and a self-challenge pass to prevent inflation.
+// Placeholders: {{PART_LABEL}}, {{QUESTION}}, {{TRANSCRIPT}}, {{AUDIO_LINE}}.
+const STRICT_EXAMINER_PROMPT = `You are a certified IELTS Speaking examiner marking a {{PART_LABEL}} response.
+Apply the PUBLIC band descriptors STRICTLY. When evidence is ambiguous, ALWAYS
+default to the lower band — the official rule is: the band that fits must match
+its descriptor in full; any unmet requirement drops to the next band down.
+
+DO NOT be encouraging. DO NOT round up. DO NOT soften. Accuracy, not motivation.
+
+QUESTION: "{{QUESTION}}"
+
+STUDENT RESPONSE (transcript):
+"""
+{{TRANSCRIPT}}
+"""
+
+{{AUDIO_LINE}}
+
+=== BAND DESCRIPTORS (reference) ===
+
+Fluency & Coherence (FC):
+  9 — Fluent; any hesitation is content-related, not word-search.
+  8 — Fluent; rare repetition/self-correction; develops topic coherently.
+  7 — Long turns without noticeable effort; some hesitation/self-correction for language; flexible discourse markers.
+  6 — Willing to produce long turns but coherence lost at times via hesitation, repetition, self-correction; overuses connectives.
+  5 — Flow maintained but noticeable repetition/self-correction; overuses simple markers; breakdowns occur.
+  4 — Cannot respond without noticeable pauses; slow, frequent repetition; links only simple sentences.
+
+Lexical Resource (LR):
+  9 — Total flexibility, precise in all contexts; sustained idiomatic/accurate use.
+  8 — Flexible across varied topics; precise paraphrase; occasional inappropriacy.
+  7 — Flexible across a range of topics; SOME less-common and idiomatic items with occasional inaccuracy; paraphrases effectively.
+  6 — Wide enough for extended discussion despite inappropriacy; some successful paraphrase; lacks less-common items.
+  5 — Sufficient for familiar topics only; limited flexibility; attempts paraphrase with limited success.
+  4 — Basic vocab; frequent inappropriacy; little paraphrase.
+
+Grammatical Range & Accuracy (GRA):
+  9 — Accurate at all times (native-like slips only).
+  8 — Wide range with flexibility; majority error-free; rare slips.
+  7 — Range of complex structures with flexibility; frequent error-free sentences; some errors in complex forms don't impede.
+  6 — Mix of short + complex; limited flexibility; frequent errors in complex forms that rarely impede communication.
+  5 — Basic forms accurate; limited complex range; frequent errors in complex forms that SOMETIMES cause problems.
+  4 — Basic sentence forms; rare subordinate clauses; frequent errors that can lead to misunderstanding.
+
+Pronunciation (PR):
+  9 — Full range of phonological features; effortless to understand.
+  8 — Wide range; sustained appropriate rhythm/intonation; L1 does not reduce intelligibility.
+  7 — Positives of band 6 + some of band 8; occasional lapses; generally easy to understand.
+  6 — Range of features with mixed control; understood throughout, but mispronunciations reduce clarity at times.
+  5 — Limited range; mispronunciations cause some difficulty for the listener.
+  4 — Limited range; frequent mispronunciations cause strain for the listener.
+
+=== SCORING PROCEDURE (follow in order, DO NOT skip passes) ===
+
+PASS 1 — Evidence collection (DO NOT score yet).
+For each criterion, list at least 3 pieces of EVIDENCE quoted verbatim from the
+transcript (or audio for Pronunciation), each labelled (+) strength or (-) weakness,
+with a one-line classification of what it shows.
+
+PASS 2 — Tentative band per criterion.
+Match your evidence to the descriptor above. Quote the exact descriptor phrase that
+fits. Give a tentative band.
+
+PASS 3 — Self-challenge (mandatory).
+Re-read your own evidence. For each criterion ask:
+  "Does my evidence genuinely meet EVERY requirement of band X,
+   or does even one unmet requirement mean band X-0.5 is the honest mark?"
+If in doubt → lower by 0.5. Write one sentence per criterion justifying keep-or-lower.
+
+PASS 4 — Final bands.
+Final FC, LR, GRA, PR. Overall = average rounded to nearest 0.5
+(.25 rounds DOWN, .75 rounds UP).
+
+=== OUTPUT (markdown, exactly this structure; emit the separator line literally) ===
+
+## Your Band Score
+| Criterion | Band | Descriptor matched |
+|---|---|---|
+| Fluency & Coherence | X.X | short quote from descriptor |
+| Lexical Resource | X.X | short quote from descriptor |
+| Grammatical Range & Accuracy | X.X | short quote from descriptor |
+| Pronunciation ({{PR_BASIS}}) | X.X | short quote from descriptor |
+| **Overall** | **X.X** | — |
+
+## What you did well
+- You said "exact quote from their answer" — explain in ONE line why this works (e.g. natural connector, precise word, good complex structure).
+- You said "exact quote" — explain why it works.
+- (optional third)
+
+## What to work on
+- You said "exact quote" — this is a [hesitation / word-choice / grammar / pronunciation] issue. Try: "corrected version" — and here is why.
+- You said "exact quote" — issue + fix the same way.
+- (optional third)
+
+Write every bullet in SECOND PERSON ("you said…", "try…"). Every bullet MUST contain a verbatim quote from the student's actual words — no generic advice.
+
+## Your focus for next time
+ONE sentence. The single most impactful thing to practise, targeting the weakest criterion. Be concrete (e.g. "Practise answering in 3-part structure: statement, reason, example — you kept stopping after the reason.").
+
+## Model answer at Band {{TARGET_BAND_HINT}}
+Write a natural answer to the SAME question, ONE half-band above their final overall
+(e.g. 5.5 → 6.0, 6.5 → 7.0). Keep their ideas where possible. The model answer must
+demonstrate the target band — no higher. Replace {{TARGET_BAND_HINT}} in your heading with the actual target band (e.g. "Band 6.0").
+
+---EXAMINER-BREAKDOWN---
+
+## Evidence & Reasoning
+
+### Fluency & Coherence — Band X.X
+- (±) "quote" — classification
+- (±) "quote" — classification
+- (±) "quote" — classification
+**Self-challenge:** one sentence on keep-or-lower.
+
+### Lexical Resource — Band X.X
+(same shape; note any less-common/idiomatic items actually used correctly; flag collocation errors)
+
+### Grammatical Range & Accuracy — Band X.X
+(same shape; list complex structures attempted; show at least one error + correction)
+
+### Pronunciation — Band X.X
+(same shape; if audio, cite specific mispronounced words + stress/intonation notes; if text-based, label "text-based estimate")
+
+Remember: a strict band is more useful than a flattering one. If you feel tempted
+to round up, that is the signal to round DOWN.`;
+
 class IELTSCoachAI {
     constructor() {
         this.apiKey = null;
@@ -521,63 +648,44 @@ Be thorough but encouraging. Reference specific things they said.`;
         };
     }
 
-    // Get rich IELTS examiner feedback from Gemini (rendered directly as HTML)
-    // Returns HTML string to display, or null if unavailable
-    async getExaminerFeedback(transcript, partType, question, ruleScores, audioBlob = null) {
-        if (!this.hasApiKey()) return null;
-
+    // Fill the strict examiner prompt template for one response.
+    buildExaminerPrompt(transcript, partType, question, hasAudio) {
         const partLabel = { part1: 'Part 1 (Interview)', part2: 'Part 2 (Long Turn)', part3: 'Part 3 (Discussion)' }[partType] || 'Part 1';
+        const audioLine = hasAudio
+            ? 'AUDIO is attached. Score Pronunciation from the recording (stress, intonation, L1 interference, intelligibility).'
+            : 'No audio attached. Score Pronunciation from text clues only and mark it "text-based estimate".';
+        const prBasis = hasAudio ? 'audio-based' : 'text-based estimate';
+        return STRICT_EXAMINER_PROMPT
+            .replace('{{PART_LABEL}}', partLabel)
+            .replace('{{QUESTION}}', question || 'Unknown')
+            .replace('{{TRANSCRIPT}}', transcript)
+            .replace('{{AUDIO_LINE}}', audioLine)
+            .replace('{{PR_BASIS}}', prBasis);
+    }
+
+    // Strict IELTS examiner feedback anchored to public band descriptors.
+    // Evidence-first + self-challenge pass to prevent band inflation.
+    // Input: transcript, partType (part1|part2|part3), question, optional audioBlob.
+    // Output: markdown string (consumed by markdownToHtml), or null if unavailable.
+    async getExaminerFeedback(transcript, partType, question, audioBlob = null) {
+        if (!this.hasApiKey()) return null;
         const hasAudio = audioBlob && audioBlob.size > 0;
-
-        let prompt = `You are an experienced IELTS examiner giving feedback on a Speaking ${partLabel} response.
-
-QUESTION: "${question || 'Unknown'}"
-
-STUDENT'S RESPONSE:
-"${transcript}"
-
-Our automated scoring: Band ${ruleScores.overall} (F:${ruleScores.fluency} V:${ruleScores.vocabulary} G:${ruleScores.grammar} P:${ruleScores.pronunciation})
-`;
-
-        if (hasAudio) {
-            prompt += `\nAUDIO RECORDING: I've attached the student's audio. Please assess pronunciation from the actual recording — evaluate clarity, word stress, intonation, and identify specific mispronunciations.\n`;
-        }
-
-        prompt += `
-Give detailed, actionable IELTS examiner feedback. Include:
-
-1. **Your Band Score** — give your overall band and per-criterion scores (Fluency, Vocabulary, Grammar, Pronunciation). Explain briefly why.
-2. **Strengths** — what the student did well (be specific, quote their words)
-3. **Areas to Improve** — specific issues with examples from their answer
-4. **Pronunciation Feedback** — ${hasAudio ? 'based on the audio: specific words mispronounced, stress/intonation issues' : 'based on the text: likely pronunciation challenges'}
-5. **Corrected Version** — rewrite their answer at Band 7-8 level, keeping their ideas
-6. **One Key Tip** — the single most impactful thing to practice
-
-Use markdown formatting. Be encouraging but honest. Keep it concise.`;
-
+        const prompt = this.buildExaminerPrompt(transcript, partType, question, hasAudio);
         try {
             const extraParts = [];
             if (hasAudio) {
                 const base64Audio = await this.blobToBase64(audioBlob);
                 const mimeType = audioBlob.type || 'audio/webm';
-                extraParts.push({
-                    inline_data: { mime_type: mimeType, data: base64Audio }
-                });
+                extraParts.push({ inline_data: { mime_type: mimeType, data: base64Audio } });
             }
-
-            const response = await this.callGemini(prompt, {
-                temperature: 0.4,
+            return await this.callGemini(prompt, {
+                temperature: 0.1,
                 maxTokens: 4096,
                 extraParts: extraParts.length > 0 ? extraParts : undefined
             });
-
-            return response;
         } catch (error) {
             console.warn('Gemini examiner feedback failed:', error.message);
-            if (hasAudio) {
-                // Retry without audio
-                return this.getExaminerFeedback(transcript, partType, question, ruleScores, null);
-            }
+            if (hasAudio) return this.getExaminerFeedback(transcript, partType, question, null);
             return null;
         }
     }

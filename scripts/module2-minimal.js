@@ -1259,10 +1259,10 @@ async function enterReview() {
     if (hasGemini) {
         // Gemini handles everything: transcription from audio, scoring, feedback
         feedbackEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--color-text-muted);"><div class="gemini-loading"></div>AI Examiner is reviewing your answer...</div>';
-        window.ieltsCoachAI.getExaminerFeedback(combinedTranscript, 'part1', questionText, scores, audioBlob)
+        window.ieltsCoachAI.getExaminerFeedback(combinedTranscript, 'part1', questionText, audioBlob)
             .then(markdown => {
                 if (markdown) {
-                    const feedbackHtml = '<div class="gemini-feedback">' + markdownToHtml(markdown) + '</div>';
+                    const feedbackHtml = renderExaminerFeedback(markdown);
                     feedbackEl.innerHTML = feedbackHtml;
                     if (window.workHistory) {
                         window.workHistory.updateFeedback(currentIndex, feedbackHtml);
@@ -1474,6 +1474,21 @@ function markdownToHtml(md) {
         .replace(/^/, '<p>').replace(/$/, '</p>')
         .replace(/<p><h/g, '<h').replace(/<\/h(\d)><\/p>/g, '</h$1>')
         .replace(/<p><ul>/g, '<ul>').replace(/<\/ul><\/p>/g, '</ul>');
+}
+
+/** Split examiner feedback markdown on the breakdown marker and render
+ *  student-facing content up top + collapsible examiner reasoning below. */
+function renderExaminerFeedback(markdown) {
+    const MARKER = '---EXAMINER-BREAKDOWN---';
+    const parts = markdown.split(MARKER);
+    const studentMd = (parts[0] || '').trim();
+    const examinerMd = (parts[1] || '').trim();
+    const studentHtml = markdownToHtml(studentMd);
+    if (!examinerMd) return '<div class="gemini-feedback">' + studentHtml + '</div>';
+    const examinerHtml = markdownToHtml(examinerMd);
+    return '<div class="gemini-feedback">' + studentHtml +
+        '<details class="examiner-reasoning"><summary>Show examiner reasoning (evidence &amp; self-challenge)</summary>' +
+        examinerHtml + '</details></div>';
 }
 
 /** Force stop speaking without scoring (used on question change) */
