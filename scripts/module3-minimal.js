@@ -2691,7 +2691,10 @@ function markdownToHtml(md) {
         .replace(/\*(.+?)\*/g, '<em>$1</em>')
         .replace(/^- (.+)$/gm, '<li>$1</li>')
         .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
-        .replace(/\n/g, '<br>');
+        .replace(/\n/g, '<br>')
+        // Track-changes tokens → <del>/<ins>
+        .replace(/⟪del:([^⟫]+)⟫/g, '<del class="correction-del">$1</del>')
+        .replace(/⟪ins:([^⟫]+)⟫/g, '<ins class="correction-ins">$1</ins>');
 }
 
 // ========== PHASE 5: BAND SCORING INTEGRATION ==========

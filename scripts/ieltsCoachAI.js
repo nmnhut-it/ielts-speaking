@@ -101,6 +101,21 @@ Final FC, LR, GRA, PR. Overall = average rounded to nearest 0.5
 
 Write every bullet in SECOND PERSON ("you said…", "try…"). Every bullet MUST contain a verbatim quote from the student's actual words — no generic advice.
 
+## Inline corrections
+
+Paste the ENTIRE transcript verbatim, then mark changes inline using these exact token brackets:
+- Wrap removals in ⟪del:original text⟫ (the exact words the student said)
+- Wrap insertions or replacements in ⟪ins:new text⟫
+- Adjacent ⟪del:X⟫⟪ins:Y⟫ means "replace X with Y"
+- Only mark real problems: grammar, wrong word choice, awkward phrasing, missing cohesion. Do NOT rewrite stylistically acceptable speech.
+- For Speaking, keep natural contractions and spoken rhythm — only fix what would impact the band.
+- Aim for 3–10 corrections on a typical low-to-mid band response; fewer if strong.
+- Do not use any other markup inside this section.
+
+Example: I ⟪del:go⟫⟪ins:went⟫ to the park yesterday and ⟪del:it was very good⟫⟪ins:had a great time⟫⟪ins:, especially when it started raining⟫.
+
+(your corrected transcript below, preserving every word of the original except those wrapped in ⟪del:⟫)
+
 ## Your focus for next time
 ONE sentence. The single most impactful thing to practise, targeting the weakest criterion. Be concrete (e.g. "Practise answering in 3-part structure: statement, reason, example — you kept stopping after the reason.").
 

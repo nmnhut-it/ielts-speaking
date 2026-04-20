@@ -1667,6 +1667,22 @@ body {
 .gemini-feedback ul { padding-left: 18px; margin: 4px 0 8px; }
 .gemini-feedback li { margin-bottom: 3px; }
 .gemini-feedback strong { color: var(--color-accent-dark); }
+.gemini-feedback del.correction-del {
+    text-decoration: line-through;
+    color: #c1392b;
+    background: rgba(193, 57, 43, 0.08);
+    padding: 0 3px;
+    border-radius: 3px;
+    margin-right: 1px;
+}
+.gemini-feedback ins.correction-ins {
+    text-decoration: none;
+    color: #16803c;
+    background: rgba(22, 128, 60, 0.1);
+    padding: 0 3px;
+    border-radius: 3px;
+    font-weight: 500;
+}
 
 /* ========== Utilities ========== */
 .hidden {

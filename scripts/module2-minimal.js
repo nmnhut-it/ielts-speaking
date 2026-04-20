@@ -1473,7 +1473,10 @@ function markdownToHtml(md) {
         .replace(/\n/g, '<br>')
         .replace(/^/, '<p>').replace(/$/, '</p>')
         .replace(/<p><h/g, '<h').replace(/<\/h(\d)><\/p>/g, '</h$1>')
-        .replace(/<p><ul>/g, '<ul>').replace(/<\/ul><\/p>/g, '</ul>');
+        .replace(/<p><ul>/g, '<ul>').replace(/<\/ul><\/p>/g, '</ul>')
+        // Track-changes tokens → <del>/<ins> (Unicode brackets survive the HTML escape above)
+        .replace(/⟪del:([^⟫]+)⟫/g, '<del class="correction-del">$1</del>')
+        .replace(/⟪ins:([^⟫]+)⟫/g, '<ins class="correction-ins">$1</ins>');
 }
 
 /** Split examiner feedback markdown on the breakdown marker and render
