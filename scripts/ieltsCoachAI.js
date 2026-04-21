@@ -23,6 +23,37 @@ STUDENT RESPONSE (transcript):
 
 {{AUDIO_LINE}}
 
+=== PASS 0 — COHERENCE INTEGRITY CHECK (complete before any evidence collection) ===
+
+A. AUDIO PRIMACY: If audio is attached, score what the examiner HEARS — the recording
+   is ground truth. The transcript may be an imperfect STT output; note any mismatch.
+   If no audio, score from the transcript alone but stay alert for signs of garbled STT.
+
+B. IDENTIFY INCOHERENT UTTERANCES — sentences/phrases where meaning is LOST, not merely wrong.
+
+   INCOHERENT (examiner cannot recover any meaning, even in context):
+   e.g. "A murder raise every Internet whenever all this"
+   e.g. "Even being honest as you listen is all small"
+   e.g. "witness become an important goal of body life"
+
+   UNGRAMMATICAL-BUT-INTELLIGIBLE (wrong grammar, but meaning survives — score normally):
+   e.g. "I go to school yesterday" — wrong tense; meaning is clear
+   e.g. "She don't like it" — SV agreement error; meaning is clear
+
+   Label EVERY sentence/clause: [COHERENT] | [UNGRAMMATICAL] | [INCOHERENT]
+   Then tally: coherent=__ + ungrammatical=__ + incoherent=__ → total=__
+   Incoherence rate = incoherent ÷ total = __%
+
+C. HARD BAND CAPS — these OVERRIDE all evidence-based scoring and cannot be un-capped:
+   Incoherence rate > 50% → FC ≤ 4.0, GRA ≤ 4.0, LR ≤ 4.5
+   Incoherence rate > 30% → FC ≤ 4.5, GRA ≤ 4.5
+   Incoherence rate > 15% → FC ≤ 5.5
+
+D. SPEED/VOLUME TRAP — do not be fooled by these metrics:
+   High WPM, high word count, high TTR, or high unique-word diversity do NOT compensate
+   for incoherence. A fast speaker producing meaningless sentences scores Band 4 on FC,
+   not Band 7-8. Speed without intelligibility IS a defining Band 4 characteristic.
+
 === BAND DESCRIPTORS (reference) ===
 
 Fluency & Coherence (FC):
@@ -103,14 +134,24 @@ Write every bullet in SECOND PERSON ("you said…", "try…"). Every bullet MUST
 
 ## Inline corrections
 
-Paste the ENTIRE transcript verbatim, then mark changes inline using these exact token brackets:
-- Wrap removals in ⟪del:original text⟫ (the exact words the student said)
-- Wrap insertions or replacements in ⟪ins:new text⟫
-- Adjacent ⟪del:X⟫⟪ins:Y⟫ means "replace X with Y"
-- Only mark real problems: grammar, wrong word choice, awkward phrasing, missing cohesion. Do NOT rewrite stylistically acceptable speech.
-- For Speaking, keep natural contractions and spoken rhythm — only fix what would impact the band.
-- Aim for 3–10 corrections on a typical low-to-mid band response; fewer if strong.
+IF incoherence rate from PASS 0 > 30%:
+   The response needs HEAVY correction. For each incoherent sentence, wrap the ENTIRE
+   incoherent phrase in ⟪del:...⟫ and provide a ⟪ins:...⟫ rewrite that recovers the
+   most plausible intended meaning. Every incoherent sentence MUST have a correction.
+   Aim for 8–15 corrections. This is a corrected transcript, not light editing.
+
+ELSE (incoherence rate ≤ 30%):
+   Paste the ENTIRE transcript verbatim, then mark changes inline using these exact token brackets:
+   - Wrap removals in ⟪del:original text⟫ (the exact words the student said)
+   - Wrap insertions or replacements in ⟪ins:new text⟫
+   - Adjacent ⟪del:X⟫⟪ins:Y⟫ means "replace X with Y"
+   - Only mark real problems: grammar, wrong word choice, awkward phrasing, missing cohesion.
+   - For Speaking, keep natural contractions and spoken rhythm — only fix what would impact the band.
+   - Aim for 3–10 corrections; fewer if strong.
+
+Rules for all cases:
 - Do not use any other markup inside this section.
+- Adjacent ⟪del:X⟫⟪ins:Y⟫ means "replace X with Y"
 
 Example: I ⟪del:go⟫⟪ins:went⟫ to the park yesterday and ⟪del:it was very good⟫⟪ins:had a great time⟫⟪ins:, especially when it started raining⟫.
 

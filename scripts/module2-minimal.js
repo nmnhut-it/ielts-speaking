@@ -81,6 +81,9 @@ let recordingTimer = null;
 let currentRecording = null;
 let telegramSender = null;
 
+// Stores the last Gemini examiner markdown per question index for Telegram inclusion
+let geminiMarkdownCache = {};
+
 // Student identification state
 let studentSession = null;
 let identificationCamera = null;
@@ -1262,6 +1265,7 @@ async function enterReview() {
         window.ieltsCoachAI.getExaminerFeedback(combinedTranscript, 'part1', questionText, audioBlob)
             .then(markdown => {
                 if (markdown) {
+                    geminiMarkdownCache[currentIndex] = markdown;
                     const feedbackHtml = renderExaminerFeedback(markdown);
                     feedbackEl.innerHTML = feedbackHtml;
                     if (window.workHistory) {
@@ -1477,6 +1481,31 @@ function markdownToHtml(md) {
         // Track-changes tokens → <del>/<ins> (Unicode brackets survive the HTML escape above)
         .replace(/⟪del:([^⟫]+)⟫/g, '<del class="correction-del">$1</del>')
         .replace(/⟪ins:([^⟫]+)⟫/g, '<ins class="correction-ins">$1</ins>');
+}
+
+/**
+ * Extract the corrected transcript from Gemini examiner markdown.
+ * Applies ⟪del:X⟫⟪ins:Y⟫ tokens: removes deletions, keeps insertions.
+ * Returns plain text string or null if section not found.
+ */
+function extractCorrectedTranscript(markdown) {
+    const match = markdown.match(/## Inline corrections\s*\n([\s\S]*?)(?=\n## |\n---EXAMINER|$)/);
+    if (!match) return null;
+    let corrected = match[1]
+        .replace(/⟪del:[^⟫]*⟫/g, '')
+        .replace(/⟪ins:([^⟫]*?)⟫/g, '$1')
+        .trim();
+    return corrected || null;
+}
+
+/**
+ * Extract the model answer section from Gemini examiner markdown.
+ * Returns the model answer text or null if not found.
+ */
+function extractModelAnswer(markdown) {
+    const match = markdown.match(/## Model answer[^\n]*\n([\s\S]*?)(?=\n## |\n---EXAMINER|$)/);
+    if (!match) return null;
+    return match[1].trim() || null;
 }
 
 /** Split examiner feedback markdown on the breakdown marker and render
@@ -2392,8 +2421,18 @@ async function sendAudioToTelegram() {
                 msg2 += '\n';
             }
 
-            // Sample answer
-            if (sampleText) {
+            // Gemini corrected transcript (if available from cached AI feedback)
+            const geminiMd = geminiMarkdownCache[currentIndex];
+            if (geminiMd) {
+                const corrected = extractCorrectedTranscript(geminiMd);
+                if (corrected) {
+                    msg2 += '<b>✏️ Corrected Answer:</b>\n<i>' + corrected + '</i>\n\n';
+                }
+                const modelAns = extractModelAnswer(geminiMd);
+                if (modelAns) {
+                    msg2 += '<b>📖 Model Answer (AI):</b>\n<i>' + modelAns + '</i>';
+                }
+            } else if (sampleText) {
                 msg2 += '<b>📖 Sample Answer:</b>\n' +
                     '<i>' + sampleText + '</i>';
             }

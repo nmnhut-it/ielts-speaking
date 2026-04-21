@@ -291,6 +291,18 @@ function calculateBandScores(transcript, durationSeconds, partType, audioBlob) {
         vocabBand = Math.min(vocabBand, 6.0);
     }
 
+    // Error density cap: high errors per sentence signal incoherence, not just bad grammar
+    const errorDensity = grammarEvidence.sentenceCount > 0
+        ? grammarEvidence.errorCount / grammarEvidence.sentenceCount : 0;
+    if (errorDensity >= 1.0) {
+        fluencyBand = Math.min(fluencyBand, 5.0);
+        grammarBand = Math.min(grammarBand, 4.5);
+        vocabBand = Math.min(vocabBand, 5.0);
+    } else if (errorDensity >= 0.5) {
+        fluencyBand = Math.min(fluencyBand, 5.5);
+        grammarBand = Math.min(grammarBand, 5.0);
+    }
+
     // Step 6: Calculate overall
     const raw = (fluencyBand + vocabBand + grammarBand + pronBand) / 4;
     const overall = Math.round(raw * 2) / 2;
@@ -705,6 +717,27 @@ function detectGrammarErrors(text) {
     const dnMatches = [...text.matchAll(doubleNeg)];
     dnMatches.forEach(m => {
         errors.push({ type: 'Double negative', desc: 'Avoid double negatives', text: m[0], position: m.index });
+    });
+
+    // 3rd-person singular SV agreement: "a/an [noun] [base verb]" without preceding modal
+    // Catches incoherent patterns like "A murder raise" or "A witness become"
+    const singularArticleSV = /\b(a|an)\s+\w+\s+(raise|become|remain|seem|appear|happen|occur|grow|witness|cause|lead|matter|exist|belong|depend|rely|result|stand|fall|rise|drop)\b(?!\s+to\b)/gi;
+    const saMatches = [...text.matchAll(singularArticleSV)];
+    saMatches.forEach(m => {
+        // Exclude: modal verbs or "to" directly before the base verb (already caught by lookahead above or context)
+        const before = text.substring(Math.max(0, m.index - 15), m.index).toLowerCase();
+        if (/\b(would|could|should|will|might|may|must|can|shall|let|make|help)\s*$/.test(before)) return;
+        errors.push({ type: 'Subject-verb agreement', desc: 'Singular noun (a/an) — verb needs -s/-es', text: m[0], position: m.index });
+    });
+
+    // 3rd-person singular SV agreement: "every/each [noun] [base verb]"
+    // Catches patterns like "Every day witness become" or "each time happen"
+    const everySV = /\b(every|each)\s+\w+\s+(become|remain|seem|appear|happen|occur|grow|change|affect|matter|exist|depend|result|develop|expand|improve|decline|increase|decrease)\b/gi;
+    const everyMatches = [...text.matchAll(everySV)];
+    everyMatches.forEach(m => {
+        const before = text.substring(Math.max(0, m.index - 15), m.index).toLowerCase();
+        if (/\b(would|could|should|will|might|may|must|can|shall)\s*$/.test(before)) return;
+        errors.push({ type: 'Subject-verb agreement', desc: '"Every/each [noun]" is singular — verb needs -s/-es', text: m[0], position: m.index });
     });
 
     return errors;
